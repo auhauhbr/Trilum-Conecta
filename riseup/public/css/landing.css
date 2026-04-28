@@ -1,0 +1,132 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --azul: #009DFF;
+  --azul-escuro: #0077cc;
+}
+
+html, body {
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  color: #000;
+  overflow-x: hidden;
+}
+
+/* ── NAVEGAÇÃO ── */
+nav {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 100px);
+  max-width: 1400px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 5px;
+  background: rgba(210, 210, 210, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  border-radius: 89px;
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  z-index: 100;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.06);
+}
+
+.links-nav {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  height: 100%;
+  gap: 0;
+}
+
+.links-nav li {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.links-nav a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 32px;
+  font-size: 14px;
+  font-weight: 300;
+  color: #111;
+  text-decoration: none;
+  border-radius: 0;
+  letter-spacing: -0.2px;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.links-nav a:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Item ativo */
+.links-nav .ativo a {
+  background: rgba(58, 69, 221, 0.09);
+}
+
+.links-nav .ativo a::after {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: var(--azul);
+  border-radius: 0;
+}
+
+/* ── SEÇÃO HERO ── */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 580px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.imagem-hero {
+  position: absolute;
+  right: -80px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80%;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.texto-hero {
+  position: absolute;
+  left: 40px;
+  top: 140px;
+  z-index: 2;
+  max-width: 500px;
+}
+
+h1 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(52px, 6.5vw, 80px);
+  line-height: 1.04;
+  letter-spacing: -1px;
+  color: #000000;
+}
+
+h1 .azul {
+  color: var(--azul);
+}
