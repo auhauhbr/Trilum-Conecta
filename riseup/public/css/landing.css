@@ -1,22 +1,25 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 :root {
-  --azul: #009DFF;
+  --azul: #009dff;
   --azul-escuro: #0077cc;
 }
 
-html, body {
-  font-family: 'Inter', sans-serif;
+html,
+body {
+  font-family: "Inter", sans-serif;
   background: #ffffff;
   color: #000;
   overflow-x: hidden;
 }
 
-/* ── NAVEGAÇÃO ── */
+/* nav*/
 nav {
   position: fixed;
   top: 18px;
@@ -30,7 +33,7 @@ nav {
   justify-content: flex-end;
   padding: 0 5px;
   background: rgba(210, 210, 210, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.40);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 89px;
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
@@ -72,13 +75,13 @@ nav {
   background: rgba(0, 0, 0, 0.04);
 }
 
-/* Item ativo */
+/* atv*/
 .links-nav .ativo a {
   background: rgba(58, 69, 221, 0.09);
 }
 
 .links-nav .ativo a::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0px;
   left: 0;
@@ -88,7 +91,7 @@ nav {
   border-radius: 0;
 }
 
-/* ── SEÇÃO HERO ── */
+/* parte img começo */
 .hero {
   position: relative;
   width: 100%;
@@ -119,7 +122,7 @@ nav {
 }
 
 h1 {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 700;
   font-size: clamp(52px, 6.5vw, 80px);
   line-height: 1.04;
@@ -129,4 +132,114 @@ h1 {
 
 h1 .azul {
   color: var(--azul);
+}
+
+/* geral */
+.secao {
+  padding: 90px 80px;
+}
+
+.rotulo-secao {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--azul);
+  margin-bottom: 14px;
+}
+
+.titulo-secao {
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  line-height: 1.1;
+  color: #000;
+  margin-bottom: 12px;
+}
+
+.descricao-secao {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.65;
+  max-width: 480px;
+}
+
+/* como funfa*/
+.como {
+  background: #f7f7f5;
+}
+
+.grade-como {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  margin-top: 52px;
+}
+
+.passos {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.passo {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.numero-passo {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  background: var(--azul);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.corpo-passo h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+}
+
+.corpo-passo p {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.visual-como {
+  background: #fff;
+  border: 1px solid #e8e8e4;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rotulo-visual {
+  font-size: 10px;
+  font-weight: 700;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 2px;
+}
+
+.card-curso {
+  background: #f7f7f5;
+  border-radius: 11px;
+  padding: 13px 15px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border: 1px solid #eee;
 }
