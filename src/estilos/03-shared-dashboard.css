@@ -1,0 +1,190 @@
+/* Base compartilhada, dashboard e cards */
+.pagina,
+.dashboard-page,
+.player-page {
+  background: #f5f4f1;
+}
+
+.dashboard-html-hero,
+.dashboard-section,
+.perfil-page,
+.pagina {
+  width: min(1120px, calc(100% - 40px));
+}
+
+.dashboard-html-hero {
+  min-height: auto;
+  padding: 44px 0 36px;
+}
+
+.dashboard-hero-text .greeting-tag {
+  border-radius: 4px;
+  background: transparent;
+  color: #1a6bff;
+  padding: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard-hero-text h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -0.04em;
+}
+
+.dashboard-hero-panel,
+.perfil-hero,
+.info-card,
+.metricas article,
+.trilha-card,
+.curso-card,
+.vaga-card,
+.curso-hero,
+.vaga-hero,
+.empresa-box,
+.modulo-bloco,
+.course-info,
+.perfil-final {
+  border: 1px solid #e2e0db;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.dashboard-section {
+  margin: 0 auto;
+  padding: 38px 0;
+}
+
+.dashboard-section.bg-gray {
+  background: transparent;
+}
+
+.section-header-html h2,
+.secao-cabecalho h1,
+.secao-cabecalho h2,
+.perfil-hero h1,
+.curso-hero h1,
+.vaga-hero h1 {
+  color: #1a1917;
+  letter-spacing: -0.04em;
+}
+
+.section-header-html p,
+.dashboard-hero-text p,
+.perfil-hero p,
+.info-card p,
+.trilha-card p,
+.curso-card p,
+.vaga-card p {
+  color: #6b6860;
+}
+
+.grade-cards,
+.vagas-painel-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.trilha-card,
+.curso-card,
+.vaga-card {
+  min-height: auto;
+  padding: 18px;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.trilha-card:hover,
+.curso-card:hover,
+.vaga-card:hover {
+  border-color: #b9b5ad;
+  transform: translateY(-2px);
+}
+
+.trilha-card h3,
+.curso-card h3,
+.vaga-card h3 {
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.badge {
+  border-radius: 4px;
+  background: #eeecea;
+  color: #4b4740;
+  text-transform: none;
+}
+
+.badge-brand {
+  background: #eaf0ff;
+  color: #1a6bff;
+}
+
+.botao-primary,
+.botao {
+  border-radius: 6px;
+}
+
+.botao-primary {
+  background: #1a6bff;
+}
+
+.botao-secondary,
+.botao-ghost {
+  border-color: #e2e0db;
+  background: #fff;
+}
+
+.progresso,
+.wizard-progresso {
+  height: 5px;
+  border-radius: 2px;
+  background: #e2e0db;
+}
+
+.progresso span,
+.wizard-progresso span {
+  border-radius: 2px;
+  background: #1a6bff;
+}
+
+.metricas {
+  gap: 16px;
+}
+
+.metricas article {
+  box-shadow: none;
+}
+
+.metricas strong {
+  font-size: 28px;
+}
+
+.grafico-tecnologias {
+  gap: 12px;
+}
+
+.barra-tecnologia {
+  grid-template-columns: 96px minmax(0, 1fr) 42px;
+}
+
+.barra-tecnologia div {
+  height: 8px;
+  border-radius: 2px;
+  background: #e2e0db;
+}
+
+.barra-tecnologia strong {
+  border-radius: 2px;
+  background: #1a6bff;
+}
+
+.certificado-expansivel {
+  border-color: #e2e0db;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.certificado-expansivel summary span {
+  color: #1a6bff;
+}
+

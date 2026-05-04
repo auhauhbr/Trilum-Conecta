@@ -1,0 +1,255 @@
+/* Ajustes finais de layout global */
+/* Ajustes finais: nav, filtros, footer e vagas */
+.public-nav-links a.active,
+.public-nav-links a:hover,
+.public-nav-links button:hover {
+  position: relative;
+  background: rgba(255, 255, 255, 0.32);
+  color: #111229;
+}
+
+.public-nav-links a.active::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -10px;
+  height: 3px;
+  border-radius: 999px;
+  background: #1a6bff;
+}
+
+.filtros {
+  display: grid;
+  grid-template-columns: minmax(92px, 0.42fr) minmax(220px, 1.35fr) repeat(4, minmax(128px, 0.75fr));
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+.filtro-label {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d7d7e4;
+  border-radius: 999px;
+  background: #fff;
+  color: #111229;
+  padding: 0 18px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.busca {
+  min-width: 0;
+}
+
+.busca input,
+.filtros select,
+.filtro-input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #d7d7e4;
+  border-radius: 999px;
+  background: #fff;
+  color: #111229;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.busca input {
+  padding-left: 42px;
+}
+
+.busca input::placeholder,
+.filtro-input::placeholder {
+  color: #686b83;
+  opacity: 1;
+}
+
+.filtros select {
+  appearance: auto;
+}
+
+.empresa-mini span {
+  overflow: hidden;
+}
+
+.empresa-mini span img,
+.avatar-imagem {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-linha {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #d7d7e4;
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px 14px;
+  color: #111229;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.upload-linha input {
+  display: none;
+}
+
+.site-footer {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  margin-top: 40px;
+  padding: 32px 20px;
+  border-top: 1px solid #d7d7e4;
+  background: #111229;
+  color: #fff;
+  text-align: center;
+}
+
+.site-footer strong {
+  font-size: 20px;
+}
+
+.site-footer strong span {
+  color: #1a6bff;
+}
+
+.site-footer p,
+.site-footer small {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+@media (max-width: 980px) {
+  .filtros {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .filtros {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cards de curso/trilha estilo vitrine */
+.curso-card,
+.trilha-card {
+  min-height: 292px;
+  padding: 0 12px 14px;
+}
+
+.curso-thumb-card {
+  position: relative;
+  height: 152px;
+  margin: 0 -12px 2px;
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+  background: #182033;
+}
+
+.curso-thumb-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.curso-thumb-card span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: #fff;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.curso-card-icone,
+.trilha-card::before {
+  display: none;
+}
+
+.curso-card .card-topo,
+.trilha-card .card-topo,
+.curso-card .meta-linha,
+.trilha-card .meta-linha,
+.curso-card .card-acao,
+.trilha-card .card-acao,
+.card-descricao-curta {
+  display: none;
+}
+
+.curso-card h3,
+.trilha-card h3 {
+  display: -webkit-box;
+  overflow: hidden;
+  min-height: 40px;
+  margin-top: 2px;
+  font-size: 15px;
+  line-height: 1.28;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.card-professor {
+  display: block !important;
+  overflow: hidden !important;
+  color: #555a7d !important;
+  font-size: 12px !important;
+  line-height: 1.3 !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trilha-card .progresso {
+  margin-top: auto;
+}
+
+.card-preview {
+  inset: 8px;
+  align-content: stretch;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.card-preview strong {
+  font-size: 15px;
+}
+
+.card-preview p {
+  display: -webkit-box;
+  overflow: hidden !important;
+  margin: 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.card-preview .preview-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.card-preview > svg {
+  justify-self: end;
+  color: #1a6bff;
+}
+
+.certificado-expansivel summary svg {
+  color: #1a6bff;
+  transition: transform 0.16s;
+}
+
+.certificado-expansivel[open] summary svg {
+  transform: rotate(180deg);
+}
+

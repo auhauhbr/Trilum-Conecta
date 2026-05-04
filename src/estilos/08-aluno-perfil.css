@@ -1,0 +1,413 @@
+/* Perfil do aluno */
+/* Perfil do aluno em estilo Udemy */
+.perfil-udemy-page {
+  display: grid;
+  grid-template-columns: 204px minmax(0, 1fr);
+  width: min(1016px, calc(100% - 40px));
+  min-height: calc(100vh - 96px);
+  margin: 0 auto 56px;
+  border: 1px solid #d7d7e4;
+  background: #fff;
+  color: #111229;
+}
+
+.perfil-udemy-sidebar {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+  max-height: calc(100vh - 108px);
+  overflow: auto;
+  border-right: 1px solid #d7d7e4;
+  background: #fff;
+}
+
+.perfil-udemy-sidebar .avatar {
+  display: grid;
+  object-fit: cover;
+  width: 114px;
+  height: 114px;
+  margin: 16px auto 14px;
+  place-items: center;
+  border-radius: 50%;
+  background: #15151f;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.perfil-foto-wrap {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.perfil-foto-botao {
+  position: absolute;
+  right: 2px;
+  bottom: 18px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid #d7d7e4;
+  border-radius: 50%;
+  background: #fff;
+  color: #111229;
+  cursor: pointer;
+}
+
+.perfil-foto-botao input {
+  display: none;
+}
+
+.perfil-udemy-sidebar > strong {
+  display: block;
+  width: min(150px, calc(100% - 28px));
+  margin: 0 auto 22px;
+  color: #111229;
+  font-size: 16px;
+  line-height: 1.18;
+  text-align: center;
+}
+
+.perfil-udemy-sidebar nav {
+  display: grid;
+}
+
+.perfil-udemy-sidebar a {
+  display: block;
+  padding: 7px 15px;
+  color: #1f2342;
+  font-size: 14px;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.perfil-udemy-sidebar a:hover,
+.perfil-udemy-sidebar a.ativo {
+  background: #9697b0;
+  color: #fff;
+}
+
+.perfil-udemy-conteudo {
+  min-width: 0;
+  background: #fff;
+}
+
+.perfil-udemy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 40px 18px;
+  border-bottom: 1px solid #d7d7e4;
+  text-align: center;
+}
+
+.perfil-udemy-header > div:first-child {
+  flex: 1;
+}
+
+.perfil-edicao-acoes {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.perfil-udemy-header h1 {
+  margin: 0 0 6px;
+  color: #111229;
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.perfil-udemy-header p {
+  margin: 0;
+  color: #1f2342;
+  font-size: 14px;
+}
+
+.perfil-udemy-form {
+  display: grid;
+  gap: 16px;
+  width: min(562px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 24px 0 22px;
+  border-bottom: 1px solid #d7d7e4;
+  scroll-margin-top: 104px;
+}
+
+.perfil-udemy-form:last-child {
+  border-bottom: 0;
+}
+
+.perfil-udemy-form h2 {
+  margin: 0;
+  color: #111229;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.perfil-campo-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.perfil-udemy-form input,
+.perfil-udemy-form textarea,
+.perfil-udemy-form select {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid #9da0bd;
+  border-radius: 3px;
+  background: #fff;
+  color: #1f2342;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.perfil-udemy-form input[readonly],
+.perfil-udemy-form textarea[readonly] {
+  background: #fbfbfc;
+  color: #34364f;
+}
+
+.perfil-udemy-form input:focus,
+.perfil-udemy-form textarea:focus,
+.perfil-udemy-form select:focus {
+  border-color: #1a6bff;
+}
+
+.perfil-input-contador {
+  position: relative;
+}
+
+.perfil-input-contador input {
+  padding-right: 48px;
+}
+
+.perfil-input-contador span {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  color: #555a7d;
+  transform: translateY(-50%);
+}
+
+.perfil-udemy-form small {
+  color: #555a7d;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.perfil-editor {
+  display: grid;
+  gap: 0;
+}
+
+.perfil-editor > span {
+  margin-bottom: 8px;
+  color: #111229;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: 22px;
+  min-height: 38px;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid #9da0bd;
+  border-bottom: 0;
+  border-radius: 3px 3px 0 0;
+}
+
+.editor-toolbar b,
+.editor-toolbar i {
+  color: #1f2342;
+}
+
+.perfil-editor textarea {
+  min-height: 66px;
+  resize: vertical;
+  border-radius: 0 0 3px 3px;
+}
+
+.perfil-editor small {
+  margin-top: 8px;
+}
+
+.perfil-metricas-bloco {
+  width: min(720px, calc(100% - 64px));
+}
+
+.perfil-metricas-udemy {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.perfil-metricas-udemy article {
+  padding: 16px;
+  border-color: #d7d7e4;
+  border-radius: 4px;
+  background: #fafafa;
+}
+
+.perfil-metricas-udemy strong {
+  font-size: 24px;
+}
+
+.perfil-duas-colunas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.perfil-subcard {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #d7d7e4;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.perfil-subcard h3 {
+  margin: 0;
+  color: #111229;
+  font-size: 15px;
+}
+
+.perfil-certificados-destaque {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid #d7d7e4;
+  border-radius: 6px;
+  background: #f8fafc;
+}
+
+.perfil-certificados-destaque > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.perfil-certificados-destaque strong {
+  font-size: 28px;
+  color: #111229;
+}
+
+.perfil-certificados-destaque span {
+  color: #555a7d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.perfil-certificados-destaque p {
+  margin: 0;
+  color: #555a7d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.perfil-subcard p,
+.perfil-udemy-form p {
+  margin: 0;
+  color: #555a7d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.perfil-udemy-page .linha-progresso,
+.perfil-udemy-page .candidatura-item {
+  padding: 10px 0;
+}
+
+.perfil-udemy-page .progresso {
+  height: 6px;
+  border-radius: 2px;
+}
+
+.perfil-udemy-page .barra-tecnologia {
+  grid-template-columns: 92px minmax(0, 1fr) 38px;
+}
+
+.perfil-udemy-page .barra-tecnologia div {
+  height: 7px;
+  border-radius: 2px;
+}
+
+.perfil-udemy-page .certificado-expansivel {
+  border-color: #d7d7e4;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.perfil-udemy-page .certificado-expansivel summary {
+  padding: 14px;
+}
+
+.perfil-udemy-page .certificado-detalhes {
+  padding: 0 14px 14px;
+}
+
+.perfil-udemy-page .respostas-grid div {
+  border: 1px solid #d7d7e4;
+  border-radius: 4px;
+  background: #fafafa;
+}
+
+@media (max-width: 900px) {
+  .perfil-udemy-page {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-udemy-sidebar {
+    position: static;
+    max-height: none;
+    border-right: 0;
+    border-bottom: 1px solid #d7d7e4;
+  }
+
+  .perfil-udemy-sidebar nav {
+    grid-auto-flow: column;
+    overflow-x: auto;
+    padding: 0 10px 10px;
+  }
+
+  .perfil-udemy-sidebar a {
+    white-space: nowrap;
+  }
+
+  .perfil-duas-colunas,
+  .perfil-metricas-udemy {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .perfil-udemy-page {
+    width: min(100% - 20px, 1016px);
+  }
+
+  .perfil-udemy-header {
+    align-items: stretch;
+    flex-direction: column;
+    padding-inline: 20px;
+  }
+
+  .perfil-udemy-form,
+  .perfil-metricas-bloco {
+    width: min(100% - 28px, 720px);
+  }
+}
+

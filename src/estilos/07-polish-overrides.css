@@ -1,0 +1,363 @@
+/* Polimento visual e overrides do painel */
+/* Udemy-like square polish */
+.public-nav {
+  width: 100%;
+  height: 64px;
+  padding: 0 48px;
+  border-bottom: 1px solid #e2e0db;
+  border-radius: 0;
+  background: rgba(245, 244, 241, 0.96);
+  box-shadow: none;
+}
+
+.public-nav-links a,
+.public-nav-links button {
+  min-width: auto;
+  min-height: 0;
+  height: auto;
+  padding: 7px 16px;
+  border-radius: 999px;
+  color: #6b6860;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.public-nav-links a.active,
+.public-nav-links a:hover,
+.public-nav-links button:hover {
+  background: #eeecea;
+  color: #1a1917;
+}
+
+.pagina,
+.dashboard-page,
+.perfil-page {
+  background: #f5f4f1;
+}
+
+.dashboard-html-hero,
+.dashboard-section,
+.perfil-page,
+.pagina {
+  width: min(1120px, calc(100% - 40px));
+}
+
+.dashboard-section {
+  display: grid;
+  gap: 22px;
+  margin: 0 auto;
+  padding: 38px 0;
+  background: transparent;
+}
+
+.dashboard-section.bg-gray {
+  background: transparent;
+}
+
+.dashboard-html-hero,
+.perfil-hero,
+.info-card,
+.trilha-card,
+.curso-card,
+.vaga-card,
+.recomendacao,
+.metricas article,
+.perfil-final,
+.dashboard-hero-panel,
+.auth-card,
+.form-card {
+  border: 1px solid #e2e0db;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.trilha-card,
+.curso-card,
+.vaga-card,
+.info-card,
+.recomendacao {
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.trilha-card:hover,
+.curso-card:hover,
+.vaga-card:hover {
+  border-color: #1a6bff;
+  transform: translateY(-2px);
+}
+
+.badge {
+  border-radius: 999px;
+}
+
+.botao,
+.btn-large {
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.botao-primary,
+.btn-large.primary {
+  background: #1a6bff;
+}
+
+.progresso,
+.progress-mini {
+  border-radius: 3px;
+}
+
+.progresso span,
+.progress-mini span,
+.barra-tecnologia strong {
+  background: #1a6bff;
+}
+
+@media (max-width: 900px) {
+  .public-nav {
+    width: 100%;
+  }
+}
+
+@media (max-width: 680px) {
+  .public-nav {
+    height: auto;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 18px;
+  }
+
+  .public-nav-links {
+    overflow-x: auto;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .public-nav-links a,
+  .public-nav-links button {
+    padding: 7px 14px;
+    white-space: nowrap;
+  }
+
+  .landing-udemy-hero,
+  .landing-section-udemy,
+  .dashboard-html-hero,
+  .dashboard-section,
+  .pagina,
+  .perfil-page {
+    width: min(100% - 24px, 1120px);
+  }
+}
+
+/* Ajustes finais solicitados */
+.public-nav {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  z-index: 100;
+  width: min(960px, calc(100% - 40px));
+  height: 56px;
+  margin: 0 auto 14px;
+  padding: 0 18px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(210, 210, 210, 0.7);
+  border-radius: 999px;
+  background: rgba(230, 230, 230, 0.72);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(16px) saturate(140%);
+}
+
+.public-nav.nav-rolagem {
+  position: sticky;
+  top: 14px;
+  left: auto;
+  transform: none;
+}
+
+.public-nav-links {
+  border: 0;
+  background: transparent;
+}
+
+.public-nav-links a,
+.public-nav-links button {
+  padding: 9px 18px;
+  color: #1f1f1f;
+  font-weight: 500;
+}
+
+.public-nav-links .nav-voltar {
+  border-left: 1px solid rgba(80, 80, 80, 0.12);
+  color: #1a6bff;
+  font-weight: 800;
+}
+
+.public-nav-links a.active,
+.public-nav-links a:hover,
+.public-nav-links button:hover {
+  background: rgba(255, 255, 255, 0.42);
+  color: #1a1917;
+}
+
+.dashboard-page {
+  background: #f5f4f1;
+}
+
+.dashboard-html-hero {
+  width: min(1120px, calc(100% - 40px));
+  min-height: auto;
+  margin: 0 auto;
+  padding: 50px 0 34px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.dashboard-hero-text .greeting-tag {
+  margin-bottom: 12px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #1a6bff;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard-hero-text h1 {
+  max-width: 620px;
+  font-size: clamp(32px, 4.2vw, 48px);
+  line-height: 1.06;
+}
+
+.dashboard-hero-text p {
+  max-width: 520px;
+  margin: 16px 0 0;
+  font-size: 15px;
+}
+
+.dashboard-hero-panel {
+  align-self: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e2e0db;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.hero-panel-top {
+  align-items: flex-start;
+}
+
+.hero-panel-avatar {
+  border-radius: 10px;
+  background: #1a1917;
+}
+
+.bell-sm {
+  display: none;
+}
+
+.panel-cards article {
+  border-color: #e2e0db;
+  border-radius: 8px;
+  background: #f7f6f3;
+}
+
+.perfil-resumo-linha .badge {
+  border-radius: 999px;
+  background: #f3f2ef;
+  color: #6b6860;
+  font-size: 11px;
+}
+
+.grade-cards {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.trilha-card {
+  display: grid;
+  gap: 12px;
+  min-height: 236px;
+  padding: 20px;
+  border: 1px solid #e2e0db;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.trilha-card:hover {
+  border-color: #b9b5ad;
+  transform: none;
+}
+
+.trilha-card .card-topo {
+  align-items: flex-start;
+}
+
+.trilha-card .card-topo > span {
+  color: #77736b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.trilha-card h3 {
+  margin: 0;
+  color: #1f1f1f;
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.trilha-card p {
+  margin: 0;
+  color: #6f6f6f;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.trilha-card .meta-linha {
+  margin-top: auto;
+  color: #6f6f6f;
+  font-size: 12px;
+}
+
+.trilha-card .card-acao {
+  color: #1a6bff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.recomendacao,
+.motivo {
+  display: contents;
+}
+
+.landing-udemy-hero {
+  padding-bottom: 72px;
+}
+
+.landing-section-udemy:first-of-type {
+  padding-top: 42px;
+}
+
+@media (max-width: 980px) {
+  .dashboard-html-hero,
+  .grade-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .public-nav {
+    top: 8px;
+    width: min(100% - 20px, 960px);
+    height: auto;
+    padding: 12px;
+  }
+}
+
