@@ -71,6 +71,25 @@ export const vagas = [
     requisitos: ['Comunicacao', 'Organizacao', 'Noções de metodologias ageis'],
     atividades: ['Acompanhar tarefas', 'Testar funcionalidades', 'Registrar feedbacks'],
   },
+    {
+    id: 'vaga-5',
+    empresaId: 'empresa-2',
+    titulo: 'Assistente de Produto Digitallll',
+    nivel: 'Junior',
+    tipo: 'CLT',
+    modalidade: 'Remoto',
+    localizacao: 'Brasil',
+    salario: 'R$ 2.400 - R$ 3.000',
+    status: 'encerrada',
+    publicadaEm: '2026-03-29',
+    candidatos: 21,
+    tags: ['agil', 'comunicacao', 'portfolio', 'produto'],
+    descricao:
+      'Apoiar organizacao de backlog, testes de interface e comunicacao entre time tecnico e negocio.',
+    requisitos: ['Comunicacao', 'Organizacao', 'Noções de metodologias ageis'],
+    atividades: ['Acompanhar tarefas', 'Testar funcionalidades', 'Registrar feedbacks'],
+  },
+  
 ]
 
 export const candidatosMock = [

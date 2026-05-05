@@ -5,7 +5,7 @@ export const usuarios = [
     id: 'aluno-1',
     tipo: 'aluno',
     nome: 'Jefferson Santos',
-    email: 'aluno@Unit.com',
+    email: 'aluno@riseup.com',
     senha: 'Aluno@123',
     foto: 'JS',
     fotoUrl: jeffersonSantosPerfil,

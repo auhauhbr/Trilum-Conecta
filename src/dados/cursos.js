@@ -36,6 +36,10 @@
   }
 }
 
+
+// lista simples pra inserie cursos @inserirCurso.js
+import { inserirCurso } from './inserirCurso'
+
 export const videosCursos = {
   informaticaModulo1: 'https://www.youtube.com/embed/videoseries?list=PLAp37wMSBouByrGkI9JkLlqGe7eqI_bYI',
   informaticaModulo2: 'https://www.youtube.com/embed/videoseries?list=PLAp37wMSBouDB89STzjYKZdyYZzu29y-E',
@@ -101,6 +105,128 @@ const videosAlgoritmos = {
 
 function aulaCurso(id, titulo, duracao, videoUrl, descricao, professor, capitulos = []) {
   return { id, titulo, duracao, videoUrl, descricao, professor, capitulos }
+}
+
+function textoParaId(valor = 'curso') {
+  return String(valor)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+function listaSimples(valor) {
+  if (Array.isArray(valor)) return valor.map((item) => String(item).trim()).filter(Boolean)
+  return String(valor || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function tempoParaSegundos(valor) {
+  if (valor === undefined || valor === null || valor === '') return null
+  if (typeof valor === 'number') return valor
+
+  const texto = String(valor).trim()
+  const partes = texto.split(':').map(Number)
+  if (partes.some(Number.isNaN)) return null
+
+  return partes.reduce((total, parte) => total * 60 + parte, 0)
+}
+
+function tempoYoutubeParaSegundos(url = '') {
+  const tempo = String(url).match(/[?&]t=([^&]+)/)?.[1]
+  if (!tempo) return null
+
+  const segundosDiretos = tempo.match(/^(\d+)s?$/)
+  if (segundosDiretos) return Number(segundosDiretos[1])
+
+  const horas = Number(tempo.match(/(\d+)h/)?.[1] || 0)
+  const minutos = Number(tempo.match(/(\d+)m/)?.[1] || 0)
+  const segundos = Number(tempo.match(/(\d+)s/)?.[1] || 0)
+  const total = horas * 3600 + minutos * 60 + segundos
+  return total || null
+}
+
+function youtubeEmbed(url = '', inicioEm = null) {
+  const texto = String(url || '').trim()
+  if (!texto) return ''
+  const inicio = tempoParaSegundos(inicioEm) ?? tempoYoutubeParaSegundos(texto)
+
+  if (texto.includes('/embed/')) {
+    if (!inicio || texto.includes('start=')) return texto
+    return `${texto}${texto.includes('?') ? '&' : '?'}start=${inicio}`
+  }
+
+  const videoId = texto.match(/[?&]v=([^&]+)/)?.[1] || texto.match(/youtu\.be\/([^?&/]+)/)?.[1]
+  return videoId ? `https://www.youtube.com/embed/${videoId}${inicio ? `?start=${inicio}` : ''}` : texto
+}
+
+function thumbnailYoutube(url = '') {
+  const videoId = youtubeEmbed(url).match(/embed\/([^?&/]+)/)?.[1]
+  return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null
+}
+
+function aulaInseridaParaAula(aula, cursoId, professor, moduloIndice, aulaIndice) {
+  const id = aula.id || `${cursoId}-m${moduloIndice + 1}-a${String(aulaIndice + 1).padStart(2, '0')}`
+
+  return aulaCurso(
+    id,
+    aula.titulo,
+    aula.duracao || '',
+    youtubeEmbed(aula.link || aula.videoUrl, aula.inicioEm),
+    aula.descricao || aula.titulo,
+    aula.professor || professor,
+    aula.capitulos || [],
+  )
+}
+
+function cursoInseridoParaCurso(cursoInserido, indice) {
+  const id = cursoInserido.id || textoParaId(cursoInserido.titulo || `curso-inserido-${indice + 1}`)
+  const professor = cursoInserido.professor || 'Professor externo'
+  const modulosOriginais =
+    Array.isArray(cursoInserido.modulos) && cursoInserido.modulos.length
+      ? cursoInserido.modulos
+      : [
+          {
+            titulo: 'Modulo 1: Conteudo do curso',
+            descricao: cursoInserido.destaque || cursoInserido.descricao,
+            aulas: cursoInserido.aulas || [],
+          },
+        ]
+
+  const modulos = modulosOriginais.map((modulo, moduloIndice) => ({
+    id: modulo.id || `${id}-modulo-${moduloIndice + 1}`,
+    titulo: modulo.titulo || `Modulo ${moduloIndice + 1}`,
+    descricao: modulo.descricao || cursoInserido.descricao || '',
+    aviso: modulo.aviso,
+    aulas: (modulo.aulas || []).map((aula, aulaIndice) =>
+      aulaInseridaParaAula(aula, id, professor, moduloIndice, aulaIndice),
+    ),
+  }))
+  const aulas = modulos.flatMap((modulo) => modulo.aulas)
+  const videoPrincipal = youtubeEmbed(cursoInserido.videoPrincipal || cursoInserido.youtubeUrl || aulas[0]?.videoUrl)
+
+  return curso(
+    id,
+    cursoInserido.titulo,
+    cursoInserido.categoria,
+    cursoInserido.tecnologia,
+    cursoInserido.nivel,
+    cursoInserido.duracao,
+    videoPrincipal,
+    listaSimples(cursoInserido.tags),
+    listaSimples(cursoInserido.trilhas || cursoInserido.trilhaIds),
+    cursoInserido.descricao,
+    cursoInserido.destaque,
+    {
+      professor,
+      aulas,
+      modulos,
+      thumbnailUrl: cursoInserido.thumbnailUrl || thumbnailYoutube(videoPrincipal),
+    },
+  )
 }
 
 const professorInformatica = 'Alfredo Junior / Hardware Redes Brasil'
@@ -242,6 +368,7 @@ export const aulasPythonBasico = [
     ],
   ),
 ]
+
 
 export const aulasPythonAnaliseIntro = [
   aulaCurso(
@@ -1700,7 +1827,10 @@ export const modulosQaCompleto = [
 
 export const aulasQaCompleto = modulosQaCompleto.flatMap((modulo) => modulo.aulas)
 
-export const cursos = [
+const cursosBase = [
+
+
+
   curso(
     'curso-info-computador',
     'Computador do zero para estudar tecnologia',
@@ -2305,3 +2435,4 @@ export const cursos = [
 
 
 
+export const cursos = [...cursosBase, ...inserirCurso.map(cursoInseridoParaCurso)]
