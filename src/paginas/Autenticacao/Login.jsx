@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { LockKeyhole, Mail } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../contextos/AppContext'
+import { modoApresentacao } from '../../dados/usuarios'
 
 export function Login() {
   const navigate = useNavigate()
@@ -20,7 +21,7 @@ export function Login() {
       setErro(resposta.mensagem)
       return
     }
-    navigate(resposta.usuario.tipo === 'empresa' ? '/empresa/painel' : '/aluno/painel')
+    navigate(resposta.redirecionarPara)
   }
 
   return (
@@ -76,7 +77,9 @@ export function Login() {
           <button className="btn-submit-html" type="submit">→ Entrar</button>
           <div className="auth-links html-auth-links">
             <button type="button" onClick={() => setForm({ email: 'aluno@riseup.com', senha: 'Aluno@123' })}>Demo aluno</button>
-            <button type="button" onClick={() => setForm({ email: 'empresa@riseup.com', senha: 'Empresa@123' })}>Demo empresa</button>
+            {!modoApresentacao.ativo && (
+              <button type="button" onClick={() => setForm({ email: 'empresa@riseup.com', senha: 'Empresa@123' })}>Demo empresa</button>
+            )}
           </div>
         </form>
       </div>

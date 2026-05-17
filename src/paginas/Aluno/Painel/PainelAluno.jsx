@@ -6,6 +6,7 @@ import { Badge } from '../../../componentes/interface/Badge'
 import { Botao } from '../../../componentes/interface/Botao'
 import { VagaCard } from '../../../componentes/vagas/VagaCard'
 import { useApp } from '../../../contextos/AppContext'
+import { modoApresentacao } from '../../../dados/usuarios'
 import { calcularProgresso, recomendarCursos, recomendarTrilhas, recomendarVagas } from '../../../servicos/recomendacoes'
 
 const rotulos = {
@@ -17,9 +18,10 @@ const rotulos = {
 
 export function PainelAluno() {
   const { usuarioAtual, respostasWizard, progressoCursos, candidaturas } = useApp()
+  const apresentacaoAtiva = modoApresentacao.ativo
   const recomendadas = recomendarTrilhas(respostasWizard)
   const cursosSugeridos = recomendarCursos(respostasWizard).slice(0, 4)
-  const vagas = recomendarVagas(respostasWizard, candidaturas).slice(0, 3)
+  const vagas = apresentacaoAtiva ? [] : recomendarVagas(respostasWizard, candidaturas).slice(0, 3)
   const temWizard = Object.keys(respostasWizard).length > 0
   const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || 'aluno'
   const iniciais = usuarioAtual?.foto || primeiroNome.slice(0, 2).toUpperCase()
@@ -41,14 +43,20 @@ export function PainelAluno() {
           </h1>
           <p>
             {temWizard
-              ? 'Seus proximos passos foram priorizados para evitar excesso de caminhos ao mesmo tempo.'
-              : 'Complete o questionario para receber trilhas, cursos e vagas mais precisos.'}
+              ? 'Seus próximos passos foram priorizados para evitar excesso de caminhos ao mesmo tempo.'
+              : 'lorem.'}
           </p>
           <div className="hero-acoes">
             <Botao to="/aluno/cursos">Ver cursos</Botao>
-            <Botao to="/aluno/vagas" variant="secondary">
-              Explorar vagas
-            </Botao>
+            {apresentacaoAtiva ? (
+              <button className="botao botao-secondary" disabled type="button">
+                Explorar vagas
+              </button>
+            ) : (
+              <Botao to="/aluno/vagas" variant="secondary">
+                Explorar vagas
+              </Botao>
+            )}
           </div>
         </div>
 
@@ -100,7 +108,7 @@ export function PainelAluno() {
       <section className="dashboard-section bg-gray">
         <div className="section-header-html">
           <div>
-            <h2>Trilhas para voce</h2>
+            <h2>Trilhas para você</h2>
             <p>Somente os caminhos mais importantes para o seu momento.</p>
           </div>
         </div>
@@ -134,14 +142,20 @@ export function PainelAluno() {
             <h2>Vagas para voce</h2>
             <p>Oportunidades compativeis com seu perfil atual.</p>
           </div>
-          <Link className="see-all" to="/aluno/vagas">
-            Ver vagas <ArrowRight size={14} />
-          </Link>
+          {apresentacaoAtiva ? (
+            <span className="see-all">Ver vagas <ArrowRight size={14} /></span>
+          ) : (
+            <Link className="see-all" to="/aluno/vagas">
+              Ver vagas <ArrowRight size={14} />
+            </Link>
+          )}
         </div>
         <div className="vagas-painel-grid">
-          {vagas.map((vaga) => (
-            <VagaCard key={vaga.id} vaga={vaga} empresa={vaga.empresa} match={vaga.match} />
-          ))}
+          {apresentacaoAtiva ? (
+            <p>Vazio vazio man</p>
+          ) : (
+            vagas.map((vaga) => <VagaCard key={vaga.id} vaga={vaga} empresa={vaga.empresa} match={vaga.match} />)
+          )}
         </div>
       </section>
     </section>

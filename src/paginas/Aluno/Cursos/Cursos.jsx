@@ -70,7 +70,7 @@ export function Cursos() {
       {!cursosFiltrados.length && (
         <div className="info-card">
           <h2>Nenhum resultado encontrado</h2>
-          <p>Tente buscar por outra tecnologia, categoria ou nivel.</p>
+          <p>Tente buscar por outra tecnologia, categoria ou nível.</p>
         </div>
       )}
     </section>

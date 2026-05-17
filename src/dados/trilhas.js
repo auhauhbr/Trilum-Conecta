@@ -18,6 +18,7 @@ import {
   aulasNodeCrud,
   aulasOratoria,
   aulasPythonBasico,
+  cursosInseridos,
   modulosReactBasico,
   modulosReactIntermediario,
   modulosPythonAnalise,
@@ -49,6 +50,13 @@ const videos = {
 function aula(id, titulo, duracao, videoUrl, descricao, professor = 'Professor externo', capitulos = []) {
   return { id, titulo, duracao, videoUrl, descricao, professor, capitulos }
 }
+
+function cursoInseridoPorId(id) {
+  return cursosInseridos.find((curso) => curso.id === id)
+}
+
+const cursoAngular = cursoInseridoPorId('curso-angular-19-pratica')
+const cursoPhp = cursoInseridoPorId('curso-php-iniciante')
 
 export const trilhas = [
   {
@@ -218,6 +226,22 @@ export const trilhas = [
     ],
   },
   {
+    id: 'angular-frontend',
+    titulo: 'Angular para Front-end',
+    categoria: 'Front-end',
+    area: 'frontend',
+    nivel: 'Intermediario',
+    duracao: cursoAngular?.duracao || '6h37',
+    tempoSugerido: '6 semanas',
+    tecnologias: ['angular', 'javascript', 'typescript'],
+    ordemBase: 6,
+    tags: ['angular', 'frontend', 'typescript', 'javascript', 'spa', 'testes', 'docker', 'deploy', 'ci-cd', 'portfolio'],
+    descricao: 'Construa uma aplicacao moderna com Angular, componentes, Signals, formularios, testes, Docker e deploy.',
+    destaque: 'Boa escolha para quem quer front-end estruturado e projetos completos.',
+    modulos: cursoAngular?.modulos || [],
+    thumbnailUrl: cursoAngular?.thumbnailUrl,
+  },
+  {
     id: 'node-backend',
     titulo: 'Back-end com Node.js',
     categoria: 'Back-end',
@@ -226,7 +250,7 @@ export const trilhas = [
     duracao: '2h43',
     tempoSugerido: '5 semanas',
     tecnologias: ['node', 'javascript'],
-    ordemBase: 6,
+    ordemBase: 7,
     tags: ['node', 'backend', 'api', 'javascript', 'express', 'mongodb', 'crud'],
     descricao: 'Crie APIs com JavaScript, Express e MongoDB, organize rotas e pratique CRUD.',
     destaque: 'Boa ponte para quem vem do front-end.',
@@ -255,7 +279,7 @@ export const trilhas = [
     duracao: '12h23',
     tempoSugerido: '8 semanas',
     tecnologias: ['java'],
-    ordemBase: 7,
+    ordemBase: 8,
     tags: ['java', 'backend', 'spring', 'api', 'poo', 'jpa', 'security', 'jwt'],
     descricao: 'Aprenda Java do básico à orientação a objetos e avance para APIs REST com Spring Boot, JPA, Hibernate, Spring Security e JWT.',
     destaque: 'Boa evolução para quem quer mirar vagas back-end júnior com Java.',
@@ -263,6 +287,22 @@ export const trilhas = [
       ...modulosJavaBasico,
       ...modulosJavaSpring,
     ],
+  },
+  {
+    id: 'php-backend',
+    titulo: 'Back-end com PHP',
+    categoria: 'Back-end',
+    area: 'backend',
+    nivel: 'Basico',
+    duracao: cursoPhp?.duracao || '9h30',
+    tempoSugerido: '6 semanas',
+    tecnologias: ['php'],
+    ordemBase: 9,
+    tags: ['php', 'backend', 'web', 'html', 'formularios', 'servidor', 'banco-de-dados', 'portfolio'],
+    descricao: 'Aprenda PHP para criar paginas dinamicas, trabalhar com formularios, servidor e base para integracao com banco de dados.',
+    destaque: 'Caminho pratico para quem quer back-end web com PHP.',
+    modulos: cursoPhp?.modulos || [],
+    thumbnailUrl: cursoPhp?.thumbnailUrl,
   },
   {
     id: 'go-backend',
@@ -273,7 +313,7 @@ export const trilhas = [
     duracao: '26h',
     tempoSugerido: '5 semanas',
     tecnologias: ['go'],
-    ordemBase: 8,
+    ordemBase: 10,
     tags: ['go', 'golang', 'backend', 'api', 'concorrencia'],
     descricao: 'Aprenda Go para construir APIs simples, performaticas e faceis de publicar.',
     destaque: 'Otima escolha para quem quer aprofundar back-end moderno.',
@@ -307,7 +347,7 @@ export const trilhas = [
     duracao: '32h30',
     tempoSugerido: '8 semanas',
     tecnologias: ['python'],
-    ordemBase: 9,
+    ordemBase: 12,
     tags: ['python', 'dados', 'automacao', 'pandas', 'numpy', 'visualizacao', 'webscraping'],
     descricao: 'Aprenda Python com foco em fundamentos, análise de dados, pandas, Numpy, visualização, webscraping e projeto prático.',
     destaque: 'Boa opção para evoluir de Python básico para análise de dados real.',
@@ -330,7 +370,7 @@ export const trilhas = [
     duracao: '8h10',
     tempoSugerido: '4 semanas',
     tecnologias: ['sql'],
-    ordemBase: 10,
+    ordemBase: 11,
     tags: ['sql', 'banco-de-dados', 'dados', 'backend', 'consultas'],
     descricao: 'Aprenda MySQL, criação de bancos, tabelas, consultas SELECT, modelo relacional, chaves estrangeiras e JOIN.',
     destaque: 'Complemento forte para dados, back-end e suporte técnico.',
@@ -376,7 +416,7 @@ export const trilhas = [
     duracao: '3h15',
     tempoSugerido: '5 semanas',
     tecnologias: ['docker-cloud', 'git-github'],
-    ordemBase: 11,
+    ordemBase: 13,
     tags: ['devops', 'docker', 'cloud', 'deploy', 'infra'],
     descricao: 'Entenda Docker, containers, imagens, Dockerfile, Docker Compose, deploy e configuração de aplicações em ambientes modernos.',
     destaque: 'Para quem quer publicar projetos e entender ambientes de produção.',
@@ -404,7 +444,7 @@ export const trilhas = [
     duracao: '9h35',
     tempoSugerido: '4 semanas',
     tecnologias: ['qa'],
-    ordemBase: 12,
+    ordemBase: 14,
     tags: ['qa', 'testes', 'qualidade', 'bugs', 'produto', 'automacao', 'api', 'mobile', 'appium'],
     descricao: 'Aprenda fundamentos de QA, cenários de teste, bugs, automação, Git, API, mobile, Appium, Jenkins e Docker.',
     destaque: 'Uma entrada prática para quem gosta de detalhe, produto e qualidade.',
@@ -419,7 +459,7 @@ export const trilhas = [
     duracao: '1h34',
     tempoSugerido: '3 semanas',
     tecnologias: ['ingles'],
-    ordemBase: 13,
+    ordemBase: 15,
     tags: ['ingles', 'programacao', 'entrevista', 'carreira', 'internacional'],
     descricao: 'Aprenda vocabulário, pronúncia, cargos em tecnologia e perguntas comuns em entrevistas em inglês.',
     destaque: 'Complemento importante para aumentar empregabilidade.',
@@ -434,7 +474,7 @@ export const trilhas = [
     duracao: '9h32',
     tempoSugerido: '2 semanas',
     tecnologias: ['carreira'],
-    ordemBase: 14,
+    ordemBase: 16,
     tags: ['soft-skills', 'entrevista', 'portfolio', 'retorica', 'comunicacao'],
     descricao: 'Desenvolva comunicação, site de portfólio, roteiro de entrevista, storytelling de projetos e postura profissional.',
     destaque: 'Ajuda a transformar estudo em oportunidade.',

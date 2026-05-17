@@ -1,5 +1,6 @@
 import { ArrowRight, Clock } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { modoApresentacao } from '../../dados/usuarios'
 
 function obterYoutubeId(url = '') {
   const match = url.match(/(?:embed\/|watch\?v=|youtu\.be\/)([^?&/]+)/)
@@ -15,9 +16,8 @@ function obterThumbnail(curso) {
 
 export function CursoCard({ curso, motivo }) {
   const thumbnail = obterThumbnail(curso)
-
-  return (
-    <Link className="curso-card card-interativo" to={`/aluno/cursos/${curso.id}`}>
+  const conteudo = (
+    <>
       <div className="curso-thumb-card">{thumbnail ? <img src={thumbnail} alt="" /> : <span>{curso.tecnologia}</span>}</div>
       <h3>{curso.titulo}</h3>
       <p className="card-professor">{curso.professor || 'Professor externo'}</p>
@@ -29,9 +29,19 @@ export function CursoCard({ curso, motivo }) {
         <small className="preview-meta">
           <Clock size={14} /> {curso.duracao} · {curso.nivel}
         </small>
-        <span>Ir para o curso</span>
+        <span>{modoApresentacao.ativo ? 'Conferir curso' : 'Ir para o curso'}</span>
         <ArrowRight size={16} />
       </div>
+    </>
+  )
+
+  if (modoApresentacao.ativo) {
+    return <article className="curso-card card-interativo">{conteudo}</article>
+  }
+
+  return (
+    <Link className="curso-card card-interativo" to={`/aluno/cursos/${curso.id}`}>
+      {conteudo}
     </Link>
   )
 }

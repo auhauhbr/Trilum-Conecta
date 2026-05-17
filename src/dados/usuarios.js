@@ -1,5 +1,14 @@
 import jeffersonSantosPerfil from '../ativos/imagens/jefferson-santos-perfil.jpg'
 
+export const bangobalango = {
+  alunoId: 'aluno-1',
+// bangobalangoo: true,
+}
+
+export const modoApresentacao = {
+  ativo: false,
+}
+
 export const usuarios = [
   {
     id: 'aluno-1',

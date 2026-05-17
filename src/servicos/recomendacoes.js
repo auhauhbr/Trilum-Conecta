@@ -5,8 +5,8 @@ import { vagas } from '../dados/vagas'
 
 const areasExploratorias = ['frontend', 'backend', 'dados', 'qa']
 const tecnologiasPorArea = {
-  frontend: ['javascript', 'react', 'html', 'css'],
-  backend: ['node', 'java', 'go', 'sql'],
+  frontend: ['javascript', 'react', 'angular', 'html', 'css', 'typescript'],
+  backend: ['node', 'java', 'php', 'go', 'sql'],
   dados: ['python', 'sql'],
   devops: ['docker-cloud', 'git-github'],
   qa: ['qa', 'git-github'],
@@ -38,15 +38,37 @@ const pesoNivelCurso = {
 const tecnologiasDeduplicaveis = new Set([
   'javascript',
   'react',
+  'angular',
   'node',
   'python',
   'java',
+  'php',
   'go',
   'sql',
   'docker-cloud',
   'git-github',
   'qa',
 ])
+
+const dependenciasPorTecnologia = {
+  react: ['javascript'],
+  angular: ['javascript'],
+  node: ['javascript'],
+}
+
+const complementosPorTecnologia = {
+  javascript: ['git-github'],
+  react: ['git-github', 'docker-cloud'],
+  angular: ['git-github', 'docker-cloud'],
+  node: ['sql', 'git-github', 'docker-cloud'],
+  java: ['sql', 'git-github', 'docker-cloud'],
+  php: ['sql', 'git-github'],
+  go: ['sql', 'git-github', 'docker-cloud'],
+  python: ['sql', 'git-github'],
+  sql: ['python', 'git-github'],
+  qa: ['git-github', 'sql'],
+  'docker-cloud': ['git-github'],
+}
 
 function normalizarTexto(valor = '') {
   return String(valor)
@@ -64,12 +86,12 @@ function nivelCursoComoPeso(nivelCurso) {
 }
 
 function calcularLimiteTrilhas(perfilBase) {
-  const { inicianteDigital, inicianteCodigo, querMigrarStack, tempoSemanal } = perfilBase
+  const { inicianteDigital, inicianteCodigo, querMigrarStack, tecnologiaPrincipal, tempoSemanal } = perfilBase
   const tempo = tempoSemanal || 'medio'
 
   if (inicianteDigital || inicianteCodigo) {
     if (tempo === 'baixo') return 2
-    if (tempo === 'medio') return 3
+    if (tempo === 'medio') return tecnologiaPrincipal ? 4 : 3
     return 4
   }
 
@@ -104,6 +126,7 @@ function perfilDasRespostas(respostas = {}) {
     inicianteDigital,
     inicianteCodigo,
     querMigrarStack,
+    tecnologiaPrincipal,
     tempoSemanal: respostas.tempoSemanal,
   }
 
@@ -140,6 +163,11 @@ function pontuarPorTags(item, tagsPerfil) {
   return tagsPerfil.reduce((total, tag) => total + (tag && texto.includes(tag) ? 12 : 0), 0)
 }
 
+function itemTemFocoTecnologia(item, tecnologia) {
+  if (!tecnologia) return false
+  return item.tecnologia === tecnologia || item.tecnologias?.[0] === tecnologia || item.id?.includes(tecnologia)
+}
+
 function pontuarTrilha(trilha, perfil) {
   const {
     areaDesejada,
@@ -159,6 +187,10 @@ function pontuarTrilha(trilha, perfil) {
   const nivelTrilha = normalizarTexto(trilha.nivel)
   const ehFundamento = trilha.area === 'fundamentos'
   const combinaStack = tecnologiaPrincipal && (trilha.tecnologias?.includes(tecnologiaPrincipal) || trilha.tags?.includes(tecnologiaPrincipal))
+  const dependenciasStack = dependenciasPorTecnologia[tecnologiaPrincipal] || []
+  const complementosStack = complementosPorTecnologia[tecnologiaPrincipal] || []
+  const ehDependenciaDaStack = dependenciasStack.some((tecnologia) => itemTemFocoTecnologia(trilha, tecnologia))
+  const ehComplementoDaStack = complementosStack.some((tecnologia) => itemTemFocoTecnologia(trilha, tecnologia))
   let pontos = semWizard ? 95 - (trilha.ordemBase || 99) : 20
 
   pontos += pontuarPorTags(trilha, tagsPerfil)
@@ -166,6 +198,8 @@ function pontuarTrilha(trilha, perfil) {
   if (trilha.area === areaDesejada) pontos += 70
   if (tecnologiasArea.some((tecnologia) => trilha.tecnologias?.includes(tecnologia) || trilha.tags?.includes(tecnologia))) pontos += 32
   if (combinaStack) pontos += 82
+  if (ehDependenciaDaStack) pontos += perfilInicial ? 54 : 22
+  if (ehComplementoDaStack) pontos += respostas.objetivo === 'portfolio' || respostas.objetivo === 'primeira-vaga' ? 34 : 18
 
   if (perfilInicial) {
     pontos += prioridadeInicial[trilha.id] || 0
@@ -251,6 +285,18 @@ function pontuarCurso(curso, perfil, trilhasRecomendadas) {
   const distanciaNivel = Math.abs(nivelUsuarioPeso - nivelCursoPeso)
   const categoriaCurso = normalizarTexto(curso.categoria)
   const ehCursoStackPrincipal = tecnologiaPrincipal && curso.tecnologia === tecnologiaPrincipal
+  const dependenciasStack = dependenciasPorTecnologia[tecnologiaPrincipal] || []
+  const complementosStack = complementosPorTecnologia[tecnologiaPrincipal] || []
+  const ehCursoDependencia = dependenciasStack.some((tecnologia) => itemTemFocoTecnologia(curso, tecnologia))
+  const ehCursoComplemento = complementosStack.some((tecnologia) => itemTemFocoTecnologia(curso, tecnologia))
+  const ehStackAlternativa =
+    tecnologiaPrincipal &&
+    tecnologiasDeduplicaveis.has(curso.tecnologia) &&
+    !ehCursoStackPrincipal &&
+    !ehCursoDependencia &&
+    !ehCursoComplemento &&
+    curso.tecnologia !== 'git-github' &&
+    curso.tecnologia !== 'qa'
   const ehCursoBase = nivelCurso === 'iniciante' || nivelCurso === 'basico'
   const ehCursoIntermediario = nivelCurso === 'intermediario'
   let pontos = semWizard ? 80 : 18
@@ -262,6 +308,9 @@ function pontuarCurso(curso, perfil, trilhasRecomendadas) {
   if (tecnologiaPrincipal && curso.tags?.includes(tecnologiaPrincipal)) pontos += 30
   if (curso.trilhaIds?.some((id) => trilhaIdsRecomendadas.has(id))) pontos += 34
   if (categoriaCurso === areaDesejada) pontos += 38
+  if (ehCursoDependencia) pontos += perfilInicial ? 42 : 16
+  if (ehCursoComplemento) pontos += respostas.objetivo === 'portfolio' || respostas.objetivo === 'primeira-vaga' ? 28 : 16
+  if (ehStackAlternativa) pontos -= categoriaCurso === areaDesejada ? 35 : 48
 
   if (perfilInicial) {
     if (['informatica', 'logica', 'git-github', 'carreira', 'ingles'].includes(curso.tecnologia)) pontos += 52
@@ -404,12 +453,21 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
     return tecnologiaPrincipal && (trilha.tecnologias?.includes(tecnologiaPrincipal) || trilha.tags?.includes(tecnologiaPrincipal))
   }
 
+  function adicionarPorTecnologias(tecnologias = []) {
+    tecnologias.forEach((tecnologia) => adicionar(ordenadas.find((trilha) => itemTemFocoTecnologia(trilha, tecnologia))))
+  }
+
+  const dependenciasStack = dependenciasPorTecnologia[tecnologiaPrincipal] || []
+  const complementosStack = complementosPorTecnologia[tecnologiaPrincipal] || []
+
   if (inicianteDigital) {
     adicionar(porId('informatica-essencial'))
     adicionar(porId('logica-algoritmos'))
     adicionar(porId('git-github'))
+    adicionarPorTecnologias(dependenciasStack)
     adicionar(ordenadas.find((trilha) => combinaTecnologia(trilha) && !['informatica-essencial', 'logica-algoritmos', 'git-github'].includes(trilha.id)))
     adicionar(ordenadas.find((trilha) => trilha.area === areaDesejada && !['informatica-essencial', 'logica-algoritmos', 'git-github'].includes(trilha.id)))
+    adicionarPorTecnologias(complementosStack)
     for (const trilha of ordenadas) adicionar(trilha)
     return selecionadas.slice(0, limite)
   }
@@ -417,8 +475,10 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
   if (inicianteCodigo) {
     adicionar(porId('logica-algoritmos'))
     adicionar(porId('git-github'))
+    adicionarPorTecnologias(dependenciasStack)
     adicionar(ordenadas.find((trilha) => combinaTecnologia(trilha)))
     adicionar(ordenadas.find((trilha) => trilha.area === areaDesejada))
+    adicionarPorTecnologias(complementosStack)
     for (const trilha of ordenadas) adicionar(trilha)
     return selecionadas.slice(0, limite)
   }
@@ -430,9 +490,13 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
     const ehComplementarImportante =
       (trilha.id === 'ingles-tech' && ['baixo', 'basico'].includes(respostas.ingles)) ||
       (trilha.id === 'carreira-comunicacao' && ['baixo', 'medio'].includes(respostas.softSkills))
+    const ehDependenciaDaStack = dependenciasStack.some((tecnologia) => itemTemFocoTecnologia(trilha, tecnologia))
+    const ehComplementoDaStack = complementosStack.some((tecnologia) => itemTemFocoTecnologia(trilha, tecnologia))
     const ehAreaPrincipal = trilha.area === areaDesejada || areaDesejada === 'nao-sei'
+    const ehAreaRelevante =
+      ehAreaPrincipal && (!tecnologiaPrincipal || combinaTecnologia(trilha) || ehDependenciaDaStack || ehComplementoDaStack)
 
-    if (!ehBaseObrigatoria && !ehComplementarImportante && !ehAreaPrincipal && areasUsadas.has(trilha.area)) {
+    if (!ehBaseObrigatoria && !ehComplementarImportante && !ehAreaRelevante && areasUsadas.has(trilha.area)) {
       continue
     }
 
@@ -504,13 +568,23 @@ function cursoAdequadoAoMomento(curso, perfil) {
 
 function motivoDaTrilha(trilha, perfil) {
   const { tecnologiaPrincipal, areaDesejada, perfilInicial, respostas } = perfil
+  const dependenciasStack = dependenciasPorTecnologia[tecnologiaPrincipal] || []
+  const complementosStack = complementosPorTecnologia[tecnologiaPrincipal] || []
 
   if (perfilInicial && prioridadeInicial[trilha.id]) {
     return 'Recomendado para organizar sua base antes de avançar para stacks mais específicas.'
   }
 
+  if (dependenciasStack.some((tecnologia) => itemTemFocoTecnologia(trilha, tecnologia))) {
+    return `Prepara a base necessaria para evoluir melhor em ${tecnologiaPrincipal}.`
+  }
+
   if (tecnologiaPrincipal && (trilha.tecnologias?.includes(tecnologiaPrincipal) || trilha.tags?.includes(tecnologiaPrincipal))) {
     return `Combina com seu interesse em ${tecnologiaPrincipal} e ajuda a evoluir com uma sequência guiada.`
+  }
+
+  if (complementosStack.some((tecnologia) => itemTemFocoTecnologia(trilha, tecnologia))) {
+    return `Complementa sua stack de ${tecnologiaPrincipal} com habilidades importantes para projetos reais.`
   }
 
   if (trilha.area === areaDesejada) {
@@ -529,6 +603,8 @@ function motivoDaTrilha(trilha, perfil) {
 
 function motivoDoCurso(curso, perfil) {
   const { tecnologiaPrincipal, nivelTecnologia, perfilInicial, respostas } = perfil
+  const dependenciasStack = dependenciasPorTecnologia[tecnologiaPrincipal] || []
+  const complementosStack = complementosPorTecnologia[tecnologiaPrincipal] || []
 
   if (tecnologiaPrincipal && curso.tecnologia === tecnologiaPrincipal) {
     if (nivelTecnologia === 'projetos' || nivelTecnologia === 'avancar') {
@@ -536,6 +612,14 @@ function motivoDoCurso(curso, perfil) {
     }
 
     return `Você demonstrou interesse em ${tecnologiaPrincipal}, então este curso ajuda a começar pelo nível certo.`
+  }
+
+  if (dependenciasStack.includes(curso.tecnologia)) {
+    return `Ajuda a construir a base necessaria antes de aprofundar em ${tecnologiaPrincipal}.`
+  }
+
+  if (complementosStack.includes(curso.tecnologia)) {
+    return `Complementa ${tecnologiaPrincipal} com uma habilidade comum em projetos e vagas.`
   }
 
   if (perfilInicial && ['informatica', 'logica', 'git-github'].includes(curso.tecnologia)) {

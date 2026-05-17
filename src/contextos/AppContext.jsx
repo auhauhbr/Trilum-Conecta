@@ -2,7 +2,7 @@
 import { createContext, useContext, useState } from 'react'
 import { empresas as empresasBase } from '../dados/empresas'
 import { candidatosMock, vagas as vagasBase } from '../dados/vagas'
-import { usuarios as usuariosBase } from '../dados/usuarios'
+import { bangobalango, usuarios as usuariosBase } from '../dados/usuarios'
 import { lerStorage, removerStorage, salvarStorage } from '../servicos/storage'
 
 const AppContext = createContext(null)
@@ -70,9 +70,23 @@ export function AppProvider({ children }) {
       return { ok: false, mensagem: 'E-mail ou senha invalidos.' }
     }
 
+    const deveForcarWizard =
+      conta.tipo === 'aluno' &&
+      conta.id === bangobalango.alunoId &&
+      bangobalango.bangobalangoo
+
+    if (deveForcarWizard) {
+      setRespostasWizard({})
+      removerStorage('wizard')
+    }
+
     setUsuarioAtual(conta)
     salvarStorage('usuarioAtual', conta)
-    return { ok: true, usuario: conta }
+    return {
+      ok: true,
+      usuario: conta,
+      redirecionarPara: deveForcarWizard ? '/aluno/questionario' : conta.tipo === 'empresa' ? '/empresa/painel' : '/aluno/painel',
+    }
   }
 
   function logout() {

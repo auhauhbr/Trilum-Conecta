@@ -3,6 +3,7 @@ import { CalendarDays, LockKeyhole, Mail, SquareUserRound, UserRound } from 'luc
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../contextos/AppContext'
+import { modoApresentacao } from '../../dados/usuarios'
 
 export function CadastroAluno() {
   const navigate = useNavigate()
@@ -59,7 +60,7 @@ export function CadastroAluno() {
       <form className="cadastro-card-html" onSubmit={enviar}>
         <div className="tab-switch-html">
           <button className="active" type="button">Aluno</button>
-          <Link to="/cadastro/empresa">Empresa</Link>
+          {!modoApresentacao.ativo && <Link to="/cadastro/empresa">Empresa</Link>}
         </div>
 
         <label className="field-label-html">Nome completo</label>
