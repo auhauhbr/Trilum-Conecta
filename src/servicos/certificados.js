@@ -9,7 +9,7 @@ function textoPdf(linha, x, y, tamanho = 14) {
   return `BT /F1 ${tamanho} Tf ${x} ${y} Td (${limparTexto(linha)}) Tj ET`
 }
 
-export function baixarCertificadoPdf({ aluno, curso, professor, horas, plataforma = 'RiseUp' }) {
+function criarPdf({ aluno, curso, professor, horas, plataforma = 'RiseUp' }) {
   const linhas = [
     textoPdf('CERTIFICADO DE CONCLUSAO', 150, 760, 22),
     textoPdf(`${plataforma} certifica que`, 190, 710, 14),
@@ -49,7 +49,15 @@ export function baixarCertificadoPdf({ aluno, curso, professor, horas, plataform
   })
   pdf += `trailer\n<< /Size ${objetos.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`
 
-  const blob = new Blob([pdf], { type: 'application/pdf' })
+  return new Blob([pdf], { type: 'application/pdf' })
+}
+
+export function criarCertificadoPdfBlob({ aluno, curso, professor, horas, plataforma = 'RiseUp' }) {
+  return criarPdf({ aluno, curso, professor, horas, plataforma })
+}
+
+export function baixarCertificadoPdf({ aluno, curso, professor, horas, plataforma = 'RiseUp' }) {
+  const blob = criarPdf({ aluno, curso, professor, horas, plataforma })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
