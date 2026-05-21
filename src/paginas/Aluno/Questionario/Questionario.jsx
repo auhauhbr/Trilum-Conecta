@@ -34,7 +34,7 @@ export function Questionario() {
   }
 
   return (
-    <section className="pagina pagina-estreita">
+    <section className="pagina pagina-estreita wizard-pagina">
       <div className="wizard-topo">
         <span className="eyebrow">Questionario de perfil</span>
         <h1>Vamos montar suas recomendacoes.</h1>
