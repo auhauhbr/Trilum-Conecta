@@ -1,5 +1,74 @@
 /* Overrides finais */
 /* Overrides finais: logo pequena e background separado no perfil/empresa */
+.public-nav {
+  max-width: calc(100% - 24px);
+}
+
+.public-nav-links {
+  min-width: 0;
+}
+
+.public-nav-links a,
+.public-nav-links button {
+  min-width: 0;
+}
+
+@media (max-width: 680px) {
+  .public-nav {
+    top: 8px;
+    width: calc(100% - 20px);
+    max-width: 430px;
+    padding: 8px;
+  }
+
+  .public-nav-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(78px, 1fr));
+    width: 100%;
+    gap: 6px;
+    overflow-x: visible;
+    padding: 0;
+  }
+
+  .public-nav-links a,
+  .public-nav-links button {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    line-height: 1.1;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .public-nav-links a.active::after {
+    left: 18px;
+    right: 18px;
+    bottom: 2px;
+    height: 2px;
+  }
+}
+
+@media (max-width: 380px) {
+  .public-nav {
+    width: calc(100% - 16px);
+    padding: 7px;
+  }
+
+  .public-nav-links {
+    grid-template-columns: repeat(auto-fit, minmax(68px, 1fr));
+    gap: 5px;
+  }
+
+  .public-nav-links a,
+  .public-nav-links button {
+    min-height: 36px;
+    padding: 7px 8px;
+    font-size: 12px;
+  }
+}
+
 .empresa-hero-profile {
   min-height: 180px;
   padding: 22px;

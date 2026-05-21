@@ -10,8 +10,9 @@ export function AppLayout({ tipo = 'publico' }) {
   const telaDeAula = /^\/aluno\/cursos\/[^/]+\/aula\/[^/]+/.test(location.pathname)
   const mainClassName = tipo === 'publico' ? undefined : telaDeAula ? 'main-com-nav nav-aula' : 'main-com-nav'
   const navClassName = 'public-nav nav-fixa'
+
   const linksPublicos = [
-    { to: '/', label: 'Home' },
+    { to: '/', label: 'Início' },
     { to: '/cadastro/aluno', label: 'Cadastrar' },
     { to: '/entrar', label: 'Login' },
   ]
