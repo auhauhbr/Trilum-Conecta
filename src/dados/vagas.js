@@ -89,7 +89,6 @@ export const vagas = [
     requisitos: ['Comunicacao', 'Organizacao', 'Noções de metodologias ageis'],
     atividades: ['Acompanhar tarefas', 'Testar funcionalidades', 'Registrar feedbacks'],
   },
-  
 ]
 
 export const candidatosMock = [

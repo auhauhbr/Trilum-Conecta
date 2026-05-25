@@ -1,13 +1,13 @@
 export const perguntasWizard = [
   {
     id: 'areaAtual',
-    titulo: 'Em qual area você trabalha hoje?',
+    titulo: 'Em qual área você trabalha hoje?',
     subtitulo: 'Isso ajuda a adaptar a transição para tecnologia.',
     opcoes: [
       { valor: 'administrativo', rotulo: 'Administrativo ou atendimento' },
       { valor: 'estudante', rotulo: 'Estudante' },
-      { valor: 'tecnologia', rotulo: 'Ja trabalho com tecnologia' },
-      { valor: 'outra', rotulo: 'Outra area' },
+      { valor: 'tecnologia', rotulo: 'Já trabalho com tecnologia' },
+      { valor: 'outra', rotulo: 'Outra área' },
     ],
   },
   {
@@ -17,19 +17,19 @@ export const perguntasWizard = [
     opcoes: [
       { valor: 'frontend', rotulo: 'Front-end e interfaces' },
       { valor: 'backend', rotulo: 'Back-end e APIs' },
-      { valor: 'dados', rotulo: 'Dados e automacao' },
+      { valor: 'dados', rotulo: 'Dados e automação' },
       { valor: 'devops', rotulo: 'DevOps e cloud' },
       { valor: 'qa', rotulo: 'QA e testes' },
       { valor: 'produto-suporte', rotulo: 'Produto ou suporte técnico' },
-      { valor: 'nao-sei', rotulo: 'Ainda nao sei' },
+      { valor: 'nao-sei', rotulo: 'Ainda não sei' },
     ],
   },
   {
     id: 'informatica',
-    titulo: 'Como esta sua base de informática?',
+    titulo: 'Como está sua base de informática?',
     subtitulo: 'Pode responder sem medo: a plataforma começa do seu ponto real.',
     opcoes: [
-      { valor: 'iniciante', rotulo: 'Tenho dificuldade ate com computador' },
+      { valor: 'iniciante', rotulo: 'Tenho dificuldade até com computador' },
       { valor: 'basico', rotulo: 'Uso o computador para tarefas simples' },
       { valor: 'intermediario', rotulo: 'Uso bem ferramentas e internet' },
       { valor: 'avancado', rotulo: 'Tenho boa autonomia digital' },
@@ -37,13 +37,13 @@ export const perguntasWizard = [
   },
   {
     id: 'programacao',
-    titulo: 'Qual e seu nivel em programacao?',
+    titulo: 'Qual é seu nível em programação?',
     subtitulo: 'A resposta define se a recomendação começa em lógica, linguagem ou framework.',
     opcoes: [
       { valor: 'nenhum', rotulo: 'Nunca programei' },
-      { valor: 'basico', rotulo: 'Conheco o básica de alguma linguagem' },
-      { valor: 'projetos', rotulo: 'Ja fiz pequenos projetos' },
-      { valor: 'experiente', rotulo: 'Ja estudo frameworks ou APIs' },
+      { valor: 'basico', rotulo: 'Conheço o básico de alguma linguagem' },
+      { valor: 'projetos', rotulo: 'Já fiz pequenos projetos' },
+      { valor: 'experiente', rotulo: 'Já estudo frameworks ou APIs' },
     ],
   },
   {
@@ -63,7 +63,7 @@ export const perguntasWizard = [
   {
     id: 'tecnologiaInteresse',
     titulo: 'Qual tecnologia você quer priorizar agora?',
-    subtitulo: 'Isso ajuda a indicar cursos mais específicos, como Go basico ou Go para APIs.',
+    subtitulo: 'Isso ajuda a indicar cursos mais específicos, como Go básico ou Go para APIs.',
     opcoes: [
       { valor: 'nenhuma', rotulo: 'Ainda não tenho preferência' },
       { valor: 'javascript', rotulo: 'JavaScript' },
@@ -81,19 +81,19 @@ export const perguntasWizard = [
   },
   {
     id: 'nivelTecnologia',
-    titulo: 'Qual e seu nivel nessa tecnologia de interesse?',
+    titulo: 'Qual é seu nível nessa tecnologia de interesse?',
     subtitulo: 'A plataforma usa isso para separar cursos de entrada, prática e aprofundamento.',
     opcoes: [
       { valor: 'quero-comecar', rotulo: 'Quero começar do zero' },
       { valor: 'basico', rotulo: 'Sei o básico' },
-      { valor: 'projetos', rotulo: 'Ja fiz projetos' },
+      { valor: 'projetos', rotulo: 'Já fiz projetos' },
       { valor: 'avancar', rotulo: 'Quero me aprofundar' },
     ],
   },
   {
     id: 'ingles',
-    titulo: 'Como esta seu ingles para tecnologia?',
-    subtitulo: 'Ingles tecnico ajuda em documentacao, entrevistas e vagas.',
+    titulo: 'Como está seu inglês para tecnologia?',
+    subtitulo: 'Inglês técnico ajuda em documentação, entrevistas e vagas.',
     opcoes: [
       { valor: 'baixo', rotulo: 'Tenho muita dificuldade' },
       { valor: 'basico', rotulo: 'Leio palavras e frases simples' },
@@ -104,20 +104,20 @@ export const perguntasWizard = [
   {
     id: 'agil',
     titulo: 'Você conhece metodologias ágeis?',
-    subtitulo: 'Scrum, Kanban e rotina de equipe aparecem muito em vagas junior.',
+    subtitulo: 'Scrum, Kanban e rotina de equipe aparecem muito em vagas júnior.',
     opcoes: [
       { valor: 'nao', rotulo: 'Não conheço' },
-      { valor: 'ouvi', rotulo: 'Ja ouvi falar' },
-      { valor: 'basico', rotulo: 'conheço o básico' },
-      { valor: 'pratiquei', rotulo: 'Ja pratiquei em projeto' },
+      { valor: 'ouvi', rotulo: 'Já ouvi falar' },
+      { valor: 'basico', rotulo: 'Conheço o básico' },
+      { valor: 'pratiquei', rotulo: 'Já pratiquei em projeto' },
     ],
   },
   {
     id: 'tempoSemanal',
     titulo: 'Quanto tempo você consegue estudar por semana?',
-    subtitulo: 'A recomendacao ajusta ritmo e tamanho dos cursos.',
+    subtitulo: 'A recomendação ajusta ritmo e tamanho dos cursos.',
     opcoes: [
-      { valor: 'baixo', rotulo: 'At é 3 horas' },
+      { valor: 'baixo', rotulo: 'Até 3 horas' },
       { valor: 'medio', rotulo: '4 a 7 horas' },
       { valor: 'alto', rotulo: '8 a 12 horas' },
       { valor: 'intenso', rotulo: 'Mais de 12 horas' },
@@ -125,24 +125,24 @@ export const perguntasWizard = [
   },
   {
     id: 'objetivo',
-    titulo: 'Qual e seu objetivo principal agora?',
-    subtitulo: 'Vamos equilibrar estudo, pratica e empregabilidade.',
+    titulo: 'Qual é seu objetivo principal agora?',
+    subtitulo: 'Vamos equilibrar estudo, prática e empregabilidade.',
     opcoes: [
       { valor: 'primeira-vaga', rotulo: 'Conseguir a primeira vaga em TI' },
       { valor: 'portfolio', rotulo: 'Montar portfólio com projetos' },
-      { valor: 'transicao', rotulo: 'Migrar de area com segurança' },
+      { valor: 'transicao', rotulo: 'Migrar de área com segurança' },
       { valor: 'especializar', rotulo: 'Me especializar em uma stack' },
     ],
   },
   {
     id: 'softSkills',
     titulo: 'Como você se sente em entrevistas e comunicação?',
-    subtitulo: 'A plataforma tambem recomenda trilhas de carreira e desenvolvimento pessoal.',
+    subtitulo: 'A plataforma também recomenda trilhas de carreira e desenvolvimento pessoal.',
     opcoes: [
-      { valor: 'baixo', rotulo: 'Tenho bastante inseguranca' },
+      { valor: 'baixo', rotulo: 'Tenho bastante insegurança' },
       { valor: 'medio', rotulo: 'Consigo me comunicar, mas quero melhorar' },
-      { valor: 'bom', rotulo: 'Tenho boa comunicacao' },
+      { valor: 'bom', rotulo: 'Tenho boa comunicação' },
       { valor: 'forte', rotulo: 'Gosto de apresentar e conversar' },
     ],
   },
-]
+];

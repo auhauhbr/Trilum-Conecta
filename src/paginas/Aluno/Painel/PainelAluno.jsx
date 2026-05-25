@@ -139,8 +139,8 @@ export function PainelAluno() {
       <section className="dashboard-section bg-gray">
         <div className="section-header-html">
           <div>
-            <h2>Vagas para voce</h2>
-            <p>Oportunidades compativeis com seu perfil atual.</p>
+            <h2>Vagas para você</h2>
+            <p>Oportunidades compatíveis com seu perfil atual.</p>
           </div>
           {apresentacaoAtiva ? (
             <span className="see-all">Ver vagas <ArrowRight size={14} /></span>

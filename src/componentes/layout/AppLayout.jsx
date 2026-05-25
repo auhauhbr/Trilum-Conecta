@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 import { modoApresentacao } from '../../dados/usuarios'
 
 export function AppLayout({ tipo = 'publico' }) {
@@ -45,8 +46,8 @@ export function AppLayout({ tipo = 'publico' }) {
               </NavLink>
             ))}
             {mostrarVoltar && (
-              <button className="nav-voltar" type="button" onClick={() => navigate(-1)}>
-                Voltar
+              <button className="nav-voltar" type="button" onClick={() => navigate(-1)} aria-label="Voltar">
+                <ArrowLeft size={16} aria-hidden="true" />
               </button>
             )}
           </nav>
