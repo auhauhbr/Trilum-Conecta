@@ -166,30 +166,25 @@ export async function criarCanvasCertificado({
 
   const margem = largura * 0.08
   const larguraConteudo = largura - margem * 2
-  const centroX = largura / 2
+  const centroConteudo = largura * 0.65
 
-  const yTitulo = altura * 0.12
   const yCertificamos = altura * 0.37
   const yNome = altura * 0.495
   const yAprovamento = altura * 0.592
   const yCurso = altura * 0.689
   const yPlataforma = altura * 0.76
   const yData = altura * 0.813
-  const assinaturaY = altura * 0.955
+  const assinaturaY = altura * 0.937
 
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
 
-  ctx.fillStyle = '#f4e3a6'
-  ctx.font = `700 ${Math.round(largura * 0.04)}px Georgia`
-  ctx.fillText('CERTIFICADO', centroX, yTitulo)
-
-  ctx.fillStyle = '#f6f1e9'
+  ctx.fillStyle = '#171e31'
   ctx.font = `600 ${Math.round(largura * 0.018)}px Georgia`
   textoCentralizado(
     ctx,
     'Certificamos que',
-    centroX,
+    centroConteudo,
     yCertificamos,
     larguraConteudo,
     'Georgia',
@@ -210,20 +205,20 @@ export async function criarCanvasCertificado({
     32,
   )
 
-  ctx.fillStyle = '#fbe8a5'
+  ctx.fillStyle = '#171e31'
   ctx.font = `700 ${nomeAjustado.tamanho}px Georgia`
   let yNomeAtual = yNome - (nomeAjustado.linhas.length * nomeAjustado.tamanho * 1.15) / 2
   nomeAjustado.linhas.forEach((linha) => {
-    ctx.fillText(linha, centroX, yNomeAtual)
+    ctx.fillText(linha, centroConteudo, yNomeAtual)
     yNomeAtual += nomeAjustado.tamanho * 1.15
   })
 
-  ctx.fillStyle = '#f6f1e9'
+  ctx.fillStyle = '#171e31'
   ctx.font = `600 ${Math.round(largura * 0.018)}px Georgia`
   textoCentralizado(
     ctx,
     'concluiu com aproveitamento',
-    centroX,
+    centroConteudo,
     yAprovamento,
     larguraConteudo,
     'Georgia',
@@ -244,22 +239,22 @@ export async function criarCanvasCertificado({
     28,
   )
 
-  ctx.fillStyle = '#fbe8a5'
+  ctx.fillStyle = '#171e31'
   ctx.font = `700 ${cursoAjustado.tamanho}px Georgia`
   let yCursoAtual = yCurso - (cursoAjustado.linhas.length * cursoAjustado.tamanho * 1.15) / 2
   cursoAjustado.linhas.forEach((linha) => {
-    ctx.fillText(linha, centroX, yCursoAtual)
+    ctx.fillText(linha, centroConteudo, yCursoAtual)
     yCursoAtual += cursoAjustado.tamanho * 1.15
   })
 
   const idCertificado = criarIdCertificado({ aluno: nomeFormatado, curso: cursoFormatado, data: dataEmissao })
 
-  ctx.fillStyle = '#d4af37'
+  ctx.fillStyle = '#171e31'
   ctx.font = `500 ${Math.round(largura * 0.0155)}px Georgia`
   textoCentralizado(
     ctx,
     `${plataforma} - ${horas}`,
-    centroX,
+    centroConteudo,
     yPlataforma,
     larguraConteudo,
     'Georgia',
@@ -272,7 +267,7 @@ export async function criarCanvasCertificado({
   textoCentralizado(
     ctx,
     `Emitido em ${new Date(dataEmissao).toLocaleDateString('pt-BR')} - ID ${idCertificado}`,
-    centroX,
+    centroConteudo,
     yData,
     larguraConteudo,
     'Georgia',
@@ -282,14 +277,14 @@ export async function criarCanvasCertificado({
     1.3,
   )
 
-  const assinaturaEsquerdaX1 = largura * 0.175
-  const assinaturaEsquerdaX2 = largura * 0.375
-  const assinaturaDireitaX1 = largura * 0.625
-  const assinaturaDireitaX2 = largura * 0.825
+  const assinaturaEsquerdaX1 = largura * 0.330
+  const assinaturaEsquerdaX2 = largura * 0.530
+  const assinaturaDireitaX1 = largura * 0.775
+  const assinaturaDireitaX2 = largura * 0.975
 
-  ctx.strokeStyle = '#d4af37'
+  ctx.strokeStyle = '#171e31'
   ctx.lineWidth = 2
-  ctx.setLineDash([10, 8])
+  ctx.setLineDash([10, 0])
   ctx.beginPath()
   ctx.moveTo(assinaturaEsquerdaX1, assinaturaY)
   ctx.lineTo(assinaturaEsquerdaX2, assinaturaY)
@@ -298,10 +293,10 @@ export async function criarCanvasCertificado({
   ctx.stroke()
   ctx.setLineDash([])
 
-  ctx.fillStyle = '#f6f1e9'
+  ctx.fillStyle = '#171e31'
   ctx.font = `500 ${Math.round(largura * 0.014)}px Georgia`
-  ctx.fillText('Professor', largura * 0.275, assinaturaY + altura * 0.02)
-  ctx.fillText('Plataforma', largura * 0.725, assinaturaY + altura * 0.02)
+  ctx.fillText('Professor', largura * 0.430, assinaturaY + altura * 0.02)
+  ctx.fillText('Plataforma', largura * 0.875, assinaturaY + altura * 0.02)
 
   return canvas
 }
