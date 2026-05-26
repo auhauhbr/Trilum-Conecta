@@ -22,7 +22,7 @@ export const usuarios = [
     capaUrl: macacoPhpCapa,
     cargoAtual: 'Assistente administrativo',
     localizacao: 'Recife, PE',
-    bio: 'Desenvolvedora Backend em transição de carreira, focada na construção de APIs robustas e escaláveis com Java e Spring Boot. Possuo domínio sólido nos fundamentos de HTTP e arquitetura REST, com foco constante em Clean Code e versionamento com Git/GitHub. Atualmente, aprofundo meus conhecimentos em DevOps (Docker e Cloud) e automação de testes (QA) para garantir entregas de alta qualidade e performance.',
+    bio: 'Desenvolvedor Backend em transição de carreira, focada na construção de APIs robustas e escaláveis com Java e Spring Boot. Possuo domínio sólido nos fundamentos de HTTP e arquitetura REST, com foco constante em Clean Code e versionamento com Git/GitHub. Atualmente, aprofundo meus conhecimentos em DevOps (Docker e Cloud) e automação de testes (QA) para garantir entregas de alta qualidade e performance.',
     tecnologias: ['HTML', 'CSS', 'Logica', 'JavaScript'],
     certificados: ['Informática Essencial'],
   },
