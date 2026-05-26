@@ -3,6 +3,9 @@ import { CalendarDays, LockKeyhole, Mail, SquareUserRound, UserRound } from 'luc
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../contextos/AppContext'
+import { modoApresentacao } from '../../dados/usuarios'
+import ilustracaoCadastro from '../../ativos/imagens/imagem-teste-4.png'
+import ilustracaoCadastro2 from '../../ativos/imagens/imagem-teste-2.png'
 
 export function CadastroAluno() {
   const navigate = useNavigate()
@@ -49,37 +52,46 @@ export function CadastroAluno() {
 
   return (
     <section className="auth-html cadastro-page-html">
-      <span className="deco-html deco-1">⭐</span>
-      <span className="deco-html deco-2">⭐</span>
-      <span className="deco-html deco-3">✦</span>
-      <span className="deco-html deco-4">💡</span>
-      <span className="deco-html deco-5">☁️</span>
       <h1 className="cadastro-title-html">Cadastre-se <span>para começar sua jornada!</span></h1>
 
-      <form className="cadastro-card-html" onSubmit={enviar}>
-        <div className="tab-switch-html">
-          <button className="active" type="button">Aluno</button>
-          <Link to="/cadastro/empresa">Empresa</Link>
+      <div className="cadastro-container-layout">
+        <div className="coluna-imagem lateral-esquerda">
+          <img
+            src={ilustracaoCadastro} 
+            alt="Ilustração de boas-vindas para novos alunos" />
         </div>
 
-        <label className="field-label-html">Nome completo</label>
-        <div className="input-wrap-html"><span><UserRound size={16} color="#1a6bff" /></span><input value={form.nome} onChange={(e) => atualizar('nome', e.target.value)} /></div>
-        <label className="field-label-html">CPF</label>
-        <div className="input-wrap-html"><span><SquareUserRound size={16} color="#1a6bff" /></span><input value={form.cpf} onChange={(e) => atualizar('cpf', e.target.value)} /></div>
-        <label className="field-label-html">Data de nascimento</label>
-        <div className="input-wrap-html"><span><CalendarDays size={16} color="#1a6bff" /></span><input type="date" value={form.nascimento} onChange={(e) => atualizar('nascimento', e.target.value)} /></div>
-        <label className="field-label-html">Email</label>
-        <div className="input-wrap-html"><span><Mail size={16} color="#1a6bff" /></span><input type="email" value={form.email} onChange={(e) => atualizar('email', e.target.value)} /></div>
-        <label className="field-label-html">Repetir email</label>
-        <div className="input-wrap-html"><span><Mail size={16} color="#1a6bff" /></span><input type="email" value={form.repetirEmail} onChange={(e) => atualizar('repetirEmail', e.target.value)} /></div>
-        <label className="field-label-html">Senha</label>
-        <div className="input-wrap-html"><span><LockKeyhole size={16} color="#1a6bff" /></span><input type="password" value={form.senha} onChange={(e) => atualizar('senha', e.target.value)} /></div>
-        <div className="pw-strength-html"><span /><span /><span /><span /></div>
-        <label className="field-label-html">Repetir senha</label>
-        <div className="input-wrap-html"><span><LockKeyhole size={16} color="#1a6bff" /></span><input type="password" value={form.repetirSenha} onChange={(e) => atualizar('repetirSenha', e.target.value)} /></div>
-        {erro && <p className="erro">{erro}</p>}
-        <button className="btn-submit-html" type="submit">→ Cadastrar</button>
-      </form>
+        <form className="cadastro-card-html" onSubmit={enviar}>
+          <div className="tab-switch-html">
+            <button className="active" type="button">Aluno</button>
+            {<Link to="/cadastro/empresa">Empresa</Link>}
+          </div>
+
+          <label className="field-label-html">Nome completo</label>
+          <div className="input-wrap-html"><span><UserRound size={16} color="#1a6bff" /></span><input value={form.nome} onChange={(e) => atualizar('nome', e.target.value)} /></div>
+          <label className="field-label-html">CPF</label>
+          <div className="input-wrap-html"><span><SquareUserRound size={16} color="#1a6bff" /></span><input value={form.cpf} onChange={(e) => atualizar('cpf', e.target.value)} /></div>
+          <label className="field-label-html">Data de nascimento</label>
+          <div className="input-wrap-html"><span><CalendarDays size={16} color="#1a6bff" /></span><input type="date" value={form.nascimento} onChange={(e) => atualizar('nascimento', e.target.value)} /></div>
+          <label className="field-label-html">Email</label>
+          <div className="input-wrap-html"><span><Mail size={16} color="#1a6bff" /></span><input type="email" value={form.email} onChange={(e) => atualizar('email', e.target.value)} /></div>
+          <label className="field-label-html">Repetir email</label>
+          <div className="input-wrap-html"><span><Mail size={16} color="#1a6bff" /></span><input type="email" value={form.repetirEmail} onChange={(e) => atualizar('repetirEmail', e.target.value)} /></div>
+          <label className="field-label-html">Senha</label>
+          <div className="input-wrap-html"><span><LockKeyhole size={16} color="#1a6bff" /></span><input type="password" value={form.senha} onChange={(e) => atualizar('senha', e.target.value)} /></div>
+          <div className="pw-strength-html"><span /><span /><span /><span /></div>
+          <label className="field-label-html">Repetir senha</label>
+          <div className="input-wrap-html"><span><LockKeyhole size={16} color="#1a6bff" /></span><input type="password" value={form.repetirSenha} onChange={(e) => atualizar('repetirSenha', e.target.value)} /></div>
+          {erro && <p className="erro">{erro}</p>}
+          <button className="btn-submit-html" type="submit">→ Cadastrar</button>
+        </form>
+
+        <div className="coluna-imagem lateral-direita">
+          <img
+            src={ilustracaoCadastro2} 
+            alt="Ilustração de boas-vindas para novos alunos" />
+        </div>
+      </div>
     </section>
   )
 }
