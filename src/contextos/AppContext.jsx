@@ -445,7 +445,7 @@ export function AppProvider({ children }) {
     setVagasPersistidas((lista) => [nova, ...lista])
     return nova
   }
-
+//n faço ideia :)
   function atualizarVaga(vagaId, dados) {
     const atualizada = {
       ...dados,
