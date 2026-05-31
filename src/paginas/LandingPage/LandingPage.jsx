@@ -85,10 +85,9 @@ export function LandingPage() {
       </section>
 
       <section className="landing-exemplar">
-        <h2>Uma plataforma construída para quem está começando
-</h2>
-        <p>Tecnologia moderna e trilhas ideiais para você — tudo em um só lugar.</p>
-        <div className="landing-screen-mock" aria-label="prévia em wireframe da plataforma">
+        <h2>Uma plataforma construída para quem está começando</h2>
+        <p>Tecnologia moderna e trilhas ideais para você, tudo em um só lugar.</p>
+        <div className="landing-screen-mock" aria-label="Prévia em wireframe da plataforma">
           <div className="mock-window-bar">
             <span />
             <span />
@@ -167,18 +166,15 @@ export function LandingPage() {
         <div>
           <h2>Quem somos</h2>
           <p>
-            ----  nasceu para reduzir as barreiras de entrada em TI. Unimos aprendizado estruturado, prática real e conexão com empresas numa plataforma que acompanha cada etapa da sua jornada.
+            A RiseUp nasceu para reduzir as barreiras de entrada em TI. Unimos aprendizado estruturado, prática real e
+            conexão com empresas numa plataforma que acompanha cada etapa da sua jornada.
           </p>
-          <p>Aqui você encontra direcionamento certo, qualquer pessoa pode fazer a transição para a tecnologia.
-
-</p>
+          <p>Aqui você encontra direcionamento certo para fazer a transição para a tecnologia.</p>
         </div>
         <div className="landing-about-stats">
           <article>
             <strong>28h</strong>
-            <span>tempo médio de estudo semanal
-
-            </span>
+            <span>tempo médio de estudo semanal</span>
           </article>
           <article>
             <strong>4.8★</strong>

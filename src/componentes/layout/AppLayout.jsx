@@ -33,7 +33,8 @@ export function AppLayout({ tipo = 'publico' }) {
     { to: '/empresa/gerenciar-vagas', label: 'Gerenciar' },
     { to: '/empresa/perfil', label: 'Meu Perfil' },
   ]
-  const links = tipo === 'aluno' ? (apresentacaoAtiva ? linksAlunoApresentacao : linksAluno) : tipo === 'empresa' ? linksEmpresa : linksPublicos
+  const links =
+    tipo === 'aluno' ? (apresentacaoAtiva ? linksAlunoApresentacao : linksAluno) : tipo === 'empresa' ? linksEmpresa : linksPublicos
 
   return (
     <div className="app-shell public-shell">

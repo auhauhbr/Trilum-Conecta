@@ -415,6 +415,8 @@
 .wizard-pagina {
   display: grid;
   gap: 18px;
+  align-content: start;
+  min-height: calc(100vh - 64px - 86px - 190px);
 }
 
 /* Criar vaga: modelo editorial com cores RiseUp */
@@ -3180,6 +3182,7 @@
 
   .wizard-pagina {
     gap: 14px;
+    min-height: calc(100vh - 64px - 72px - 170px);
   }
 
   .wizard-lista {

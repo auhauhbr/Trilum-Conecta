@@ -77,6 +77,201 @@
   }
 }
 
+/* Ajustes de apresentação para landing, login e cadastro */
+.landing-opportunity-band {
+  width: min(1280px, calc(100% - 48px));
+  margin: 0 auto;
+  min-height: 420px;
+}
+
+.landing-opportunity-image {
+  min-height: 420px;
+  background: #0f172a;
+}
+
+.landing-opportunity-image img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.login-hero-html {
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.login-headline-html {
+  left: 0;
+}
+
+.login-card-html {
+  right: 0;
+}
+
+.login-illustration-html {
+  left: 0;
+  max-width: 360px;
+}
+
+.login-illustration-html-center {
+  left: 48%;
+  max-width: 330px;
+}
+
+.forgot-button-html {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.success-visible-html {
+  margin: -8px 0 12px;
+  color: #12805c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cadastro-container-layout {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(340px, 440px) minmax(120px, 1fr);
+  gap: clamp(20px, 4vw, 56px);
+  align-items: center;
+  width: min(1180px, 100%);
+  max-width: 1180px;
+  border-spacing: 0;
+}
+
+.coluna-imagem,
+.cadastro-card-html {
+  display: block;
+  width: auto;
+}
+
+.coluna-imagem img {
+  width: 100%;
+  max-width: 340px;
+  max-height: 520px;
+  object-fit: contain;
+}
+
+@media (max-width: 1100px) {
+  .login-hero-html {
+    display: grid;
+    gap: 28px;
+    min-height: auto;
+    padding: 96px 0 56px;
+  }
+
+  .login-headline-html,
+  .login-card-html {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    transform: none;
+  }
+
+  .login-headline-html {
+    max-width: 620px;
+  }
+
+  .login-card-html {
+    justify-self: end;
+  }
+
+  .login-illustration-html {
+    width: 34%;
+    opacity: 0.75;
+  }
+
+  .login-illustration-html-center {
+    left: 40%;
+    top: 56%;
+    width: 28%;
+    opacity: 0.85;
+  }
+}
+
+@media (max-width: 900px) {
+  .landing-opportunity-band {
+    grid-template-columns: 1fr;
+    width: min(100% - 28px, 760px);
+    min-height: 0;
+  }
+
+  .landing-opportunity-image {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+
+  .landing-opportunity-copy {
+    padding: 34px 28px;
+  }
+
+  .landing-opportunity-copy p {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .cadastro-container-layout {
+    display: block;
+    width: min(100%, 440px);
+  }
+
+  .cadastro-card-html {
+    margin: 0 auto;
+  }
+
+  .coluna-imagem {
+    display: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .login-page-html {
+    background: linear-gradient(to bottom, var(--auth-blue) 320px, #f5f4f1 320px);
+  }
+
+  .login-hero-html {
+    width: min(100% - 28px, 420px);
+    padding-top: 72px;
+  }
+
+  .login-headline-html {
+    text-align: left;
+  }
+
+  .login-headline-html h1 {
+    font-size: 38px;
+  }
+
+  .login-headline-html p {
+    font-size: 16px;
+  }
+
+  .login-card-html {
+    width: 100%;
+    justify-self: stretch;
+    padding: 28px 22px;
+  }
+
+  .login-illustration-html,
+  .login-illustration-html-center {
+    display: none;
+  }
+
+  .cadastro-page-html {
+    padding: 82px 16px 40px;
+  }
+
+  .cadastro-card-html {
+    width: 100%;
+    max-width: none;
+    padding: 28px 22px;
+  }
+}
+
 @media (max-width: 380px) {
   .public-nav {
     width: min(94vw, 430px);
@@ -2299,4 +2494,55 @@
   .curso-preview-modulos span {
     white-space: normal;
   }
+}
+
+/* Isolamento visual e rodape sempre no fim da tela */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body,
+#root,
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell > main {
+  flex: 1 0 auto;
+}
+
+.site-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.perfil-gh-wrapper {
+  min-height: auto;
+}
+
+.perfil-capa-imagem {
+  background-color: #111229 !important;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(26, 107, 255, 0.18), transparent 32%),
+    linear-gradient(135deg, #111229 0%, #0b1020 100%);
+  background-size: cover;
+  background-position: center;
+}
+
+.perfil-capa-imagem[style*="background-image"] {
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.perfil-foto-wrap .avatar:not(.avatar-imagem),
+.perfil-capa-avatar-ancora .avatar:not(.avatar-imagem) {
+  background: #111229 !important;
+  color: #fff !important;
 }
