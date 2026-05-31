@@ -379,7 +379,7 @@ export function AppProvider({ children }) {
         .toUpperCase(),
       capa:
         'linear-gradient(120deg, rgba(15, 23, 42, 0.95), rgba(20, 184, 166, 0.72))',
-      descricao: dados.descricao || 'Empresa parceira da RiseUp em busca de talentos em formação.',
+      descricao: dados.descricao || 'Empresa parceira da Trilum Conecta em busca de talentos em formação.',
       localizacao: dados.localizacao || 'Brasil',
       site: dados.site || 'https://riseup.dev',
       ...dados,

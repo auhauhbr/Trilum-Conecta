@@ -53,7 +53,7 @@ export function CadastroAluno() {
       senha: form.senha,
       cargoAtual: 'Aluno em transição para TI',
       localizacao: 'Brasil',
-      bio: 'Novo aluno da RiseUp preparando sua transição para tecnologia.',
+      bio: 'Novo aluno da Trilum Conecta preparando sua transição para tecnologia.',
     })
 
     if (!resposta.ok) {

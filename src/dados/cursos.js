@@ -33,7 +33,7 @@
     trilhaIds,
     descricao,
     destaque,
-    professor: extras.professor || professores[tecnologia] || 'Equipe RiseUp',
+    professor: extras.professor || professores[tecnologia] || 'Equipe Trilum Conecta',
     modulos: extras.modulos || null,
 
     aulas: extras.aulas || extras.modulos?.flatMap((modulo) => modulo.aulas || []) || null,

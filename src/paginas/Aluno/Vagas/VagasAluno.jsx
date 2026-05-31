@@ -26,7 +26,7 @@ function lista(valor) {
 }
 
 function formatarEmpresa(empresa) {
-  return empresa?.nome || 'Empresa RiseUp'
+  return empresa?.nome || 'Empresa Trilum Conecta'
 }
 
 function classeModalidade(modalidade = '') {
@@ -283,11 +283,11 @@ export function VagasAluno() {
                     {empresaAtiva?.logoUrl ? <img src={empresaAtiva.logoUrl} alt="" /> : empresaAtiva?.logo || 'UP'}
                   </span>
                   <div>
-                    <h2>{empresaAtiva?.nome || 'Empresa RiseUp'}</h2>
+                    <h2>{empresaAtiva?.nome || 'Empresa Trilum Conecta'}</h2>
                     <p>{empresaAtiva?.localizacao || 'Brasil'}</p>
                   </div>
                 </div>
-                <p>{empresaAtiva?.descricao || 'Empresa parceira da RiseUp em busca de talentos em formação.'}</p>
+                <p>{empresaAtiva?.descricao || 'Empresa parceira da Trilum Conecta em busca de talentos em formação.'}</p>
                 <dl>
                   {empresaAtiva?.setor && (
                     <div>

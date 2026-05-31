@@ -1,9 +1,61 @@
 import { ArrowRight } from 'lucide-react'
+import { TbBrandGithub } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
+import brunoAvatar from '../../ativos/imagens/equipe/bruno-v-m-silva.jpg'
+import eduardoAvatar from '../../ativos/imagens/equipe/eduardo-farias.jpg'
+import eltonAvatar from '../../ativos/imagens/equipe/elton-bezerra-da-silva.jpg'
+import evertonAvatar from '../../ativos/imagens/equipe/everton-m-silva.jpg'
+import gabrielAvatar from '../../ativos/imagens/equipe/gabriel-monteiro.jpg'
+import jeffersonAvatar from '../../ativos/imagens/equipe/jefferson-santos.jpg'
 import logoPlataforma from '../../ativos/imagens/logo-plataforma.png'
 import oportunidadesImg from '../../ativos/imagens/oportunidades-ia.webp'
 import phpBadge from '../../ativos/imagens/php-badge.svg'
 import reactBadge from '../../ativos/imagens/react-badge.svg'
+
+const membrosEquipe = [
+  {
+    nome: 'Everton M. Silva',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: evertonAvatar,
+    iniciais: 'ES',
+    github: 'https://github.com/evertonmsilva1080-crypto',
+  },
+  {
+    nome: 'Bruno V. M. Silva',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: brunoAvatar,
+    iniciais: 'BS',
+    github: 'https://github.com/bvenicius',
+  },
+  {
+    nome: 'Jefferson Santos',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: jeffersonAvatar,
+    iniciais: 'JS',
+    github: 'https://github.com/auhauhbr',
+  },
+  {
+    nome: 'Elton Bezerra da Silva',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: eltonAvatar,
+    iniciais: 'EB',
+    github: 'https://github.com/Elton-bezerra-da-silva',
+  },
+  {
+    nome: 'Eduardo Farias',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: eduardoAvatar,
+    iniciais: 'EF',
+    github: 'https://github.com/EduFarias23',
+  },
+  {
+    nome: 'Gabriel Monteiro',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: gabrielAvatar,
+    iniciais: 'GM',
+    github: 'https://github.com/gbrlmonteiron',
+  },
+]
 
 export function LandingPage() {
   return (
@@ -166,7 +218,7 @@ export function LandingPage() {
         <div>
           <h2>Quem somos</h2>
           <p>
-            A RiseUp nasceu para reduzir as barreiras de entrada em TI. Unimos aprendizado estruturado, prática real e
+            A Trilum Conecta nasceu para reduzir as barreiras de entrada em TI. Unimos aprendizado estruturado, prática real e
             conexão com empresas numa plataforma que acompanha cada etapa da sua jornada.
           </p>
           <p>Aqui você encontra direcionamento certo para fazer a transição para a tecnologia.</p>
@@ -188,6 +240,37 @@ export function LandingPage() {
             <strong>0</strong>
             <span>alunos sem suporte</span>
           </article>
+        </div>
+      </section>
+
+      <section className="landing-team" aria-labelledby="landing-team-title">
+        <div className="landing-team-heading">
+          <span>Nossa equipe</span>
+          <h2 id="landing-team-title">As pessoas por trás da Trilum Conecta</h2>
+          <p>Um time unido para transformar orientação, estudo e oportunidades em uma jornada mais clara.</p>
+        </div>
+
+        <div className="landing-team-grid">
+          {membrosEquipe.map((membro) => (
+            <article className="team-card" key={membro.nome}>
+              <div className="team-avatar" aria-hidden="true">
+                {membro.foto ? <img src={membro.foto} alt="" loading="lazy" /> : <span>{membro.iniciais}</span>}
+              </div>
+              <h3>{membro.nome}</h3>
+              <p>{membro.faculdade}</p>
+              <div className="team-socials" aria-label={`Redes sociais de ${membro.nome}`}>
+                {membro.github ? (
+                  <a href={membro.github} target="_blank" rel="noreferrer" aria-label={`GitHub de ${membro.nome}`}>
+                    <TbBrandGithub size={20} />
+                  </a>
+                ) : (
+                  <span title="GitHub em breve" aria-label={`GitHub de ${membro.nome} em breve`}>
+                    <TbBrandGithub size={20} />
+                  </span>
+                )}
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 

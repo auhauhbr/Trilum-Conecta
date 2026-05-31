@@ -35,7 +35,7 @@ export function VagaCard({ vaga, empresa, totalCandidatos }) {
         <h3 className="job-title">{vaga.titulo}</h3>
         <div className="job-company">
           <span className="company-logo">{empresa?.logoUrl ? <img src={empresa.logoUrl} alt="" /> : empresaLogo}</span>
-          {empresa?.nome || 'Empresa RiseUp'}
+          {empresa?.nome || 'Empresa Trilum Conecta'}
         </div>
       </header>
 

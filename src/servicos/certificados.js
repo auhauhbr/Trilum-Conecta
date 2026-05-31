@@ -146,11 +146,11 @@ export function textoCentralizado(
 }
 
 export async function criarCanvasCertificado({
-  aluno = 'Aluno RiseUp',
+  aluno = 'Aluno Trilum Conecta',
   curso = 'Curso da plataforma',
-  professor = 'Equipe RiseUp',
+  professor = 'Equipe Trilum Conecta',
   horas = 'Carga horaria nao informada',
-  plataforma = 'RiseUp',
+  plataforma = 'Trilum Conecta',
   dataEmissao = new Date(),
 }) {
   const imagem = await carregarImagem()
@@ -166,10 +166,10 @@ export async function criarCanvasCertificado({
   ctx.imageSmoothingEnabled = true
   ctx.drawImage(imagem, 0, 0, largura, altura)
 
-  const nomeFormatado = String(aluno).trim() || 'Aluno RiseUp'
+  const nomeFormatado = String(aluno).trim() || 'Aluno Trilum Conecta'
   const cursoFormatado = String(curso).trim() || 'Curso da plataforma'
   const cargaHoraria = horas || 'Carga horaria nao informada'
-  const responsavel = professor || 'Equipe RiseUp'
+  const responsavel = professor || 'Equipe Trilum Conecta'
   const data = new Date(dataEmissao).toLocaleDateString('pt-BR')
   const idCertificado = criarIdCertificado({
     aluno: nomeFormatado,

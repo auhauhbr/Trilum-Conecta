@@ -246,14 +246,14 @@ function candidatoDaCandidatura(candidatura, usuario, progressoCursos) {
     id: candidatura.id,
     vagaId: candidatura.vagaId,
     alunoId: candidatura.alunoId,
-    nome: perfil.nome || 'Aluno RiseUp',
+    nome: perfil.nome || 'Aluno Trilum Conecta',
     fotoUrl: perfil.fotoUrl,
     capaUrl: perfil.capaUrl,
     foto: perfil.foto,
     status: candidatura.status || 'Candidatura enviada',
     cargo: perfil.titulo || perfil.cargoAtual || 'Aluno em formação',
     localizacao: perfil.localizacao || 'Brasil',
-    bio: perfil.bio || 'Pessoa candidata cadastrada na RiseUp, com perfil editável pelo aluno.',
+    bio: perfil.bio || 'Pessoa candidata cadastrada na Trilum Conecta, com perfil editável pelo aluno.',
     cursos: cursosDoUsuario(perfil),
     cursosConcluidos: Array.isArray(perfil.cursosConcluidos) ? perfil.cursosConcluidos : [],
     certificados: Array.isArray(perfil.certificados) ? perfil.certificados : [],
@@ -577,7 +577,7 @@ export function ListaCandidatos() {
 
                 {abaCursoPreview === 'certificado' && cursoPreview.certificadoDisponivel ? (
                   <div className="certificado-preview-mini">
-                    <span>Certificado RiseUp</span>
+                    <span>Certificado Trilum Conecta</span>
                     <h4>{perfilPreview.nome}</h4>
                     <p>concluiu {cursoPreview.titulo}</p>
                     <small>{cursoPreview.duracao} de carga horária • {cursoPreview.professor}</small>

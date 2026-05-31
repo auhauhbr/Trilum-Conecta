@@ -75,7 +75,7 @@ export function PerfilAluno() {
   const navigate = useNavigate()
   const { usuarioAtual, respostasWizard, progressoCursos, candidaturas, vagasEmpresa, atualizarAluno, logout } = useApp()
 
-  const nome = usuarioAtual?.nome || 'Aluno RiseUp'
+  const nome = usuarioAtual?.nome || 'Aluno Trilum Conecta'
   const partesNome = nome.split(' ')
 
   const formInicial = {
