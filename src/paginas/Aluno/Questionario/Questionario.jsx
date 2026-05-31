@@ -54,8 +54,8 @@ function QuestionarioFormulario({ respostasIniciais, salvarWizard, pularWizard }
   return (
     <section className="pagina pagina-estreita wizard-pagina">
       <div className="wizard-topo">
-        <span className="eyebrow">Questionario de perfil</span>
-        <h1>Vamos montar suas recomendacoes.</h1>
+        <span className="eyebrow">Questionário de perfil</span>
+        <h1>Vamos montar suas recomendações.</h1>
         <div className="wizard-progresso">
           <span style={{ width: `${progresso}%` }} />
         </div>
@@ -97,7 +97,7 @@ function QuestionarioFormulario({ respostasIniciais, salvarWizard, pularWizard }
           Pular por enquanto
         </Botao>
         <Botao disabled={!podeAvancar} onClick={avancar}>
-          {etapa === perguntasPorEtapa.length - 1 ? 'Finalizar' : 'Proximo'} <ArrowRight size={18} />
+          {etapa === perguntasPorEtapa.length - 1 ? 'Finalizar' : 'Próximo'} <ArrowRight size={18} />
         </Botao>
       </div>
     </section>
