@@ -4,6 +4,7 @@ import { CursoCard } from '../../../componentes/cursos/CursoCard'
 import { TrilhaCard } from '../../../componentes/cursos/TrilhaCard'
 import { Badge } from '../../../componentes/interface/Badge'
 import { Botao } from '../../../componentes/interface/Botao'
+import { MentorRecomendacaoToast } from '../../../componentes/interface/MentorRecomendacaoToast'
 import { VagaCard } from '../../../componentes/vagas/VagaCard'
 import { useApp } from '../../../contextos/AppContext'
 import { modoApresentacao } from '../../../dados/usuarios'
@@ -34,7 +35,7 @@ export function PainelAluno() {
 
   return (
     <section className="dashboard-page">
-      <div className="dashboard-html-hero">
+      <div className="dashboard-html-hero" data-mentor-aluno-section="resumo">
         <div className="dashboard-hero-text">
           <span className="greeting-tag">Bem-vindo de volta</span>
           <h1>
@@ -106,7 +107,7 @@ export function PainelAluno() {
         </aside>
       </div>
 
-      <section className="dashboard-section bg-gray">
+      <section className="dashboard-section bg-gray" data-mentor-aluno-section="trilhas">
         <div className="section-header-html">
           <div>
             <h2>Trilhas para você</h2>
@@ -120,7 +121,7 @@ export function PainelAluno() {
         </div>
       </section>
 
-      <section className="dashboard-section">
+      <section className="dashboard-section" data-mentor-aluno-section="cursos">
         <div className="section-header-html">
           <div>
             <h2>Cursos recomendados</h2>
@@ -137,7 +138,7 @@ export function PainelAluno() {
         </div>
       </section>
 
-      <section className="dashboard-section bg-gray">
+      <section className="dashboard-section bg-gray" data-mentor-aluno-section="vagas">
         <div className="section-header-html">
           <div>
             <h2>Vagas para você</h2>
@@ -167,6 +168,14 @@ export function PainelAluno() {
           )}
         </div>
       </section>
+      {usuarioAtual?.wizardConcluido && (
+        <MentorRecomendacaoToast
+          usuarioAtual={usuarioAtual}
+          respostasWizard={respostasWizard}
+          trilhasRecomendadas={recomendadas}
+          cursosRecomendados={cursosSugeridos}
+        />
+      )}
     </section>
   )
 }
