@@ -1,5 +1,6 @@
-import { BookOpen, CheckCircle2, Code2, Layers3, LockKeyhole, PlayCircle, Rocket } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { BookOpen, Code2, PlayCircle, Rocket } from 'lucide-react'
+import { useParams } from 'react-router-dom'
+import { ModulosAccordion } from '../../../componentes/cursos/ModulosAccordion'
 import { Badge } from '../../../componentes/interface/Badge'
 import { Botao } from '../../../componentes/interface/Botao'
 import { useApp } from '../../../contextos/AppContext'
@@ -11,7 +12,7 @@ export function DetalheCurso() {
   const { progressoCursos } = useApp()
   const conteudo = encontrarConteudo(trilhaId)
 
-  if (!conteudo) return <section className="pagina">Curso ou trilha não encontrada.</section>
+  if (!conteudo) return <section className="pagina">Curso ou trilha nao encontrada.</section>
 
   const progresso = calcularProgresso(conteudo, progressoCursos)
   const primeiraAula = conteudo.modulos[0]?.aulas[0]
@@ -26,6 +27,7 @@ export function DetalheCurso() {
 
   function cursoRelacionadoDoModulo(modulo) {
     if (!cursosRelacionados.length) return null
+    if (modulo.cursoId) return cursosRelacionados.find((curso) => curso.id === modulo.cursoId) || null
 
     const aulasDoModulo = new Set((modulo.aulas || []).map((aula) => aula.id))
     const relacionadoPorAula = cursosRelacionados.find((curso) => (curso.aulas || []).some((aula) => aulasDoModulo.has(aula.id)))
@@ -69,7 +71,7 @@ export function DetalheCurso() {
           </div>
           {primeiraAula && (
             <Botao to={`/aluno/cursos/${conteudo.id}/aula/${primeiraAula.id}`}>
-              <PlayCircle size={18} /> {progresso ? 'Continuar' : 'Começar'}
+              <PlayCircle size={18} /> {progresso ? 'Continuar' : 'Comecar'}
             </Botao>
           )}
         </div>
@@ -77,69 +79,26 @@ export function DetalheCurso() {
 
       <main className="curso-conteudo-grid">
         <article className="course-info">
-          <span className="eyebrow">Apresentação</span>
-          <h2>O que você vai desenvolver</h2>
+          <span className="eyebrow">Apresentacao</span>
+          <h2>O que voce vai desenvolver</h2>
           <p>{conteudo.descricao}</p>
           <p>{conteudo.destaque}</p>
           <div className="professor-card">
             <span>{iniciaisProfessores}</span>
             <div>
               <strong>{professoresTexto}</strong>
-              <small>Professor(es) responsável(is) pelos vídeos selecionados para este conteúdo.</small>
+              <small>Professor(es) responsavel(is) pelos videos selecionados para este conteudo.</small>
             </div>
           </div>
         </article>
 
         <aside className="curso-modulos-sidebar">
-          {conteudo.modulos.map((modulo, indice) => {
-            const cursoRelacionado = cursoRelacionadoDoModulo(modulo)
-
-            return (
-              <section className="modulo-bloco modulo-bloco-compacto" key={modulo.id}>
-                <div className="modulo-header-linha">
-                  <span className="mod-idx">{indice + 1}</span>
-                  <div>
-                    <span className="eyebrow">Nível {indice + 1}</span>
-                    <h2>{modulo.titulo}</h2>
-                  </div>
-                </div>
-                <p>{modulo.descricao}</p>
-                {modulo.aviso && <p className="modulo-aviso">{modulo.aviso}</p>}
-
-                {conteudo.tipoConteudo === 'trilha' && cursoRelacionado && (
-                  <Link className="curso-link-mini" to={`/aluno/cursos/${cursoRelacionado.id}`}>
-                    <Layers3 size={17} />
-                    <span>Ir ao curso: {cursoRelacionado.titulo}</span>
-                  </Link>
-                )}
-
-                <div className="aulas-lista">
-                  {modulo.aulas.map((aula) => {
-                    const concluida = progressoCursos[aula.id]
-                    return (
-                      <Link className="aula-item" key={aula.id} to={`/aluno/cursos/${conteudo.id}/aula/${aula.id}`}>
-                        {concluida ? <CheckCircle2 size={20} /> : <PlayCircle size={20} />}
-                        <div>
-                          <strong>{aula.titulo}</strong>
-                          <span>{aula.descricao}</span>
-                        </div>
-                        <small>{aula.duracao}</small>
-                      </Link>
-                    )
-                  })}
-                  {conteudo.tipoConteudo === 'trilha' && (
-                    <div className="aula-item bloqueado">
-                      <LockKeyhole size={19} />
-                      <div>
-                        <strong>Quiz - {modulo.titulo.replace('Nivel ', '').replace('Nível ', '')}</strong>
-                        <span>Atividade avaliativa liberada após concluir as aulas do módulo.</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </section>
-            )
-          })}
+          <ModulosAccordion
+            conteudo={conteudo}
+            progressoCursos={progressoCursos}
+            cursoRelacionadoDoModulo={conteudo.tipoConteudo === 'trilha' ? cursoRelacionadoDoModulo : undefined}
+            mostrarQuiz={conteudo.tipoConteudo === 'trilha'}
+          />
         </aside>
       </main>
     </section>

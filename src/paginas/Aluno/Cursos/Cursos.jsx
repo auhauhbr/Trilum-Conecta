@@ -1,8 +1,16 @@
 import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { CursoCard } from '../../../componentes/cursos/CursoCard'
+import { MentorPaginaAlunoToast } from '../../../componentes/interface/MentorPaginaAlunoToast'
 import { cursos } from '../../../dados/cursos'
+import { mensagensCursos } from '../../../dados/mensagensMentorAluno'
 import { filtrarCursos } from '../../../servicos/filtros'
+
+const mapaMentorCursos = {
+  topo: 'cursos-intro',
+  filtros: 'cursos-filtros',
+  catalogo: 'cursos-catalogo',
+}
 
 export function Cursos() {
   const [busca, setBusca] = useState('')
@@ -16,14 +24,14 @@ export function Cursos() {
 
   return (
     <section className="pagina">
-      <div className="secao-cabecalho linha">
+      <div className="secao-cabecalho linha" data-mentor-pagina-section="topo">
         <div>
           <span className="eyebrow">Catalogo</span>
           <h1>Cursos</h1>
           <p>Explore os Conteúdos da Plataforma e assista tudo por aqui.</p>
         </div>
       </div>
-      <div className="filtros">
+      <div className="filtros" data-mentor-pagina-section="filtros">
         <span className="filtro-label">FILTRAR</span>
         <label className="busca">
           <Search size={18} />
@@ -52,7 +60,7 @@ export function Cursos() {
         </select>
       </div>
 
-      <section className="catalogo-bloco">
+      <section className="catalogo-bloco" data-mentor-pagina-section="catalogo">
         <div className="secao-cabecalho linha">
           <div>
             <span className="eyebrow">Cursos</span>
@@ -70,9 +78,11 @@ export function Cursos() {
       {!cursosFiltrados.length && (
         <div className="info-card">
           <h2>Nenhum resultado encontrado</h2>
-          <p>Tente buscar por outra tecnologia, categoria ou nivel.</p>
+          <p>Tente buscar por outra tecnologia, categoria ou nível.</p>
         </div>
       )}
+
+      <MentorPaginaAlunoToast mensagens={mensagensCursos} mapaSecoes={mapaMentorCursos} />
     </section>
   )
 }

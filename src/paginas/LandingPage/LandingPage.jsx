@@ -1,11 +1,67 @@
 import { ArrowRight } from 'lucide-react'
+import { TbBrandGithub } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
+import { MentorLandingToast } from '../../componentes/interface/MentorLandingToast'
+import brunoAvatar from '../../ativos/imagens/equipe/bruno-v-m-silva.jpg'
+import eduardoAvatar from '../../ativos/imagens/equipe/eduardo-farias.jpg'
+import eltonAvatar from '../../ativos/imagens/equipe/elton-bezerra-da-silva.jpg'
+import evertonAvatar from '../../ativos/imagens/equipe/everton-m-silva.jpg'
+import gabrielAvatar from '../../ativos/imagens/equipe/gabriel-monteiro.jpg'
+import jeffersonAvatar from '../../ativos/imagens/equipe/jefferson-santos.jpg'
+import logoPlataforma from '../../ativos/imagens/logo-plataforma.png'
 import oportunidadesImg from '../../ativos/imagens/oportunidades-ia.webp'
+import phpBadge from '../../ativos/imagens/php-badge.svg'
+import reactBadge from '../../ativos/imagens/react-badge.svg'
+
+const membrosEquipe = [
+  {
+    nome: 'Everton M. Silva',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: evertonAvatar,
+    iniciais: 'ES',
+    github: 'https://github.com/evertonmsilva1080-crypto',
+  },
+  {
+    nome: 'Bruno V. M. Silva',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: brunoAvatar,
+    iniciais: 'BS',
+    github: 'https://github.com/bvenicius',
+  },
+  {
+    nome: 'Jefferson Santos',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: jeffersonAvatar,
+    iniciais: 'JS',
+    github: 'https://github.com/auhauhbr',
+  },
+  {
+    nome: 'Elton Bezerra da Silva',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: eltonAvatar,
+    iniciais: 'EB',
+    github: 'https://github.com/Elton-bezerra-da-silva',
+  },
+  {
+    nome: 'Eduardo Farias',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: eduardoAvatar,
+    iniciais: 'EF',
+    github: 'https://github.com/EduFarias23',
+  },
+  {
+    nome: 'Gabriel Monteiro',
+    faculdade: 'Análise e Desenvolvimento de Sistemas - UNIT',
+    foto: gabrielAvatar,
+    iniciais: 'GM',
+    github: 'https://github.com/gbrlmonteiron',
+  },
+]
 
 export function LandingPage() {
   return (
     <div className="landing-udemy">
-      <section className="landing-udemy-hero">
+      <section className="landing-udemy-hero" id="hero" data-mentor-section="hero">
         <div className="landing-hero-copy">
           <span className="hero-label">Plataforma de carreira em TI</span>
           <h1>
@@ -31,7 +87,7 @@ export function LandingPage() {
         <aside className="landing-video-card" aria-label="Prévia de curso na plataforma">
           <div className="landing-video-copy">
             <span>Prévia da experiência</span>
-            <strong>Assista aulas dentro da RiseUp</strong>
+            <strong>Assista aulas dentro da plataforma</strong>
             <p>Prévia de entrevista para programadores: veja os primeiros 40 segundos e continue pela plataforma.</p>
           </div>
           <div className="landing-video-frame">
@@ -45,7 +101,26 @@ export function LandingPage() {
         </aside>
       </section>
 
-      <section className="landing-opportunity-band">
+      <section className="stats-bar" data-mentor-section="vagas">
+        <article>
+          <strong>28+</strong>
+          <span>cursos e trilhas</span>
+        </article>
+        <article>
+          <strong>12 sem.</strong>
+          <span>plano de estudo sugerido</span>
+        </article>
+        <article>
+          <strong>100%</strong>
+          <span>jornada guiada</span>
+        </article>
+        <article>
+          <strong>1</strong>
+          <span>perfil para estudar e se candidatar</span>
+        </article>
+      </section>
+
+      <section className="landing-opportunity-band" id="vagas" data-mentor-section="vagas">
         <div className="landing-opportunity-image">
           <img src={oportunidadesImg} alt="Pessoa segurando anotação sobre inteligência artificial" />
         </div>
@@ -62,7 +137,49 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="landing-section-udemy">
+      <section className="landing-exemplar">
+        <h2>Uma plataforma construída para quem está começando</h2>
+        <p>Tecnologia moderna e trilhas ideais para você, tudo em um só lugar.</p>
+        <div className="landing-screen-mock" aria-label="Prévia em wireframe da plataforma">
+          <div className="mock-window-bar">
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="mock-content">
+            <div className="mock-sidebar">
+              <span className="mock-menu-item active" />
+              <span className="mock-menu-item" />
+              <span className="mock-menu-item" />
+              <span className="mock-menu-item" />
+            </div>
+            <div className="mock-main">
+              <article className="mock-course-card">
+                <img src={phpBadge} alt="PHP" />
+                <div className="mock-text-lines">
+                  <span className="mock-line title" />
+                  <span className="mock-line short" />
+                  <span className="mock-progress">
+                    <span style={{ width: '62%' }} />
+                  </span>
+                </div>
+              </article>
+              <article className="mock-course-card">
+                <img src={reactBadge} alt="React" />
+                <div className="mock-text-lines">
+                  <span className="mock-line title" />
+                  <span className="mock-line medium" />
+                  <span className="mock-progress">
+                    <span style={{ width: '38%' }} />
+                  </span>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-section-udemy" id="como-funciona" data-mentor-section="como-funciona">
         <div className="section-heading">
           <span>Como funciona</span>
           <h2>Da transição à candidatura</h2>
@@ -98,12 +215,79 @@ export function LandingPage() {
         </article>
       </section>
 
+      <section className="landing-about" id="quem-somos" data-mentor-section="quem-somos">
+        <div>
+          <h2>Quem somos</h2>
+          <p>
+            A Trilum Conecta nasceu para reduzir as barreiras de entrada em TI. Unimos aprendizado estruturado, prática real e
+            conexão com empresas numa plataforma que acompanha cada etapa da sua jornada.
+          </p>
+          <p>Aqui você encontra direcionamento certo para fazer a transição para a tecnologia.</p>
+        </div>
+        <div className="landing-about-stats">
+          <article>
+            <strong>28h</strong>
+            <span>tempo médio de estudo semanal</span>
+          </article>
+          <article>
+            <strong>4.8★</strong>
+            <span>avaliação dos alunos</span>
+          </article>
+          <article>
+            <strong>80%</strong>
+            <span>piso de certificado</span>
+          </article>
+          <article>
+            <strong>0</strong>
+            <span>alunos sem suporte</span>
+          </article>
+        </div>
+      </section>
+
+      <section className="landing-team" aria-labelledby="landing-team-title" data-mentor-section="quem-somos">
+        <div className="landing-team-heading">
+          <span>Nossa equipe</span>
+          <h2 id="landing-team-title">As pessoas por trás da Trilum Conecta</h2>
+          <p>Um time unido para transformar orientação, estudo e oportunidades em uma jornada mais clara.</p>
+        </div>
+
+        <div className="landing-team-grid">
+          {membrosEquipe.map((membro) => (
+            <article className="team-card" key={membro.nome}>
+              <div className="team-avatar" aria-hidden="true">
+                {membro.foto ? <img src={membro.foto} alt="" loading="lazy" /> : <span>{membro.iniciais}</span>}
+              </div>
+              <h3>{membro.nome}</h3>
+              <p>{membro.faculdade}</p>
+              <div className="team-socials" aria-label={`Redes sociais de ${membro.nome}`}>
+                {membro.github ? (
+                  <a href={membro.github} target="_blank" rel="noreferrer" aria-label={`GitHub de ${membro.nome}`}>
+                    <TbBrandGithub size={20} />
+                  </a>
+                ) : (
+                  <span title="GitHub em breve" aria-label={`GitHub de ${membro.nome} em breve`}>
+                    <TbBrandGithub size={20} />
+                  </span>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="landing-platform-mark">
+        <img src={logoPlataforma} alt="Logo da plataforma" />
+        <p>Acreditamos em aprendizado simples, prático e com propósito real.</p>
+      </section>
+
       <section className="landing-section-udemy cta-udemy">
         <h2>Comece sua jornada com uma trilha clara.</h2>
         <Link className="btn-large primary" to="/cadastro/aluno">
           Criar conta grátis <ArrowRight size={16} />
         </Link>
       </section>
+
+      <MentorLandingToast />
     </div>
   )
 }

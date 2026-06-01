@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from '../componentes/layout/AppLayout'
 import { useApp } from '../contextos/AppContext'
+import { modoApresentacao } from '../dados/usuarios'
 import { Login } from '../paginas/Autenticacao/Login'
 import { CadastroAluno } from '../paginas/Autenticacao/CadastroAluno'
 import { CadastroEmpresa } from '../paginas/Autenticacao/CadastroEmpresa'
@@ -28,13 +29,15 @@ function Protegida({ children, tipo }) {
 }
 
 export function Rotas() {
+  const apresentacaoAtiva = modoApresentacao.ativo
+
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<LandingPage />} />
         <Route path="entrar" element={<Login />} />
         <Route path="cadastro/aluno" element={<CadastroAluno />} />
-        <Route path="cadastro/empresa" element={<CadastroEmpresa />} />
+        <Route path="cadastro/empresa" element={apresentacaoAtiva ? <Navigate to="/" replace /> : <CadastroEmpresa />} />
       </Route>
 
       <Route
@@ -46,32 +49,47 @@ export function Rotas() {
         }
       >
         <Route index element={<Navigate to="/aluno/painel" replace />} />
-        <Route path="questionario" element={<Questionario />} />
-        <Route path="painel" element={<PainelAluno />} />
-        <Route path="cursos" element={<Cursos />} />
-        <Route path="cursos/:trilhaId" element={<DetalheCurso />} />
-        <Route path="cursos/:trilhaId/aula/:aulaId" element={<PlayerCurso />} />
-        <Route path="vagas" element={<VagasAluno />} />
-        <Route path="vagas/:vagaId" element={<DetalheVaga />} />
-        <Route path="perfil" element={<PerfilAluno />} />
+        {apresentacaoAtiva ? (
+          <>
+            <Route path="questionario" element={<Questionario />} />
+            <Route path="painel" element={<PainelAluno />} />
+            <Route path="cursos" element={<Cursos />} />
+            <Route path="*" element={<Navigate to="/aluno/painel" replace />} />
+          </>
+        ) : (
+          <>
+            <Route path="questionario" element={<Questionario />} />
+            <Route path="painel" element={<PainelAluno />} />
+            <Route path="cursos" element={<Cursos />} />
+            <Route path="cursos/:trilhaId" element={<DetalheCurso />} />
+            <Route path="cursos/:trilhaId/aula/:aulaId" element={<PlayerCurso />} />
+            <Route path="vagas" element={<VagasAluno />} />
+            <Route path="vagas/:vagaId" element={<DetalheVaga />} />
+            <Route path="perfil" element={<PerfilAluno />} />
+          </>
+        )}
       </Route>
 
-      <Route
-        path="empresa"
-        element={
-          <Protegida tipo="empresa">
-            <AppLayout tipo="empresa" />
-          </Protegida>
-        }
-      >
-        <Route index element={<Navigate to="/empresa/painel" replace />} />
-        <Route path="painel" element={<PainelEmpresa />} />
-        <Route path="criar-vaga" element={<CriarVaga />} />
-        <Route path="gerenciar-vagas" element={<GerenciarVagas />} />
-        <Route path="vagas/:vagaId/editar" element={<CriarVaga />} />
-        <Route path="vagas/:vagaId/candidatos" element={<ListaCandidatos />} />
-        <Route path="perfil" element={<PerfilEmpresa />} />
-      </Route>
+      {apresentacaoAtiva ? (
+        <Route path="empresa/*" element={<Navigate to="/" replace />} />
+      ) : (
+        <Route
+          path="empresa"
+          element={
+            <Protegida tipo="empresa">
+              <AppLayout tipo="empresa" />
+            </Protegida>
+          }
+        >
+          <Route index element={<Navigate to="/empresa/painel" replace />} />
+          <Route path="painel" element={<PainelEmpresa />} />
+          <Route path="criar-vaga" element={<CriarVaga />} />
+          <Route path="gerenciar-vagas" element={<GerenciarVagas />} />
+          <Route path="vagas/:vagaId/editar" element={<CriarVaga />} />
+          <Route path="vagas/:vagaId/candidatos" element={<ListaCandidatos />} />
+          <Route path="perfil" element={<PerfilEmpresa />} />
+        </Route>
+      )}
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

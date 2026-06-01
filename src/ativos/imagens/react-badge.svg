@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72" role="img" aria-label="React">
+  <rect width="72" height="72" rx="14" fill="#ecfeff"/>
+  <circle cx="36" cy="36" r="5" fill="#0ea5e9"/>
+  <g fill="none" stroke="#0ea5e9" stroke-width="3">
+    <ellipse cx="36" cy="36" rx="25" ry="10"/>
+    <ellipse cx="36" cy="36" rx="25" ry="10" transform="rotate(60 36 36)"/>
+    <ellipse cx="36" cy="36" rx="25" ry="10" transform="rotate(120 36 36)"/>
+  </g>
+</svg>

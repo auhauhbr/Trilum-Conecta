@@ -1,86 +1,251 @@
 import { useState } from 'react'
-import { Building2, LockKeyhole, Mail, SquareUserRound } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import { Building2, LockKeyhole, Mail, MapPin, SquareUserRound } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { MentorCompactadoButton } from '../../componentes/interface/MentorCompactadoButton'
+import { MentorFeedback } from '../../componentes/interface/MentorFeedback'
 import { useApp } from '../../contextos/AppContext'
-import { modoApresentacao } from '../../dados/usuarios'
 import ilustracaoCadastro from '../../ativos/imagens/imagem-teste-4.png'
 import ilustracaoCadastro2 from '../../ativos/imagens/imagem-teste-2.png'
+import {
+  cnpjValido,
+  emailCorporativoValido,
+  mensagensSenha,
+  progressoSenha,
+  requisitosSenha,
+} from '../../servicos/validacaoAuth'
 
+const formInicial = {
+  nome: '',
+  cnpj: '',
+  email: '',
+  repetirEmail: '',
+  senha: '',
+  repetirSenha: '',
+  localizacao: '',
+  site: '',
+  descricao: '',
+}
 
 export function CadastroEmpresa() {
   const navigate = useNavigate()
   const { cadastrarEmpresa } = useApp()
-  const [form, setForm] = useState({
-    nome: '',
-    cnpj: '',
-    email: '',
-    repetirEmail: '',
-    senha: '',
-    repetirSenha: '',
-    localizacao: '',
-    site: '',
-    descricao: '',
-  })
-  const [erro, setErro] = useState('')
+  const [form, setForm] = useState(formInicial)
+  const [tentouEnviar, setTentouEnviar] = useState(false)
+  const [erroConta, setErroConta] = useState('')
+  const [feedbackFechado, setFeedbackFechado] = useState(false)
+  const requisitos = requisitosSenha(form.senha)
+  const progresso = progressoSenha(form.senha)
+  const itensValidacao = tentouEnviar ? validarFormulario() : []
+  const itensFeedback = [...itensValidacao, ...(erroConta ? [erroConta] : [])]
 
   function atualizar(campo, valor) {
     setForm((atual) => ({ ...atual, [campo]: valor }))
+    setErroConta('')
+  }
+
+  function validarFormulario() {
+    const pendencias = []
+
+    if (!form.nome.trim()) pendencias.push('qual o nome da sua empresa?')
+    if (!form.cnpj.trim()) pendencias.push('preciso do CNPJ da empresa')
+    else if (!cnpjValido(form.cnpj)) pendencias.push('CNPJ parece incorreto, dá uma olhada')
+    if (!form.email.trim()) pendencias.push('informe o e-mail corporativo')
+    else if (!emailCorporativoValido(form.email)) pendencias.push('e-mail corporativo não parece válido')
+    if (!form.repetirEmail.trim()) pendencias.push('confirme o e-mail corporativo')
+    else if (form.email && form.email !== form.repetirEmail) pendencias.push('os e-mails corporativos não conferem')
+    if (!form.senha) pendencias.push('crie uma senha para acesso')
+    else pendencias.push(...mensagensSenha(form.senha))
+    if (!form.repetirSenha) pendencias.push('repita a senha criada')
+    else if (form.senha && form.senha !== form.repetirSenha) pendencias.push('as senhas estão diferentes, ajuste')
+    if (!form.localizacao.trim()) pendencias.push('selecione sua localização')
+
+    return pendencias
+  }
+
+  function saudacaoFeedback() {
+    const nomeEmpresa = form.nome.trim()
+    if (nomeEmpresa) return `Ei pessoal da ${nomeEmpresa}, você precisa fazer o seguinte:`
+    return 'Ei humano da empresa, você precisa fazer o seguinte:'
   }
 
   function enviar(evento) {
     evento.preventDefault()
-    if (!form.nome || !form.cnpj || !form.email || !form.senha) return setErro('Preencher campo obrigatorio.')
-    if (form.email !== form.repetirEmail) return setErro('Os e-mails precisam ser iguais.')
-    if (form.senha !== form.repetirSenha) return setErro('As senhas precisam ser iguais.')
-    if (form.senha.length < 8 || !/[A-Z]/.test(form.senha) || !/[^A-Za-z0-9]/.test(form.senha)) {
-      return setErro('A senha nao cumpre todos os criterios (Mm, #, min. 8).')
+    setTentouEnviar(true)
+    setErroConta('')
+    setFeedbackFechado(false)
+
+    const pendencias = validarFormulario()
+    if (pendencias.length) {
+      return
     }
 
-    cadastrarEmpresa(form)
+    const resposta = cadastrarEmpresa({
+      nome: form.nome.trim(),
+      cnpj: form.cnpj.trim(),
+      email: form.email,
+      senha: form.senha,
+      localizacao: form.localizacao.trim(),
+      site: form.site.trim(),
+      descricao: form.descricao.trim(),
+    })
+
+    if (!resposta.ok) {
+      setErroConta(resposta.mensagem)
+      return
+    }
+
     navigate('/empresa/painel')
   }
 
   return (
     <section className="auth-html cadastro-page-html">
-      <h1 className="cadastro-title-html">Cadastre-se <span>para começar sua jornada!</span></h1>
+      <h1 className="cadastro-title-html">
+        Cadastre sua empresa <span>e encontre novos talentos.</span>
+      </h1>
 
       <div className="cadastro-container-layout">
         <div className="coluna-imagem lateral-esquerda">
-          <img
-            src={ilustracaoCadastro} 
-            alt="Ilustração de boas-vindas para novos alunos" />
+          <img src={ilustracaoCadastro} alt="Ilustração de boas-vindas para empresas" />
         </div>
 
-        <form className="cadastro-card-html" onSubmit={enviar}>
+        <form className="cadastro-card-html" onSubmit={enviar} noValidate>
           <div className="tab-switch-html">
             <Link to="/cadastro/aluno">Aluno</Link>
-            <button className="active" type="button">Empresa</button>
+            <button className="active" type="button">
+              Empresa
+            </button>
           </div>
 
-          <label className="field-label-html">Razão social</label>
-          <div className="input-wrap-html"><span><Building2 size={16} color="#1a6bff" /></span><input value={form.nome} onChange={(e) => atualizar('nome', e.target.value)} /></div>
-          <label className="field-label-html">CNPJ</label>
-          <div className="input-wrap-html"><span><SquareUserRound size={16} color="#1a6bff" /></span><input value={form.cnpj} onChange={(e) => atualizar('cnpj', e.target.value)} /></div>
-          <label className="field-label-html">Email corporativo</label>
-          <div className="input-wrap-html"><span><Mail size={16} color="#1a6bff" /></span><input type="email" value={form.email} onChange={(e) => atualizar('email', e.target.value)} /></div>
-          <label className="field-label-html">Repetir email</label>
-          <div className="input-wrap-html"><span><Mail size={16} color="#1a6bff" /></span><input type="email" value={form.repetirEmail} onChange={(e) => atualizar('repetirEmail', e.target.value)} /></div>
-          <label className="field-label-html">Senha</label>
-          <div className="input-wrap-html"><span><LockKeyhole size={16} color="#1a6bff" /></span><input type="password" value={form.senha} onChange={(e) => atualizar('senha', e.target.value)} /></div>
-          <div className="pw-strength-html"><span /><span /><span /><span /></div>
-          <label className="field-label-html">Repetir senha</label>
-          <div className="input-wrap-html"><span><LockKeyhole size={16} color="#1a6bff" /></span><input type="password" value={form.repetirSenha} onChange={(e) => atualizar('repetirSenha', e.target.value)} /></div>
-          {erro && <p className="erro">{erro}</p>}
-          <button className="btn-submit-html" type="submit">→ Cadastrar</button>
+          <label className="field-label-html" htmlFor="empresa-nome">
+            Nome da empresa
+          </label>
+          <div className="input-wrap-html">
+            <span>
+              <Building2 size={16} color="#1a6bff" />
+            </span>
+            <input
+              id="empresa-nome"
+              value={form.nome}
+              onChange={(e) => atualizar('nome', e.target.value)}
+              placeholder="Nome que os candidatos verão"
+            />
+          </div>
+
+          <label className="field-label-html" htmlFor="empresa-cnpj">
+            CNPJ
+          </label>
+          <div className="input-wrap-html">
+            <span>
+              <SquareUserRound size={16} color="#1a6bff" />
+            </span>
+            <input id="empresa-cnpj" value={form.cnpj} onChange={(e) => atualizar('cnpj', e.target.value)} />
+          </div>
+          <small className="field-hint-html">ex: 00.000.000/0001-91</small>
+
+          <label className="field-label-html" htmlFor="empresa-email">
+            E-mail corporativo
+          </label>
+          <div className="input-wrap-html">
+            <span>
+              <Mail size={16} color="#1a6bff" />
+            </span>
+            <input
+              id="empresa-email"
+              type="email"
+              value={form.email}
+              onChange={(e) => atualizar('email', e.target.value)}
+              autoComplete="email"
+            />
+          </div>
+
+          <label className="field-label-html" htmlFor="empresa-repetir-email">
+            Repetir e-mail
+          </label>
+          <div className="input-wrap-html">
+            <span>
+              <Mail size={16} color="#1a6bff" />
+            </span>
+            <input
+              id="empresa-repetir-email"
+              type="email"
+              value={form.repetirEmail}
+              onChange={(e) => atualizar('repetirEmail', e.target.value)}
+              autoComplete="email"
+            />
+          </div>
+
+          <label className="field-label-html" htmlFor="empresa-senha">
+            Senha
+          </label>
+          <div className="input-wrap-html">
+            <span>
+              <LockKeyhole size={16} color="#1a6bff" />
+            </span>
+            <input
+              id="empresa-senha"
+              type="password"
+              value={form.senha}
+              onChange={(e) => atualizar('senha', e.target.value)}
+              autoComplete="new-password"
+            />
+          </div>
+          <div className="pw-strength-html" aria-label="Requisitos da senha">
+            {requisitos.map((requisito, index) => (
+              <span className={index < progresso ? 'ativo' : ''} key={requisito.id} />
+            ))}
+          </div>
+
+          <label className="field-label-html" htmlFor="empresa-repetir-senha">
+            Repetir senha
+          </label>
+          <div className="input-wrap-html">
+            <span>
+              <LockKeyhole size={16} color="#1a6bff" />
+            </span>
+            <input
+              id="empresa-repetir-senha"
+              type="password"
+              value={form.repetirSenha}
+              onChange={(e) => atualizar('repetirSenha', e.target.value)}
+              autoComplete="new-password"
+            />
+          </div>
+
+          <label className="field-label-html" htmlFor="empresa-localizacao">
+            Localização
+          </label>
+          <div className="input-wrap-html">
+            <span>
+              <MapPin size={16} color="#1a6bff" />
+            </span>
+            <input
+              id="empresa-localizacao"
+              value={form.localizacao}
+              onChange={(e) => atualizar('localizacao', e.target.value)}
+              placeholder="Ex: Recife, PE"
+            />
+          </div>
+
+          <button className="btn-submit-html" type="submit">
+            Cadastrar
+          </button>
         </form>
 
         <div className="coluna-imagem lateral-direita">
-          <img
-            src={ilustracaoCadastro2} 
-            alt="Ilustração de boas-vindas para novas empresas" />
+          <img src={ilustracaoCadastro2} alt="Ilustração de boas-vindas para novas empresas" />
         </div>
       </div>
+
+      {feedbackFechado && itensFeedback.length > 0 ? (
+        <MentorCompactadoButton posicao="direita" onClick={() => setFeedbackFechado(false)} />
+      ) : !feedbackFechado && (
+        <MentorFeedback
+          saudacao={saudacaoFeedback()}
+          itens={itensFeedback}
+          posicao="direita"
+          onClose={() => setFeedbackFechado(true)}
+        />
+      )}
     </section>
   )
 }

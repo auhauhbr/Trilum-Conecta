@@ -1,8 +1,10 @@
 import { BriefcaseBusiness, CheckCircle2, Plus, UsersRound } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
+import { MentorEmpresaToast } from '../../../componentes/interface/MentorEmpresaToast'
 import { Avatar } from '../../../componentes/perfis/Avatar'
 import { useApp } from '../../../contextos/AppContext'
+import { contarCandidatosDasVagas, metricasCandidatosDaVaga } from '../../../servicos/candidaturas'
 
 function statusClasse(status) {
   return status === 'ativa' ? 'status-chip status-ativa' : 'status-chip status-encerrada'
@@ -12,11 +14,32 @@ function statusRotulo(status) {
   return status === 'ativa' ? 'Ativa' : 'Encerrada'
 }
 
+function classeModalidade(modalidade = '') {
+  const texto = modalidade.toLowerCase()
+  if (texto.includes('presencial')) return 'presencial'
+  if (texto.includes('híbrido') || texto.includes('hibrido')) return 'hibrido'
+  return 'remoto'
+}
+
+function publicadaNasUltimas24Horas(dataPublicacao) {
+  if (!dataPublicacao) return false
+  const publicadaEm = new Date(dataPublicacao.includes('T') ? dataPublicacao : `${dataPublicacao}T00:00:00`)
+  if (Number.isNaN(publicadaEm.getTime())) return false
+
+  const agora = new Date()
+  const diff = agora.getTime() - publicadaEm.getTime()
+  return diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000
+}
+
 export function PainelEmpresa() {
-  const { usuarioAtual, vagasEmpresa } = useApp()
-  const minhasVagas = vagasEmpresa.filter((vaga) => vaga.empresaId === usuarioAtual?.id || usuarioAtual?.id === 'empresa-1')
+  const { usuarioAtual, vagasEmpresa, candidatos, candidaturas } = useApp()
+  const minhasVagas = vagasEmpresa.filter((vaga) => vaga.empresaId === usuarioAtual?.id)
+  const vagasRecentes = minhasVagas
+    .filter((vaga) => publicadaNasUltimas24Horas(vaga.publicadaEm))
+    .sort((a, b) => new Date(`${b.publicadaEm}T00:00:00`) - new Date(`${a.publicadaEm}T00:00:00`))
+    .slice(0, 4)
   const ativas = minhasVagas.filter((vaga) => vaga.status === 'ativa').length
-  const candidatos = minhasVagas.reduce((total, vaga) => total + Number(vaga.candidatos || 0), 0)
+  const totalCandidatos = contarCandidatosDasVagas(minhasVagas, candidatos, candidaturas)
   const capaStyle = usuarioAtual?.capaUrl
     ? { backgroundImage: `url("${usuarioAtual.capaUrl}")` }
     : { background: usuarioAtual?.capa }
@@ -28,7 +51,11 @@ export function PainelEmpresa() {
         <div className="empresa-dashboard-info">
           <span className="eyebrow">Painel da empresa</span>
           <h1>{usuarioAtual?.nome}</h1>
-          <p>{usuarioAtual?.descricao || 'Adicione uma descrição no perfil da empresa para apresentar melhor sua marca aos candidatos.'}</p>
+          <p>
+            {usuarioAtual?.descricaoCurta ||
+              usuarioAtual?.descricao ||
+              'Adicione uma descrição no perfil da empresa para apresentar melhor sua marca aos candidatos.'}
+          </p>
         </div>
         <Botao className="botao botao-primary botao-quadrado" to="/empresa/criar-vaga">
           <Plus size={18} /> Criar vaga
@@ -49,7 +76,7 @@ export function PainelEmpresa() {
         <article>
           <UsersRound size={20} />
           <span>Candidatos</span>
-          <strong>{candidatos}</strong>
+          <strong>{totalCandidatos}</strong>
         </article>
       </div>
 
@@ -63,26 +90,56 @@ export function PainelEmpresa() {
         </Botao>
       </div>
       <div className="empresa-vagas-recentes">
-        {minhasVagas.slice(0, 4).map((vaga) => (
-          <Link className="empresa-vaga-row" key={vaga.id} to={`/empresa/vagas/${vaga.id}/candidatos`}>
-            <div className="empresa-vaga-titulo">
-              <Avatar texto={usuarioAtual?.logo || 'EM'} imagem={usuarioAtual?.logoUrl} />
-              <div>
-                <small>{usuarioAtual?.nome}</small>
+        {vagasRecentes.map((vaga) => {
+          const metricas = metricasCandidatosDaVaga(vaga.id, candidatos, candidaturas)
+
+          return (
+            <Link className="empresa-vaga-row empresa-job-row" key={vaga.id} to={`/empresa/vagas/${vaga.id}/candidatos`}>
+              <div className="empresa-job-row-main">
+                <div className="empresa-job-badges">
+                  <span className="empresa-job-badge-status">{statusRotulo(vaga.status)}</span>
+                  <span className={`empresa-job-badge-${classeModalidade(vaga.modalidade)}`}>{vaga.modalidade}</span>
+                  <span>{vaga.tipo}</span>
+                  <span>{vaga.nivel}</span>
+                </div>
                 <strong>{vaga.titulo}</strong>
+                <small>{usuarioAtual?.nome}</small>
               </div>
-            </div>
-            <div className="empresa-vaga-candidatos">
-              <span>Número de candidatos</span>
-              <strong>{vaga.candidatos || 0}</strong>
-            </div>
-            <div className="empresa-vaga-meta">
-              <span>Data publicação: {vaga.publicadaEm}</span>
-              <span>Status: <b className={statusClasse(vaga.status)}>{statusRotulo(vaga.status)}</b></span>
-            </div>
-          </Link>
-        ))}
+
+              <div className="empresa-job-row-info">
+                <span>Candidatos</span>
+                <strong>{metricas.total}</strong>
+                <small>{metricas.emAnalise} em análise</small>
+              </div>
+
+              <div className="empresa-job-row-info empresa-job-row-wide">
+                <span>Salário oferecido</span>
+                <strong>{vaga.salario || 'A combinar'}</strong>
+                <small>Publicado em {vaga.publicadaEm}</small>
+              </div>
+
+              <div className="empresa-job-row-status">
+                <b className={statusClasse(vaga.status)}>{statusRotulo(vaga.status)}</b>
+              </div>
+            </Link>
+          )
+        })}
+
+        {!vagasRecentes.length && (
+          <div className="vagas-empty">
+            <h2>Nenhuma vaga publicada nas últimas 24 horas</h2>
+            <p>As vagas antigas continuam disponíveis em Gerenciar vagas.</p>
+          </div>
+        )}
       </div>
+
+      <MentorEmpresaToast
+        empresaAtual={usuarioAtual}
+        tela="painel"
+        vagas={minhasVagas}
+        candidatos={candidatos}
+        candidaturas={candidaturas}
+      />
     </section>
   )
 }

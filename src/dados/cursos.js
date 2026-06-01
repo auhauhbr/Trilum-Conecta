@@ -7,10 +7,14 @@
     react: 'Profa. Ana Beatriz',
     node: 'Prof. Lucas Andrade',
     java: 'Prof. Bruno Carvalho',
+    php: 'Prof. Gustavo Guanabara',
+    angular: 'Prof. Lucas Peixoto',
+    
     go: 'Prof. Henrique Costa',
     python: 'Profa. Juliana Santos',
     sql: 'Prof. Mateus Lima',
     'docker-cloud': 'Prof. Vinicius Alves',
+
     qa: 'Profa. Larissa Melo',
     ingles: 'Teacher Gabriela Torres',
     carreira: 'Profa. Mariana Costa',
@@ -29,12 +33,15 @@
     trilhaIds,
     descricao,
     destaque,
-    professor: extras.professor || professores[tecnologia] || 'Equipe RiseUp',
+    professor: extras.professor || professores[tecnologia] || 'Equipe Trilum Conecta',
     modulos: extras.modulos || null,
+
     aulas: extras.aulas || extras.modulos?.flatMap((modulo) => modulo.aulas || []) || null,
+
     thumbnailUrl: extras.thumbnailUrl || null,
   }
 }
+
 
 
 // lista simples pra inserie cursos @inserirCurso.js
@@ -85,6 +92,8 @@ export const videosCursos = {
   empregabilidade: 'https://www.youtube.com/embed/hTDUrTCFHmI',
 }
 
+
+
 const videosAlgoritmos = {
   aula01: 'https://www.youtube.com/embed/8mei6uVttho',
   aula02: 'https://www.youtube.com/embed/M2Af7gkbbro',
@@ -103,9 +112,12 @@ const videosAlgoritmos = {
   aula15: 'https://www.youtube.com/embed/hkE9WrjpAAk',
 }
 
+
+
 function aulaCurso(id, titulo, duracao, videoUrl, descricao, professor, capitulos = []) {
   return { id, titulo, duracao, videoUrl, descricao, professor, capitulos }
 }
+
 
 function textoParaId(valor = 'curso') {
   return String(valor)
@@ -124,6 +136,7 @@ function listaSimples(valor) {
     .filter(Boolean)
 }
 
+
 function tempoParaSegundos(valor) {
   if (valor === undefined || valor === null || valor === '') return null
   if (typeof valor === 'number') return valor
@@ -134,6 +147,7 @@ function tempoParaSegundos(valor) {
 
   return partes.reduce((total, parte) => total * 60 + parte, 0)
 }
+
 
 function tempoYoutubeParaSegundos(url = '') {
   const tempo = String(url).match(/[?&]t=([^&]+)/)?.[1]
@@ -146,6 +160,7 @@ function tempoYoutubeParaSegundos(url = '') {
   const minutos = Number(tempo.match(/(\d+)m/)?.[1] || 0)
   const segundos = Number(tempo.match(/(\d+)s/)?.[1] || 0)
   const total = horas * 3600 + minutos * 60 + segundos
+  
   return total || null
 }
 
@@ -1160,18 +1175,23 @@ export const aulasJavaSpringRest = [
     [
       { inicio: '00:00', titulo: 'Introdução e requisitos' },
       { inicio: '01:33', titulo: 'Cupom na Alura' },
+
+
       { inicio: '02:08', titulo: 'O que é uma API REST' },
       { inicio: '05:57', titulo: 'Métodos HTTP' },
       { inicio: '08:57', titulo: 'Status HTTP' },
       { inicio: '14:10', titulo: 'Iniciando projeto' },
       { inicio: '18:35', titulo: 'Estrutura inicial do projeto' },
       { inicio: '25:25', titulo: 'Primeiro RestController' },
-      { inicio: '33:18', titulo: 'PathVariable, RequestParam e RequestBody' },
+      { inicio: '33:18', titulo: 'PathVariable, RequestParam e RequestBody' }
+      ,
       { inicio: '39:46', titulo: 'Fluxo da API' },
       { inicio: '41:26', titulo: 'Criando o Service' },
       { inicio: '45:27', titulo: 'Injeção de dependências no Spring' },
       { inicio: '49:15', titulo: 'Criando GET' },
       { inicio: '51:32', titulo: 'Criando POST' },
+
+
       { inicio: '58:47', titulo: 'Criando PUT' },
       { inicio: '1:03:21', titulo: 'Criando DELETE' },
       { inicio: '1:04:55', titulo: 'Erro comum' },
@@ -1705,7 +1725,15 @@ export const modulosInglesTecnico = [
   },
 ]
 
+
+
+
+
 export const aulasInglesTecnico = modulosInglesTecnico.flatMap((modulo) => modulo.aulas)
+
+
+
+
 
 const dadosQaCompleto = [
   ['fundamentos', 'qa-completo-aula-01', 'Introdução [Curso Do 0 Ao QA]', '2:16', 'Apresentação do curso e da jornada para entrar na área de qualidade de software.'],
@@ -1826,6 +1854,12 @@ export const modulosQaCompleto = [
 ]
 
 export const aulasQaCompleto = modulosQaCompleto.flatMap((modulo) => modulo.aulas)
+
+
+
+
+
+
 
 const cursosBase = [
 
@@ -2172,6 +2206,25 @@ const cursosBase = [
     ['go-backend'],
     'Aprenda sintaxe, funcoes, structs e pacotes para iniciar em Go.',
     'Entrada direta para quem tem interesse em Go.',
+    {
+      modulos: [
+        {
+          id: 'curso-go-basico-modulo',
+          titulo: 'Modulo 1: Go essencial',
+          descricao: 'Base de linguagem para iniciar em Go.',
+          aulas: [
+            aulaCurso(
+              'curso-go-basico-aula-1',
+              'Go essencial para back-end',
+              '4h',
+              'https://www.youtube.com/embed/8uiZC0l4Ajw',
+              'Sintaxe, funcoes, structs, pacotes e primeiros passos com Go.',
+              'Prof. Henrique Costa',
+            ),
+          ],
+        },
+      ],
+    },
   ),
   curso(
     'curso-go-api',
@@ -2185,6 +2238,25 @@ const cursosBase = [
     ['go-backend', 'sql-banco-dados'],
     'Crie handlers HTTP, trabalhe com JSON e organize um projeto de API.',
     'Para quem ja fez projetos e quer aprofundar back-end.',
+    {
+      modulos: [
+        {
+          id: 'curso-go-api-modulo',
+          titulo: 'Modulo 1: APIs com Go',
+          descricao: 'HTTP, handlers, JSON e projeto pratico.',
+          aulas: [
+            aulaCurso(
+              'curso-go-api-aula-1',
+              'APIs intermediarias com Go',
+              '5h',
+              'https://www.youtube.com/embed/8uiZC0l4Ajw',
+              'Handlers HTTP, JSON e organizacao de um projeto de API.',
+              'Prof. Henrique Costa',
+            ),
+          ],
+        },
+      ],
+    },
   ),
   curso(
     'curso-python-basico',
@@ -2435,4 +2507,29 @@ const cursosBase = [
 
 
 
-export const cursos = [...cursosBase, ...inserirCurso.map(cursoInseridoParaCurso)]
+function avisarIdsDuplicados(listaCursos) {
+  if (!import.meta.env?.DEV) return
+
+  const idsVistos = new Set()
+  const idsDuplicados = new Set()
+
+  listaCursos.forEach((cursoItem) => {
+    if (idsVistos.has(cursoItem.id)) {
+      idsDuplicados.add(cursoItem.id)
+      return
+    }
+
+    idsVistos.add(cursoItem.id)
+  })
+
+  if (idsDuplicados.size) {
+    console.warn(`IDs duplicados em cursos: ${[...idsDuplicados].join(', ')}`)
+  }
+}
+
+export const cursosInseridos = inserirCurso.map(cursoInseridoParaCurso)
+const cursosComInseridos = [...cursosBase, ...cursosInseridos]
+
+avisarIdsDuplicados(cursosComInseridos)
+
+export const cursos = cursosComInseridos

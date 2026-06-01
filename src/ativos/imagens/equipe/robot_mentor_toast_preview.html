@@ -1,0 +1,226 @@
+
+<style>
+  .wrap { font-family: var(--font-sans); padding: 1rem 0; }
+  .section-row { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; }
+  .section-info { flex: 1; }
+  .section-label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .section-title { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 10px; }
+  .toast-demo { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: 14px; padding: 12px 14px; display: flex; align-items: flex-end; gap: 10px; max-width: 340px; }
+  .robot-wrap { position: relative; flex-shrink: 0; }
+  .robot-svg { width: 52px; height: 52px; }
+  .bubble { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; border-bottom-left-radius: 4px; padding: 8px 12px; flex: 1; position: relative; }
+  .bubble::before { content: ''; position: absolute; bottom: 8px; left: -8px; width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-right: 8px solid var(--color-border-tertiary); }
+  .bubble::after { content: ''; position: absolute; bottom: 8px; left: -7px; width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-right: 8px solid var(--color-background-secondary); }
+  .bubble-label { font-size: 10px; font-weight: 500; color: var(--color-text-tertiary); margin-bottom: 3px; letter-spacing: 0.3px; }
+  .bubble-msg { font-size: 12px; color: var(--color-text-primary); line-height: 1.45; }
+  .close-btn { font-size: 14px; color: var(--color-text-tertiary); align-self: flex-start; margin-top: 2px; }
+  .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 12px 0; }
+  .pages-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .page-card { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 12px; }
+  .page-name { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .page-toast { display: flex; align-items: flex-end; gap: 8px; }
+  .robot-sm { width: 36px; height: 36px; }
+  .bubble-sm { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; border-bottom-left-radius: 3px; padding: 6px 10px; flex: 1; }
+  .bubble-sm::before,.bubble-sm::after { display: none; }
+  .bm { font-size: 11px; color: var(--color-text-primary); line-height: 1.4; }
+</style>
+
+<div class="wrap">
+  <h2 class="sr-only">Preview do robô mentor por seção da landing page</h2>
+
+  <div style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 16px; padding: 10px 14px; background: var(--color-background-secondary); border-radius: var(--border-radius-md);">
+    <i class="ti ti-robot" aria-hidden="true" style="font-size:16px; margin-right:6px; vertical-align:-2px;"></i>
+    O robô aparece no canto inferior esquerdo. O balão muda conforme a seção visível. Fecha ao clicar no X, reaparece ao recarregar.
+  </div>
+
+  <div class="section-row">
+    <div class="section-info">
+      <div class="section-label">Seção 1 — Hero</div>
+      <div class="section-title">"Aprenda hoje. Trabalhe amanhã."</div>
+      <div class="toast-demo">
+        <div class="robot-wrap">
+          <svg class="robot-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+            <rect x="30" y="55" width="80" height="65" rx="12" fill="#534AB7"/>
+            <rect x="40" y="35" width="60" height="50" rx="10" fill="#7F77DD"/>
+            <rect x="50" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+            <rect x="74" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+            <rect x="57" y="52" width="6" height="5" rx="1" fill="#534AB7"/>
+            <rect x="77" y="52" width="6" height="5" rx="1" fill="#534AB7"/>
+            <rect x="50" y="68" width="40" height="6" rx="3" fill="white" opacity="0.5"/>
+            <rect x="18" y="65" width="12" height="35" rx="6" fill="#7F77DD"/>
+            <rect x="110" y="65" width="12" height="35" rx="6" fill="#7F77DD"/>
+            <rect x="45" y="120" width="20" height="16" rx="5" fill="#7F77DD"/>
+            <rect x="75" y="120" width="20" height="16" rx="5" fill="#7F77DD"/>
+            <rect x="55" y="22" width="30" height="18" rx="4" fill="#AFA9EC"/>
+            <rect x="63" y="14" width="14" height="12" rx="3" fill="#7F77DD"/>
+            <circle cx="70" cy="14" r="4" fill="#CECBF6"/>
+          </svg>
+        </div>
+        <div class="bubble">
+          <div class="bubble-label">Mentor</div>
+          <div class="bubble-msg">Ei! Você está no lugar certo. Essa plataforma foi feita pra pessoas como você.</div>
+        </div>
+        <span class="close-btn"><i class="ti ti-x"></i></span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-row">
+    <div class="section-info">
+      <div class="section-label">Seção 2 — Vagas</div>
+      <div class="section-title">"Encontre sua próxima oportunidade"</div>
+      <div class="toast-demo">
+        <div class="robot-wrap">
+          <svg class="robot-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+            <rect x="30" y="55" width="80" height="65" rx="12" fill="#0F6E56"/>
+            <rect x="40" y="35" width="60" height="50" rx="10" fill="#1D9E75"/>
+            <rect x="50" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+            <rect x="74" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+            <rect x="57" y="52" width="6" height="5" rx="1" fill="#0F6E56"/>
+            <rect x="77" y="52" width="6" height="5" rx="1" fill="#0F6E56"/>
+            <path d="M55 70 Q70 78 85 70" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <rect x="18" y="60" width="12" height="30" rx="6" fill="#1D9E75" transform="rotate(-15 24 75)"/>
+            <rect x="110" y="65" width="12" height="35" rx="6" fill="#1D9E75"/>
+            <rect x="45" y="120" width="20" height="16" rx="5" fill="#1D9E75"/>
+            <rect x="75" y="120" width="20" height="16" rx="5" fill="#1D9E75"/>
+            <rect x="55" y="22" width="30" height="18" rx="4" fill="#5DCAA5"/>
+            <rect x="63" y="14" width="14" height="12" rx="3" fill="#1D9E75"/>
+            <circle cx="70" cy="14" r="4" fill="#9FE1CB"/>
+          </svg>
+        </div>
+        <div class="bubble">
+          <div class="bubble-label">Mentor</div>
+          <div class="bubble-msg">80% dos alunos que completam a trilha recebem ao menos uma entrevista em 3 meses.</div>
+        </div>
+        <span class="close-btn"><i class="ti ti-x"></i></span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-row">
+    <div class="section-info">
+      <div class="section-label">Seção 3 — Como funciona</div>
+      <div class="section-title">"Da transição à candidatura"</div>
+      <div class="toast-demo">
+        <div class="robot-wrap">
+          <svg class="robot-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+            <rect x="30" y="55" width="80" height="65" rx="12" fill="#854F0B"/>
+            <rect x="40" y="35" width="60" height="50" rx="10" fill="#BA7517"/>
+            <rect x="50" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+            <rect x="74" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+            <rect x="57" y="52" width="6" height="5" rx="1" fill="#854F0B"/>
+            <rect x="77" y="52" width="6" height="5" rx="1" fill="#854F0B"/>
+            <rect x="50" y="68" width="40" height="6" rx="3" fill="white" opacity="0.5"/>
+            <rect x="18" y="65" width="12" height="35" rx="6" fill="#BA7517"/>
+            <rect x="110" y="55" width="12" height="30" rx="6" fill="#BA7517" transform="rotate(15 116 70)"/>
+            <rect x="45" y="120" width="20" height="16" rx="5" fill="#BA7517"/>
+            <rect x="75" y="120" width="20" height="16" rx="5" fill="#BA7517"/>
+            <rect x="55" y="22" width="30" height="18" rx="4" fill="#EF9F27"/>
+            <rect x="63" y="14" width="14" height="12" rx="3" fill="#BA7517"/>
+            <circle cx="70" cy="14" r="4" fill="#FAC775"/>
+          </svg>
+        </div>
+        <div class="bubble">
+          <div class="bubble-label">Mentor</div>
+          <div class="bubble-msg">Cada etapa foi pensada pra você não travar. Do zero ao primeiro emprego, com clareza total.</div>
+        </div>
+        <span class="close-btn"><i class="ti ti-x"></i></span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-row">
+    <div class="section-info">
+      <div class="section-label">Seção 4 — Quem somos</div>
+      <div class="section-title">"Nascemos pra reduzir barreiras em TI"</div>
+      <div class="toast-demo">
+        <div class="robot-wrap">
+          <svg class="robot-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+            <rect x="30" y="55" width="80" height="65" rx="12" fill="#993C1D"/>
+            <rect x="40" y="35" width="60" height="50" rx="10" fill="#D85A30"/>
+            <rect x="50" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+            <rect x="74" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+            <rect x="57" y="52" width="6" height="5" rx="1" fill="#993C1D"/>
+            <rect x="77" y="52" width="6" height="5" rx="1" fill="#993C1D"/>
+            <path d="M55 72 Q70 80 85 72" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <rect x="18" y="65" width="12" height="35" rx="6" fill="#D85A30"/>
+            <rect x="110" y="65" width="12" height="35" rx="6" fill="#D85A30"/>
+            <rect x="45" y="120" width="20" height="16" rx="5" fill="#D85A30"/>
+            <rect x="75" y="120" width="20" height="16" rx="5" fill="#D85A30"/>
+            <rect x="55" y="22" width="30" height="18" rx="4" fill="#F0997B"/>
+            <rect x="63" y="14" width="14" height="12" rx="3" fill="#D85A30"/>
+            <circle cx="70" cy="14" r="4" fill="#F5C4B3"/>
+          </svg>
+        </div>
+        <div class="bubble">
+          <div class="bubble-label">Mentor</div>
+          <div class="bubble-msg">Conheça o time por trás da plataforma. Somos pessoas reais que acreditam na sua transição!</div>
+        </div>
+        <span class="close-btn"><i class="ti ti-x"></i></span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div style="font-size: 12px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 10px;">Outras páginas e eventos</div>
+  <div class="pages-grid">
+    <div class="page-card">
+      <div class="page-name">Cadastro</div>
+      <div class="page-toast">
+        <svg class="robot-sm" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+          <rect x="30" y="55" width="80" height="65" rx="12" fill="#534AB7"/>
+          <rect x="40" y="35" width="60" height="50" rx="10" fill="#7F77DD"/>
+          <rect x="50" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+          <rect x="74" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+          <path d="M55 70 Q70 78 85 70" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <rect x="18" y="65" width="12" height="35" rx="6" fill="#7F77DD"/>
+          <rect x="110" y="65" width="12" height="35" rx="6" fill="#7F77DD"/>
+          <rect x="45" y="120" width="20" height="16" rx="5" fill="#7F77DD"/>
+          <rect x="75" y="120" width="20" height="16" rx="5" fill="#7F77DD"/>
+        </svg>
+        <div class="bubble-sm"><span class="bm">Leva menos de 2 min! Vamos montar sua trilha juntos.</span></div>
+      </div>
+    </div>
+    <div class="page-card">
+      <div class="page-name">Login</div>
+      <div class="page-toast">
+        <svg class="robot-sm" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+          <rect x="30" y="55" width="80" height="65" rx="12" fill="#0F6E56"/>
+          <rect x="40" y="35" width="60" height="50" rx="10" fill="#1D9E75"/>
+          <rect x="50" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+          <rect x="74" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+          <path d="M55 70 Q70 78 85 70" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <rect x="18" y="65" width="12" height="35" rx="6" fill="#1D9E75"/>
+          <rect x="110" y="65" width="12" height="35" rx="6" fill="#1D9E75"/>
+          <rect x="45" y="120" width="20" height="16" rx="5" fill="#1D9E75"/>
+          <rect x="75" y="120" width="20" height="16" rx="5" fill="#1D9E75"/>
+        </svg>
+        <div class="bubble-sm"><span class="bm">Bem-vindo de volta! Sua trilha está esperando.</span></div>
+      </div>
+    </div>
+    <div class="page-card" style="grid-column: 1 / -1;">
+      <div class="page-name">Troca de trilha (evento)</div>
+      <div class="page-toast">
+        <svg class="robot-sm" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+          <rect x="30" y="55" width="80" height="65" rx="12" fill="#854F0B"/>
+          <rect x="40" y="35" width="60" height="50" rx="10" fill="#BA7517"/>
+          <rect x="50" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+          <rect x="74" y="48" width="16" height="12" rx="4" fill="white" opacity="0.9"/>
+          <path d="M55 70 Q70 78 85 70" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <rect x="18" y="65" width="12" height="35" rx="6" fill="#BA7517"/>
+          <rect x="110" y="65" width="12" height="35" rx="6" fill="#BA7517"/>
+          <rect x="45" y="120" width="20" height="16" rx="5" fill="#BA7517"/>
+          <rect x="75" y="120" width="20" height="16" rx="5" fill="#BA7517"/>
+        </svg>
+        <div class="bubble-sm"><span class="bm">Trilha de Backend selecionada! Seus módulos foram atualizados. Vamos lá?</span></div>
+      </div>
+    </div>
+  </div>
+</div>

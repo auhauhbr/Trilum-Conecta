@@ -46,5 +46,11 @@ export function encontrarConteudo(conteudoId) {
 }
 
 export function cursosDaTrilha(trilhaId) {
+  const trilha = trilhas.find((item) => item.id === trilhaId)
+
+  if (trilha?.cursoIds?.length) {
+    return trilha.cursoIds.map((cursoId) => cursos.find((curso) => curso.id === cursoId)).filter(Boolean)
+  }
+
   return cursos.filter((curso) => curso.trilhaIds?.includes(trilhaId))
 }

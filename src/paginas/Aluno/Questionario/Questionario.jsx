@@ -11,10 +11,23 @@ const perguntasPorEtapa = perguntasWizard.reduce((etapas, pergunta, indice) => {
 }, [])
 
 export function Questionario() {
+  const { usuarioAtual, respostasWizard, salvarWizard, pularWizard } = useApp()
+  const chaveUsuario = usuarioAtual?.id || 'sem-usuario'
+
+  return (
+    <QuestionarioFormulario
+      key={chaveUsuario}
+      respostasIniciais={respostasWizard}
+      salvarWizard={salvarWizard}
+      pularWizard={pularWizard}
+    />
+  )
+}
+
+function QuestionarioFormulario({ respostasIniciais, salvarWizard, pularWizard }) {
   const navigate = useNavigate()
-  const { respostasWizard, salvarWizard } = useApp()
   const [etapa, setEtapa] = useState(0)
-  const [respostas, setRespostas] = useState(respostasWizard)
+  const [respostas, setRespostas] = useState(respostasIniciais)
   const perguntas = perguntasPorEtapa[etapa]
   const progresso = Math.round(((etapa + 1) / perguntasPorEtapa.length) * 100)
   const podeAvancar = perguntas.every((pergunta) => respostas[pergunta.id])
@@ -33,11 +46,16 @@ export function Questionario() {
     setEtapa((atual) => atual + 1)
   }
 
+  function pular() {
+    pularWizard()
+    navigate('/aluno/painel')
+  }
+
   return (
-    <section className="pagina pagina-estreita">
+    <section className="pagina pagina-estreita wizard-pagina">
       <div className="wizard-topo">
-        <span className="eyebrow">Questionario de perfil</span>
-        <h1>Vamos montar suas recomendacoes.</h1>
+        <span className="eyebrow">Questionário de perfil</span>
+        <h1>Vamos montar suas recomendações.</h1>
         <div className="wizard-progresso">
           <span style={{ width: `${progresso}%` }} />
         </div>
@@ -75,8 +93,11 @@ export function Questionario() {
         <Botao variant="secondary" disabled={etapa === 0} onClick={() => setEtapa((atual) => atual - 1)}>
           <ArrowLeft size={18} /> Voltar
         </Botao>
+        <Botao variant="secondary" onClick={pular}>
+          Pular por enquanto
+        </Botao>
         <Botao disabled={!podeAvancar} onClick={avancar}>
-          {etapa === perguntasPorEtapa.length - 1 ? 'Finalizar' : 'Proximo'} <ArrowRight size={18} />
+          {etapa === perguntasPorEtapa.length - 1 ? 'Finalizar' : 'Próximo'} <ArrowRight size={18} />
         </Botao>
       </div>
     </section>

@@ -1,0 +1,73 @@
+  {
+    // ID único do curso. Não pode repetir.
+    // Use letras minúsculas e hífen.
+    id: 'curso-nome-do-curso',
+
+    // Nome que vai aparecer no card e na página do curso.
+    titulo: 'Nome do Curso',
+
+    // Use uma categoria existente:
+    // 'Fundamentos', 'Programação', 'Ferramentas', 'Front-end',
+    // 'Back-end', 'Dados', 'DevOps', 'QA', 'Carreira', 'Soft skills'
+    categoria: 'Back-end',
+
+    // Tecnologia principal do curso.
+    // Exemplos: 'javascript', 'react', 'node', 'java', 'python', 'sql',
+    // 'git-github', 'docker-cloud', 'qa', 'carreira', 'ingles', 'logica'
+    tecnologia: 'php',
+
+    // Nível do curso.
+    // Exemplos: 'Iniciante', 'Basico', 'Intermediário'
+    nivel: 'Basico',
+
+    // Duração total aproximada do curso.
+    duracao: '9h30',
+
+    // Nome do professor ou canal do YouTube.
+    professor: 'Nome do Professor ou Canal',
+
+    // Link do vídeo principal ou primeiro vídeo da playlist.
+    videoPrincipal: 'https://www.youtube.com/watch?v=LINK_DO_VIDEO',
+
+    // Palavras-chave separadas por vírgula.
+    tags: 'php, backend, web, banco-de-dados',
+
+    // ID da trilha relacionada.
+    // Exemplos: 'javascript-frontend', 'java-spring', 'node-backend'
+    trilhas: 'php-backend',
+
+    // Resumo maior do curso.
+    descricao:
+      'Escreva aqui um resumo do curso, explicando o que o aluno vai aprender.',
+
+    // Frase curta de destaque.
+    destaque: 'Escreva aqui uma frase curta de destaque do curso.',
+
+    // Lista de módulos do curso.
+    modulos: [
+      {
+        // Nome do módulo.
+        titulo: 'Modulo 1: Nome do módulo',
+
+        // Resumo do módulo.
+        descricao: 'Resumo do que será estudado nesse módulo.',
+
+        // Lista de aulas desse módulo.
+        aulas: [
+          {
+            // Nome da aula.
+            titulo: 'Nome da aula 1',
+
+            // Duração da aula.
+            duracao: '10:30',
+
+            // Link normal do YouTube.
+            link: 'https://www.youtube.com/embed/videoseries?list=PLAHPGKIfQVuIff8XNEhEN9-EJbwiQykCC&index=1',
+
+            // Resumo da aula.
+            descricao: 'Resumo simples do que essa aula ensina.',
+          },
+        ],
+      },
+    ],
+  },

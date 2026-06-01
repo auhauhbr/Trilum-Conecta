@@ -4,8 +4,11 @@ import { CursoCard } from '../../../componentes/cursos/CursoCard'
 import { TrilhaCard } from '../../../componentes/cursos/TrilhaCard'
 import { Badge } from '../../../componentes/interface/Badge'
 import { Botao } from '../../../componentes/interface/Botao'
+import { MentorRecomendacaoToast } from '../../../componentes/interface/MentorRecomendacaoToast'
 import { VagaCard } from '../../../componentes/vagas/VagaCard'
 import { useApp } from '../../../contextos/AppContext'
+import { modoApresentacao } from '../../../dados/usuarios'
+import { contarCandidatosDaVaga } from '../../../servicos/candidaturas'
 import { calcularProgresso, recomendarCursos, recomendarTrilhas, recomendarVagas } from '../../../servicos/recomendacoes'
 
 const rotulos = {
@@ -16,10 +19,11 @@ const rotulos = {
 }
 
 export function PainelAluno() {
-  const { usuarioAtual, respostasWizard, progressoCursos, candidaturas } = useApp()
+  const { usuarioAtual, respostasWizard, progressoCursos, candidaturas, candidatos, vagasEmpresa, empresas } = useApp()
+  const apresentacaoAtiva = modoApresentacao.ativo
   const recomendadas = recomendarTrilhas(respostasWizard)
   const cursosSugeridos = recomendarCursos(respostasWizard).slice(0, 4)
-  const vagas = recomendarVagas(respostasWizard, candidaturas).slice(0, 3)
+  const vagas = apresentacaoAtiva ? [] : recomendarVagas(respostasWizard, candidaturas, vagasEmpresa, empresas).slice(0, 3)
   const temWizard = Object.keys(respostasWizard).length > 0
   const primeiroNome = usuarioAtual?.nome?.split(' ')[0] || 'aluno'
   const iniciais = usuarioAtual?.foto || primeiroNome.slice(0, 2).toUpperCase()
@@ -31,7 +35,7 @@ export function PainelAluno() {
 
   return (
     <section className="dashboard-page">
-      <div className="dashboard-html-hero">
+      <div className="dashboard-html-hero" data-mentor-aluno-section="resumo">
         <div className="dashboard-hero-text">
           <span className="greeting-tag">Bem-vindo de volta</span>
           <h1>
@@ -41,14 +45,20 @@ export function PainelAluno() {
           </h1>
           <p>
             {temWizard
-              ? 'Seus proximos passos foram priorizados para evitar excesso de caminhos ao mesmo tempo.'
-              : 'Complete o questionario para receber trilhas, cursos e vagas mais precisos.'}
+              ? 'Seus próximos passos foram priorizados para evitar excesso de caminhos ao mesmo tempo.'
+              : 'lorem.'}
           </p>
           <div className="hero-acoes">
             <Botao to="/aluno/cursos">Ver cursos</Botao>
-            <Botao to="/aluno/vagas" variant="secondary">
-              Explorar vagas
-            </Botao>
+            {apresentacaoAtiva ? (
+              <button className="botao botao-secondary" disabled type="button">
+                Explorar vagas
+              </button>
+            ) : (
+              <Botao to="/aluno/vagas" variant="secondary">
+                Explorar vagas
+              </Botao>
+            )}
           </div>
         </div>
 
@@ -97,10 +107,10 @@ export function PainelAluno() {
         </aside>
       </div>
 
-      <section className="dashboard-section bg-gray">
+      <section className="dashboard-section bg-gray" data-mentor-aluno-section="trilhas">
         <div className="section-header-html">
           <div>
-            <h2>Trilhas para voce</h2>
+            <h2>Trilhas para você</h2>
             <p>Somente os caminhos mais importantes para o seu momento.</p>
           </div>
         </div>
@@ -111,7 +121,7 @@ export function PainelAluno() {
         </div>
       </section>
 
-      <section className="dashboard-section">
+      <section className="dashboard-section" data-mentor-aluno-section="cursos">
         <div className="section-header-html">
           <div>
             <h2>Cursos recomendados</h2>
@@ -128,22 +138,44 @@ export function PainelAluno() {
         </div>
       </section>
 
-      <section className="dashboard-section bg-gray">
+      <section className="dashboard-section bg-gray" data-mentor-aluno-section="vagas">
         <div className="section-header-html">
           <div>
-            <h2>Vagas para voce</h2>
-            <p>Oportunidades compativeis com seu perfil atual.</p>
+            <h2>Vagas para você</h2>
+            <p>Oportunidades compatíveis com seu perfil atual.</p>
           </div>
-          <Link className="see-all" to="/aluno/vagas">
-            Ver vagas <ArrowRight size={14} />
-          </Link>
+          {apresentacaoAtiva ? (
+            <span className="see-all">Ver vagas <ArrowRight size={14} /></span>
+          ) : (
+            <Link className="see-all" to="/aluno/vagas">
+              Ver vagas <ArrowRight size={14} />
+            </Link>
+          )}
         </div>
         <div className="vagas-painel-grid">
-          {vagas.map((vaga) => (
-            <VagaCard key={vaga.id} vaga={vaga} empresa={vaga.empresa} match={vaga.match} />
-          ))}
+          {apresentacaoAtiva ? (
+            <p>Vazio vazio man</p>
+          ) : (
+            vagas.map((vaga) => (
+              <VagaCard
+                key={vaga.id}
+                vaga={vaga}
+                empresa={vaga.empresa}
+                match={vaga.match}
+                totalCandidatos={contarCandidatosDaVaga(vaga.id, candidatos, candidaturas)}
+              />
+            ))
+          )}
         </div>
       </section>
+      {usuarioAtual?.wizardConcluido && (
+        <MentorRecomendacaoToast
+          usuarioAtual={usuarioAtual}
+          respostasWizard={respostasWizard}
+          trilhasRecomendadas={recomendadas}
+          cursosRecomendados={cursosSugeridos}
+        />
+      )}
     </section>
   )
 }
