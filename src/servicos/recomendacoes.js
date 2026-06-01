@@ -3,7 +3,7 @@ import { empresas } from '../dados/empresas'
 import { trilhas } from '../dados/trilhas'
 import { vagas } from '../dados/vagas'
 
-const areasExploratorias = ['frontend', 'backend', 'dados', 'qa']
+const areasExploratorias = ['frontend', 'backend', 'dados', 'qa', 'produto-suporte']
 const tecnologiasPorArea = {
   frontend: ['javascript', 'react', 'angular', 'html', 'css', 'typescript', 'design-system'],
   backend: ['node', 'java', 'java-spring', 'php', 'go', 'sql', 'api', 'api-rest', 'mongodb', 'mensageria', 'seguranca', 'design-patterns'],
@@ -55,6 +55,7 @@ const trilhasProtegidasDevOps = [
   'go-backend',
   'java-spring',
   'backend-java-profissional',
+  'backend-php-web-profissional',
   'php-backend',
 ]
 const trilhasProfissionais = new Set([
@@ -63,6 +64,8 @@ const trilhasProfissionais = new Set([
   'qa-automacao-profissional',
   'backend-node-api-profissional',
   'frontend-angular-profissional',
+  'backend-php-web-profissional',
+  'dados-python-sql-profissional',
 ])
 const tecnologiasPrincipaisDevOps = ['docker-cloud', 'linux']
 const tecnologiasComplementaresDevOps = ['git-github', 'seguranca', 'api', 'api-rest']
@@ -80,6 +83,7 @@ const prioridadeInicial = {
   'logica-algoritmos': 110,
   'git-github': 88,
   'carreira-comunicacao': 78,
+  'primeira-vaga-portfolio': 74,
   'ingles-tech': 58,
 }
 
@@ -494,6 +498,14 @@ function podeRecomendarTrilhaProfissional(trilha, perfil) {
     return tecnologiaPrincipal === 'java' || tecnologiaPrincipalCanonica === 'java' || tecnologiaInteresse === 'java-spring'
   }
 
+  if (trilha.id === 'backend-php-web-profissional') {
+    return tecnologiaPrincipal === 'php' || tecnologiaInteresse === 'php'
+  }
+
+  if (trilha.id === 'dados-python-sql-profissional') {
+    return areaDesejada === 'dados' || ['python', 'sql', 'mongodb'].includes(tecnologiaInteresse)
+  }
+
   if (trilha.id === 'devops-cloud-profissional') {
     return areaDesejada === 'devops' || focoCarreira === 'cloud-devops' || ['docker-cloud', 'linux'].includes(tecnologiaInteresse)
   }
@@ -690,7 +702,14 @@ function pontuarTrilha(trilha, perfil) {
   }
 
   if (respostas.objetivo === 'portfolio' && trilha.tags?.includes('portfolio')) pontos += 42
-  if (respostas.objetivo === 'primeira-vaga' && ['git-github', 'carreira-comunicacao', 'ingles-tech'].includes(trilha.id)) pontos += 24
+  if (
+    respostas.objetivo === 'primeira-vaga' &&
+    ['git-github', 'carreira-comunicacao', 'primeira-vaga-portfolio', 'frontend-base-portfolio', 'dados-base-primeira-vaga', 'qa-base-primeira-vaga'].includes(
+      trilha.id,
+    )
+  ) {
+    pontos += 34
+  }
   if (respostas.objetivo === 'freelancer' && (trilha.tags?.includes('portfolio') || trilha.tags?.includes('api'))) pontos += 34
   if (respostas.objetivo === 'melhorar-emprego-atual' && nivelTrilha === 'intermediario') pontos += 24
   if (respostas.ingles === 'baixo' || respostas.ingles === 'basico') {
@@ -907,6 +926,12 @@ function pontuarCurso(curso, perfil, trilhasRecomendadas) {
     if (['informatica', 'logica', 'git-github', 'carreira', 'ingles'].includes(curso.tecnologia)) pontos += 52
     if (ehCursoBase) pontos += 30
     if (ehCursoIntermediario) pontos -= 24
+    if (['angular', 'react', 'java-spring'].includes(tecnologiaPrincipal) && ehCursoStackPrincipal && ehCursoIntermediario) {
+      pontos -= 180
+    }
+    if (curso.tags?.includes('cypress') || curso.tags?.includes('automacao')) pontos -= 120
+    if (curso.tecnologia === 'design-system') pontos -= 120
+    if (!perfilDevOps && categoriaCursoArea === 'devops') pontos -= 160
   }
 
   if (emTransicao) {
@@ -1051,6 +1076,7 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
     perfilQA,
     perfilDados,
     perfilFrontend,
+    conheceProjetos,
     temBaseApi,
     temBaseBanco,
     precisaBaseLogica,
@@ -1069,6 +1095,24 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
 
   function porId(id) {
     return ordenadas.find((trilha) => trilha.id === id)
+  }
+
+  function objetivoDeCarreira() {
+    return ['primeira-vaga', 'portfolio', 'transicao'].includes(respostas.objetivo)
+  }
+
+  function adicionarBaseDaArea() {
+    if (areaDesejada === 'frontend') adicionar(porId('frontend-base-portfolio'))
+    if (areaDesejada === 'backend') adicionar(porId('backend-api-base'))
+    if (areaDesejada === 'dados') adicionar(porId('dados-base-primeira-vaga'))
+    if (areaDesejada === 'devops') adicionar(porId('devops-base-docker'))
+    if (areaDesejada === 'qa') adicionar(porId('qa-base-primeira-vaga'))
+    if (areaDesejada === 'produto-suporte') adicionar(porId('suporte-tecnico-inicial'))
+  }
+
+  function adicionarCarreiraComoComplemento() {
+    if (!objetivoDeCarreira()) return
+    adicionar(porId('primeira-vaga-portfolio'))
   }
 
   function combinaTecnologia(trilha) {
@@ -1121,11 +1165,14 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
     adicionar(porId('informatica-essencial'))
     adicionar(porId('logica-algoritmos'))
     adicionar(porId('git-github'))
+    if (areaDesejada === 'frontend') adicionar(porId('javascript-frontend'))
     adicionarPorTecnologias(dependenciasStack)
     adicionarPorTecnologias(tecnologiasFocoTrilhas)
+    adicionarBaseDaArea()
     adicionar(ordenadas.find((trilha) => combinaTecnologia(trilha) && !['informatica-essencial', 'logica-algoritmos', 'git-github'].includes(trilha.id)))
     adicionar(ordenadas.find((trilha) => trilha.area === areaDesejada && !['informatica-essencial', 'logica-algoritmos', 'git-github'].includes(trilha.id)))
     adicionar(ordenadas.find((trilha) => areaFoco && trilha.area === areaFoco && !['informatica-essencial', 'logica-algoritmos', 'git-github'].includes(trilha.id)))
+    adicionarCarreiraComoComplemento()
     adicionarPorTecnologias(complementosStack)
     for (const trilha of ordenadas) adicionar(trilha)
     return selecionadas.slice(0, limite)
@@ -1134,11 +1181,16 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
   if (inicianteCodigo) {
     adicionar(porId('logica-algoritmos'))
     adicionar(porId('git-github'))
+    if (areaDesejada === 'frontend') adicionar(porId('javascript-frontend'))
     adicionarPorTecnologias(dependenciasStack)
     adicionarPorTecnologias(tecnologiasFocoTrilhas)
-    adicionar(ordenadas.find((trilha) => combinaTecnologia(trilha)))
+    adicionarBaseDaArea()
+    if (nivelTecnologia !== 'quero-comecar') {
+      adicionar(ordenadas.find((trilha) => combinaTecnologia(trilha)))
+    }
     adicionar(ordenadas.find((trilha) => trilha.area === areaDesejada))
     adicionar(ordenadas.find((trilha) => areaFoco && trilha.area === areaFoco))
+    adicionarCarreiraComoComplemento()
     adicionarPorTecnologias(complementosStack)
     for (const trilha of ordenadas) adicionar(trilha)
     return selecionadas.slice(0, limite)
@@ -1156,6 +1208,7 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
     const priorizarProfissionalDevOps = ['projetos', 'avancar'].includes(nivelTecnologia) || respostas.objetivo === 'especializar'
 
     if (priorizarProfissionalDevOps) adicionar(porId('devops-cloud-profissional'))
+    adicionar(porId('devops-base-docker'))
     adicionar(porId('devops-docker-cloud'))
     adicionar(porId('git-github'))
     adicionar(porId('linux-fundamentos'))
@@ -1186,10 +1239,12 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
   }
 
   if (perfilFrontend) {
+    if (objetivoDeCarreira()) adicionar(porId('frontend-base-portfolio'))
+
     if (tecnologiaPrincipal === 'angular' || tecnologiaPrincipalCanonica === 'angular') {
       adicionar(porId('javascript-frontend'))
-      adicionar(porId('angular-frontend'))
-      adicionar(porId('frontend-angular-profissional'))
+      if (nivelTecnologia !== 'quero-comecar') adicionar(porId('angular-frontend'))
+      if (['projetos', 'avancar'].includes(nivelTecnologia)) adicionar(porId('frontend-angular-profissional'))
       adicionar(porId('git-github'))
       adicionarPorTecnologias(complementosStack)
     } else if (tecnologiaPrincipal === 'react') {
@@ -1197,6 +1252,8 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
       adicionar(porId('react-frontend'))
       adicionar(porId('git-github'))
       adicionarPorTecnologias(complementosStack)
+    } else {
+      adicionar(porId('javascript-frontend'))
     }
 
     for (const trilha of ordenadas) {
@@ -1212,9 +1269,10 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
   if (perfilQA) {
     if (precisaBaseLogica) adicionar(porId('logica-algoritmos'))
     adicionar(porId('git-github'))
+    adicionar(porId('qa-base-primeira-vaga'))
     adicionar(porId('qa-testes'))
     adicionar(porId('api-http-rest'))
-    adicionar(porId('qa-automacao-profissional'))
+    if (['projetos', 'avancar'].includes(nivelTecnologia) || conheceProjetos) adicionar(porId('qa-automacao-profissional'))
 
     for (const trilha of ordenadas) {
       if (selecionadas.length >= limite) break
@@ -1232,6 +1290,8 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
   }
 
   if (perfilDados) {
+    if (objetivoDeCarreira() || perfilInicial || inicianteCodigo) adicionar(porId('dados-base-primeira-vaga'))
+    if (['projetos', 'avancar'].includes(nivelTecnologia) || conheceProjetos) adicionar(porId('dados-python-sql-profissional'))
     adicionar(porId('python-dados'))
     adicionar(porId('sql-banco-dados'))
     adicionar(porId('git-github'))
@@ -1239,7 +1299,7 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
       adicionar(porId('logica-algoritmos'))
     }
     if (respostas.objetivo === 'primeira-vaga' || respostas.objetivo === 'portfolio' || respostas.objetivo === 'transicao') {
-      adicionar(porId('carreira-comunicacao'))
+      adicionar(porId('primeira-vaga-portfolio'))
     }
 
     for (const trilha of ordenadas) {

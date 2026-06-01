@@ -6,6 +6,7 @@ import { duracaoDoCurso, duracaoDosCursos, duracaoParaMinutos } from './duracao'
 const categoriasValidas = new Set([
   'Fundamentos',
   'Programação',
+  'Programacao',
   'Ferramentas',
   'Front-end',
   'Back-end',
@@ -22,24 +23,34 @@ const trilhasObrigatoriasParaRecomendacao = [
   'logica-algoritmos',
   'git-github',
   'javascript-frontend',
+  'frontend-base-portfolio',
   'react-frontend',
   'angular-frontend',
   'node-backend',
+  'backend-api-base',
   'java-spring',
   'backend-java-profissional',
   'php-backend',
+  'backend-php-web-profissional',
   'go-backend',
   'python-dados',
+  'dados-base-primeira-vaga',
+  'dados-python-sql-profissional',
   'sql-banco-dados',
+  'devops-base-docker',
   'devops-docker-cloud',
   'linux-fundamentos',
   'seguranca-informacao',
   'api-http-rest',
   'qa-testes',
+  'qa-base-primeira-vaga',
   'qa-automacao-profissional',
   'backend-node-api-profissional',
   'frontend-angular-profissional',
   'devops-cloud-profissional',
+  'suporte-tecnico-inicial',
+  'produto-suporte-carreira',
+  'primeira-vaga-portfolio',
   'carreira-comunicacao',
   'ingles-tech',
 ]
@@ -50,6 +61,28 @@ const trilhasProfissionaisComGate = new Set([
   'qa-automacao-profissional',
   'backend-node-api-profissional',
   'frontend-angular-profissional',
+  'backend-php-web-profissional',
+  'dados-python-sql-profissional',
+])
+
+const trilhasJornadaObrigatoria = new Set([
+  'javascript-frontend',
+  'react-frontend',
+  'angular-frontend',
+  'node-backend',
+  'java-spring',
+  'php-backend',
+  'python-dados',
+  'devops-docker-cloud',
+  'qa-testes',
+  'frontend-base-portfolio',
+  'backend-api-base',
+  'dados-base-primeira-vaga',
+  'devops-base-docker',
+  'qa-base-primeira-vaga',
+  'suporte-tecnico-inicial',
+  'produto-suporte-carreira',
+  'primeira-vaga-portfolio',
 ])
 
 function registrarDuplicados(itens, tipo, problemas) {
@@ -145,8 +178,13 @@ export function validarCatalogo({ emitirAvisos = false } = {}) {
     if (!niveisValidos.has(String(trilha.nivel || '').toLowerCase())) problemas.push(`Trilha com nivel fora do padrao: ${trilha.id}`)
     if ('cursoIds' in trilha && !trilha.cursoIds?.length) problemas.push(`Trilha com cursoIds vazio: ${trilha.id}`)
 
+    if (trilhasJornadaObrigatoria.has(trilha.id) && (!trilha.cursoIds || trilha.cursoIds.length < 3)) {
+      problemas.push(`Trilha de jornada com menos de 3 cursos: ${trilha.id}`)
+    }
+
     if (trilhaEhProfissional(trilha)) {
       if (!trilha.cursoIds?.length) problemas.push(`Trilha profissional sem cursoIds: ${trilha.id}`)
+      if ((trilha.cursoIds?.length || 0) < 4) problemas.push(`Trilha profissional com menos de 4 cursos: ${trilha.id}`)
       if (!trilhasProfissionaisComGate.has(trilha.id)) problemas.push(`Trilha profissional sem gate mapeado no recomendador: ${trilha.id}`)
     }
 

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
 import { Campo } from '../../../componentes/interface/Campo'
+import { MentorEmpresaToast } from '../../../componentes/interface/MentorEmpresaToast'
 import { Avatar } from '../../../componentes/perfis/Avatar'
 import { useApp } from '../../../contextos/AppContext'
 import { contarCandidatosDaVaga } from '../../../servicos/candidaturas'
@@ -66,6 +67,23 @@ function previewEmpresa(form) {
     stackDetalhes: textoParaLista(form.stackDetalhes),
     beneficios: textoParaLista(form.beneficios),
   }
+}
+
+const ajudaCamposEmpresa = {
+  nome: 'Como sua empresa e conhecida comercialmente no mercado.',
+  nomeOficial: 'A Razao Social ou nome juridico. Ex: Avanade Brasil Ltda.',
+  logo: '2 letras para exibir quando nao houver imagem de logo. Ex: AV.',
+  setor: 'Sua area principal de atuacao. Ex: Tecnologia, Financas, Saude.',
+  descricaoCurta: 'Um slogan ou resumo rapido do seu proposito em uma linha.',
+  tamanho: 'Quantidade estimada de funcionarios. Ex: 100-500, 10k+.',
+  descricao: 'Texto principal contando historia, missao, cultura e impacto da empresa.',
+  sede: 'Cidade e estado do escritorio administrativo principal.',
+  localizacao: 'Endereco fisico completo ou regiao principal de operacao.',
+  hub: 'Principal polo de inovacao ou base tecnologica. Ex: Porto Digital.',
+  links: 'Insira a URL completa para validar a autoridade da empresa.',
+  especialidades: 'Areas de negocio que voces dominam. Separe por virgula. Ex: Cloud Computing, Ciberseguranca, E-commerce.',
+  stackDetalhes: 'Linguagens, frameworks e ferramentas do dia a dia. Ex: React, .NET 8, AWS, Figma. Separe por virgula.',
+  beneficios: 'Beneficios e atrativos para candidatos. Ex: Trabalho remoto, Certificacoes pagas, PLR. Separe por virgula.',
 }
 
 export function PerfilEmpresa() {
@@ -253,28 +271,30 @@ export function PerfilEmpresa() {
               <input accept="image/*" type="file" onChange={(evento) => selecionarImagem('capaUrl', evento)} />
             </label>
 
-            <Campo label="Nome da empresa" value={form.nome} onChange={(e) => atualizar('nome', e.target.value)} />
-            <Campo label="Nome oficial" value={form.nomeOficial} onChange={(e) => atualizar('nomeOficial', e.target.value)} />
-            <Campo label="Logo em iniciais" value={form.logo} onChange={(e) => atualizar('logo', e.target.value)} />
-            <Campo label="Setor" value={form.setor} onChange={(e) => atualizar('setor', e.target.value)} />
-            <Campo label="Descrição curta" value={form.descricaoCurta} onChange={(e) => atualizar('descricaoCurta', e.target.value)} />
-            <Campo label="Tamanho" value={form.tamanho} onChange={(e) => atualizar('tamanho', e.target.value)} />
+            <Campo label="Nome da empresa" helper={ajudaCamposEmpresa.nome} value={form.nome} onChange={(e) => atualizar('nome', e.target.value)} />
+            <Campo label="Nome oficial" helper={ajudaCamposEmpresa.nomeOficial} value={form.nomeOficial} onChange={(e) => atualizar('nomeOficial', e.target.value)} />
+            <Campo label="Logo em iniciais" helper={ajudaCamposEmpresa.logo} value={form.logo} onChange={(e) => atualizar('logo', e.target.value)} />
+            <Campo label="Setor" helper={ajudaCamposEmpresa.setor} value={form.setor} onChange={(e) => atualizar('setor', e.target.value)} />
+            <Campo label="Descrição curta" helper={ajudaCamposEmpresa.descricaoCurta} value={form.descricaoCurta} onChange={(e) => atualizar('descricaoCurta', e.target.value)} />
+            <Campo label="Tamanho" helper={ajudaCamposEmpresa.tamanho} value={form.tamanho} onChange={(e) => atualizar('tamanho', e.target.value)} />
             <Campo
               label="Descrição da empresa"
+              helper={ajudaCamposEmpresa.descricao}
               textarea
               rows="5"
               value={form.descricao}
               onChange={(e) => atualizar('descricao', e.target.value)}
             />
-            <Campo label="Sede" value={form.sede} onChange={(e) => atualizar('sede', e.target.value)} />
-            <Campo label="Localização" value={form.localizacao} onChange={(e) => atualizar('localizacao', e.target.value)} />
-            <Campo label="Hub principal" value={form.hub} onChange={(e) => atualizar('hub', e.target.value)} />
-            <Campo label="Website" value={form.site} onChange={(e) => atualizar('site', e.target.value)} />
-            <Campo label="LinkedIn" value={form.linkedin} onChange={(e) => atualizar('linkedin', e.target.value)} />
-            <Campo label="Instagram" value={form.instagram} onChange={(e) => atualizar('instagram', e.target.value)} />
-            <Campo label="YouTube" value={form.youtube} onChange={(e) => atualizar('youtube', e.target.value)} />
+            <Campo label="Sede" helper={ajudaCamposEmpresa.sede} value={form.sede} onChange={(e) => atualizar('sede', e.target.value)} />
+            <Campo label="Localização" helper={ajudaCamposEmpresa.localizacao} value={form.localizacao} onChange={(e) => atualizar('localizacao', e.target.value)} />
+            <Campo label="Hub principal" helper={ajudaCamposEmpresa.hub} value={form.hub} onChange={(e) => atualizar('hub', e.target.value)} />
+            <Campo label="Website" helper={ajudaCamposEmpresa.links} value={form.site} onChange={(e) => atualizar('site', e.target.value)} />
+            <Campo label="LinkedIn" helper={ajudaCamposEmpresa.links} value={form.linkedin} onChange={(e) => atualizar('linkedin', e.target.value)} />
+            <Campo label="Instagram" helper={ajudaCamposEmpresa.links} value={form.instagram} onChange={(e) => atualizar('instagram', e.target.value)} />
+            <Campo label="YouTube" helper={ajudaCamposEmpresa.links} value={form.youtube} onChange={(e) => atualizar('youtube', e.target.value)} />
             <Campo
               label="Especialidades"
+              helper={ajudaCamposEmpresa.especialidades}
               textarea
               rows="3"
               value={form.especialidades}
@@ -282,6 +302,7 @@ export function PerfilEmpresa() {
             />
             <Campo
               label="Stack em prática"
+              helper={ajudaCamposEmpresa.stackDetalhes}
               textarea
               rows="4"
               value={form.stackDetalhes}
@@ -289,6 +310,7 @@ export function PerfilEmpresa() {
             />
             <Campo
               label="Diferenciais"
+              helper={ajudaCamposEmpresa.beneficios}
               textarea
               rows="3"
               value={form.beneficios}
@@ -338,6 +360,15 @@ export function PerfilEmpresa() {
           })}
         </div>
       </section>
+
+      <MentorEmpresaToast
+        empresaAtual={{ ...perfil, id: usuarioAtual?.id }}
+        tela="perfil-empresa"
+        vagas={vagas}
+        candidatos={candidatos}
+        candidaturas={candidaturas}
+      />
     </section>
   )
 }
+

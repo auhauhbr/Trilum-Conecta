@@ -9,12 +9,21 @@ import {
   Search,
   Share2,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
+import { MentorPaginaAlunoToast } from '../../../componentes/interface/MentorPaginaAlunoToast'
 import { useApp } from '../../../contextos/AppContext'
+import { mensagensVagas } from '../../../dados/mensagensMentorAluno'
 import { filtrarVagas } from '../../../servicos/filtros'
 import { recomendarVagas } from '../../../servicos/recomendacoes'
+
+const mapaMentorVagas = {
+  filtros: 'vagas-filtros',
+  lista: 'vagas-relevantes',
+  detalhe: 'vagas-junior',
+  tags: 'vagas-tags',
+}
 
 function textoCurto(texto, limite = 180) {
   if (!texto || texto.length <= limite) return texto || ''
@@ -48,8 +57,11 @@ export function VagasAluno() {
   const [modelo, setModelo] = useState('todos')
   const [local, setLocal] = useState('')
   const [cargo, setCargo] = useState('')
-  const [selecionadaId, setSelecionadaId] = useState(() => searchParams.get('vaga') || '')
   const [abaAtiva, setAbaAtiva] = useState('vaga')
+  const selecionadaId = searchParams.get('vaga') || ''
+  const vagaRefs = useRef(new Map())
+  const listaRef = useRef(null)
+  const detalheRef = useRef(null)
   const candidaturasDoAluno = useMemo(
     () => candidaturas.filter((item) => item.alunoId === usuarioAtual?.id),
     [candidaturas, usuarioAtual?.id],
@@ -76,15 +88,37 @@ export function VagasAluno() {
   const candidatura = candidaturasDoAluno.find((item) => item.vagaId === vagaAtiva?.id)
   const empresaAtiva = vagaAtiva?.empresa
 
+  useEffect(() => {
+    if (!selecionadaId) return undefined
+
+    const timer = window.setTimeout(() => {
+      const cardSelecionado = vagaRefs.current.get(selecionadaId)
+      const emTelaPequena = window.matchMedia('(max-width: 980px)').matches
+
+      if (emTelaPequena) {
+        detalheRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        if (cardSelecionado && listaRef.current) {
+          listaRef.current.scrollTo({
+            top: Math.max(cardSelecionado.offsetTop - 18, 0),
+            behavior: 'smooth',
+          })
+        }
+      }
+    }, 80)
+
+    return () => window.clearTimeout(timer)
+  }, [selecionadaId, filtradas.length])
+
   function selecionarVaga(vagaId) {
-    setSelecionadaId(vagaId)
     setAbaAtiva('vaga')
     setSearchParams({ vaga: vagaId })
   }
 
   return (
     <section className="pagina vagas-board-page">
-      <div className="vagas-toolbar">
+      <div className="vagas-toolbar" data-mentor-pagina-section="filtros">
         <label className="vagas-search-pill">
           <Search size={17} />
           <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Cargo, tecnologia ou empresa" />
@@ -125,7 +159,7 @@ export function VagasAluno() {
       </div>
 
       <div className="vagas-board">
-        <div className="vagas-lista">
+        <div className="vagas-lista" data-mentor-pagina-section="lista" ref={listaRef}>
           <div className="vagas-tabs">
             <strong>Relevantes</strong>
             <span>Recentes</span>
@@ -136,6 +170,10 @@ export function VagasAluno() {
             <button
               className={vaga.id === vagaAtiva?.id ? 'vaga-list-card vaga-list-job-card ativo' : 'vaga-list-card vaga-list-job-card'}
               key={vaga.id}
+              ref={(elemento) => {
+                if (elemento) vagaRefs.current.set(vaga.id, elemento)
+                else vagaRefs.current.delete(vaga.id)
+              }}
               type="button"
               onClick={() => selecionarVaga(vaga.id)}
             >
@@ -193,7 +231,7 @@ export function VagasAluno() {
         </div>
 
         {vagaAtiva && (
-          <article className="vaga-detalhe-preview">
+          <article className="vaga-detalhe-preview" data-mentor-pagina-section="detalhe" ref={detalheRef}>
             <header>
               <span className="vaga-nova">Nova vaga</span>
               <span className="vaga-detalhe-logo">
@@ -246,6 +284,11 @@ export function VagasAluno() {
             {abaAtiva === 'vaga' ? (
               <>
                 <section>
+                  <h2>Descrição:</h2>
+                  <p>{vagaAtiva.descricao}</p>
+                </section>
+
+                <section>
                   <h2>Principais atividades:</h2>
                   <ul>
                     {lista(vagaAtiva.atividades).map((item) => (
@@ -265,7 +308,7 @@ export function VagasAluno() {
                   </ul>
                 </section>
 
-                <section className="vaga-tags-preview">
+                <section className="vaga-tags-preview" data-mentor-pagina-section="tags">
                   {lista(vagaAtiva.tags).map((tag) => (
                     <span key={tag}>{tag}</span>
                   ))}
@@ -278,10 +321,19 @@ export function VagasAluno() {
               </>
             ) : (
               <section className="vaga-empresa-detalhes">
-                <div className="vaga-empresa-topo">
-                  <span className="avatar avatar-grande">
+                <div
+                  className="vaga-empresa-capa"
+                  style={
+                    empresaAtiva?.capaUrl
+                      ? { backgroundImage: `linear-gradient(120deg, rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.62)), url(${empresaAtiva.capaUrl})` }
+                      : { background: empresaAtiva?.capa || 'linear-gradient(120deg, #0f172a, #1a6bff)' }
+                  }
+                >
+                  <span className="vaga-empresa-capa-logo">
                     {empresaAtiva?.logoUrl ? <img src={empresaAtiva.logoUrl} alt="" /> : empresaAtiva?.logo || 'UP'}
                   </span>
+                </div>
+                <div className="vaga-empresa-topo">
                   <div>
                     <h2>{empresaAtiva?.nome || 'Empresa Trilum Conecta'}</h2>
                     <p>{empresaAtiva?.localizacao || 'Brasil'}</p>
@@ -349,6 +401,8 @@ export function VagasAluno() {
           </article>
         )}
       </div>
+
+      <MentorPaginaAlunoToast mensagens={mensagensVagas} mapaSecoes={mapaMentorVagas} />
     </section>
   )
 }

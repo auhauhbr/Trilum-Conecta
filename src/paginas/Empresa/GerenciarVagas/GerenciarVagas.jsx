@@ -2,6 +2,7 @@ import { BriefcaseBusiness, CalendarDays, CheckCircle2, Clock3, Eye, MapPin, Pen
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
+import { MentorEmpresaToast } from '../../../componentes/interface/MentorEmpresaToast'
 import { useApp } from '../../../contextos/AppContext'
 import { metricasCandidatosDaVaga } from '../../../servicos/candidaturas'
 import { filtrarPorTextoEStatus } from '../../../servicos/filtros'
@@ -69,6 +70,8 @@ function PreviewCard({ vaga, empresa, totalCandidatos }) {
 }
 
 function PreviewTelaVagas({ vaga, empresa }) {
+  const [abaAtiva, setAbaAtiva] = useState('vaga')
+
   return (
     <div className="vaga-preview-board-demo">
       <button className="vaga-list-card vaga-list-job-card ativo" type="button">
@@ -112,29 +115,81 @@ function PreviewTelaVagas({ vaga, empresa }) {
           </div>
         </header>
         <nav className="vaga-preview-tabs" aria-label="Preview">
-          <button className="ativo" type="button">Vaga</button>
-          <button type="button">Empresa</button>
+          <button className={abaAtiva === 'vaga' ? 'ativo' : ''} type="button" onClick={() => setAbaAtiva('vaga')}>
+            Vaga
+          </button>
+          <button className={abaAtiva === 'empresa' ? 'ativo' : ''} type="button" onClick={() => setAbaAtiva('empresa')}>
+            Empresa
+          </button>
         </nav>
-        <section>
-          <h2>Principais atividades:</h2>
-          <ul>
-            {(vaga.atividades || []).map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </section>
-        <section>
-          <h2>Perfil desejado:</h2>
-          <ul>
-            {(vaga.requisitos || []).map((item) => (
-              <li key={item}><CheckCircle2 size={15} /> {item}</li>
-            ))}
-          </ul>
-        </section>
-        <footer>
-          <MapPin size={16} />
-          {vaga.modalidade} em {vaga.localizacao}
-        </footer>
+        {abaAtiva === 'vaga' ? (
+          <>
+            <section>
+              <h2>Descrição:</h2>
+              <p>{vaga.descricao}</p>
+            </section>
+            <section>
+              <h2>Principais atividades:</h2>
+              <ul>
+                {(vaga.atividades || []).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+            <section>
+              <h2>Perfil desejado:</h2>
+              <ul>
+                {(vaga.requisitos || []).map((item) => (
+                  <li key={item}><CheckCircle2 size={15} /> {item}</li>
+                ))}
+              </ul>
+            </section>
+            <footer>
+              <MapPin size={16} />
+              {vaga.modalidade} em {vaga.localizacao}
+            </footer>
+          </>
+        ) : (
+          <section className="vaga-empresa-detalhes">
+            <div className="vaga-empresa-topo">
+              <span className="avatar avatar-grande">
+                {empresa?.logoUrl ? <img src={empresa.logoUrl} alt="" /> : empresa?.logo || 'AV'}
+              </span>
+              <div>
+                <h2>{empresa?.nome || 'Empresa Trilum Conecta'}</h2>
+                <p>{empresa?.localizacao || 'Brasil'}</p>
+              </div>
+            </div>
+            <p>{empresa?.descricao || 'Empresa parceira da Trilum Conecta em busca de talentos em formacao.'}</p>
+            <dl>
+              {empresa?.setor && (
+                <div>
+                  <dt>Setor:</dt>
+                  <dd>{empresa.setor}</dd>
+                </div>
+              )}
+              {empresa?.tamanho && (
+                <div>
+                  <dt>Tamanho:</dt>
+                  <dd>{empresa.tamanho}</dd>
+                </div>
+              )}
+              {empresa?.hub && (
+                <div>
+                  <dt>Hub:</dt>
+                  <dd>{empresa.hub}</dd>
+                </div>
+              )}
+            </dl>
+            {!!empresa?.especialidades?.length && (
+              <div className="vaga-empresa-tags">
+                {empresa.especialidades.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
       </article>
     </div>
   )
@@ -265,11 +320,18 @@ export function GerenciarVagas() {
                 totalCandidatos={metricasCandidatosDaVaga(vagaPreview.id, candidatos, candidaturas).total}
               />
             ) : (
-              <PreviewTelaVagas vaga={vagaPreview} empresa={usuarioAtual} />
+              <PreviewTelaVagas key={vagaPreview.id} vaga={vagaPreview} empresa={usuarioAtual} />
             )}
           </div>
         </div>
       )}
+      <MentorEmpresaToast
+        empresaAtual={usuarioAtual}
+        tela="gerenciar-vagas"
+        vagas={minhas}
+        candidatos={candidatos}
+        candidaturas={candidaturas}
+      />
     </section>
   )
 }
