@@ -1,6 +1,7 @@
 import { BriefcaseBusiness, CheckCircle2, Plus, UsersRound } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
+import { MentorEmpresaToast } from '../../../componentes/interface/MentorEmpresaToast'
 import { Avatar } from '../../../componentes/perfis/Avatar'
 import { useApp } from '../../../contextos/AppContext'
 import { contarCandidatosDasVagas, metricasCandidatosDaVaga } from '../../../servicos/candidaturas'
@@ -22,12 +23,12 @@ function classeModalidade(modalidade = '') {
 
 function publicadaNasUltimas24Horas(dataPublicacao) {
   if (!dataPublicacao) return false
-  const publicadaEm = new Date(`${dataPublicacao}T00:00:00`)
+  const publicadaEm = new Date(dataPublicacao.includes('T') ? dataPublicacao : `${dataPublicacao}T00:00:00`)
   if (Number.isNaN(publicadaEm.getTime())) return false
 
   const agora = new Date()
   const diff = agora.getTime() - publicadaEm.getTime()
-  return diff >= 0 && diff <= 24 * 60 * 60 * 1000
+  return diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000
 }
 
 export function PainelEmpresa() {
@@ -131,6 +132,14 @@ export function PainelEmpresa() {
           </div>
         )}
       </div>
+
+      <MentorEmpresaToast
+        empresaAtual={usuarioAtual}
+        tela="painel"
+        vagas={minhasVagas}
+        candidatos={candidatos}
+        candidaturas={candidaturas}
+      />
     </section>
   )
 }

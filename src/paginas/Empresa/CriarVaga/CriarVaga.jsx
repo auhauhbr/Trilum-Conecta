@@ -2,6 +2,7 @@ import { Send } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
+import { MentorEmpresaToast } from '../../../componentes/interface/MentorEmpresaToast'
 import { useApp } from '../../../contextos/AppContext'
 
 const formVazio = {
@@ -99,6 +100,13 @@ function separarTags(valor) {
     .filter(Boolean)
 }
 
+function linhasFormulario(valor) {
+  return String(valor || '')
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
 function textoCurto(texto, limite = 140) {
   if (!texto) return ''
   return texto.length > limite ? `${texto.slice(0, limite).trim()}...` : texto
@@ -125,7 +133,7 @@ export function CriarVaga() {
   const navigate = useNavigate()
   const tituloRef = useRef(null)
   const { vagaId } = useParams()
-  const { publicarVaga, atualizarVaga, vagasEmpresa } = useApp()
+  const { usuarioAtual, publicarVaga, atualizarVaga, vagasEmpresa } = useApp()
   const vagaEditada = useMemo(() => vagasEmpresa.find((vaga) => vaga.id === vagaId), [vagaId, vagasEmpresa])
   const modoEdicao = Boolean(vagaId)
   const [erro, setErro] = useState('')
@@ -453,6 +461,18 @@ export function CriarVaga() {
           </div>
         </aside>
       </form>
+
+      <MentorEmpresaToast
+        empresaAtual={usuarioAtual}
+        tela="criar-vaga"
+        formularioVaga={{
+          ...form,
+          salario: normalizarSalario(form.salario),
+          tags: separarTags(form.tags),
+          requisitos: linhasFormulario(form.requisitos),
+          atividades: linhasFormulario(form.atividades),
+        }}
+      />
     </section>
   )
 }

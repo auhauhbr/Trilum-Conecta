@@ -1,7 +1,8 @@
-import { Award, BookOpen, Check, Clock3, Eye, Search, SlidersHorizontal, X } from 'lucide-react'
+import { Award, BookOpen, Check, Clock3, Eye, FileText, Search, SlidersHorizontal, X } from 'lucide-react'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
+import { MentorEmpresaToast } from '../../../componentes/interface/MentorEmpresaToast'
 import { useApp } from '../../../contextos/AppContext'
 import { cursos } from '../../../dados/cursos'
 import { trilhas } from '../../../dados/trilhas'
@@ -253,7 +254,10 @@ function candidatoDaCandidatura(candidatura, usuario, progressoCursos) {
     status: candidatura.status || 'Candidatura enviada',
     cargo: perfil.titulo || perfil.cargoAtual || 'Aluno em formação',
     localizacao: perfil.localizacao || 'Brasil',
+    email: perfil.email || '',
     bio: perfil.bio || 'Pessoa candidata cadastrada na Trilum Conecta, com perfil editável pelo aluno.',
+    perfilProfissional: perfil.perfilProfissional || {},
+    curriculo: perfil.curriculo || {},
     cursos: cursosDoUsuario(perfil),
     cursosConcluidos: Array.isArray(perfil.cursosConcluidos) ? perfil.cursosConcluidos : [],
     certificados: Array.isArray(perfil.certificados) ? perfil.certificados : [],
@@ -263,6 +267,185 @@ function candidatoDaCandidatura(candidatura, usuario, progressoCursos) {
     atualizadoEm: candidatura.atualizadoEm,
     origem: 'candidatura',
   }
+}
+
+function linhasTexto(valor = '') {
+  return String(valor || '')
+    .split('\n')
+    .map((linha) => linha.trim())
+    .filter(Boolean)
+}
+
+function escaparHtml(valor = '') {
+  return String(valor || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+function textoOuPadrao(valor, padrao = '') {
+  return String(valor || '').trim() || padrao
+}
+
+function normalizarLinhaTecnologiaCurriculo(item = '') {
+  const texto = String(item || '').trim()
+  if (!texto) return ''
+  if (texto.includes(' - ') || texto.includes(' — ')) return texto
+  return `${texto} - estudando`
+}
+
+function listaHtml(titulo, itens = []) {
+  const filtrados = itens.map((item) => String(item || '').trim()).filter(Boolean)
+  if (!filtrados.length) return ''
+
+  return `
+    <section class="resume-section">
+      <h2>${escaparHtml(titulo)}</h2>
+      <ul>${filtrados.map((item) => `<li>${escaparHtml(item)}</li>`).join('')}</ul>
+    </section>
+  `
+}
+
+function montarDadosCurriculoCandidato(candidato = {}) {
+  const perfilProfissional = candidato.perfilProfissional || {}
+  const curriculo = candidato.curriculo || {}
+  const nome = textoOuPadrao(candidato.nome, 'Aluno Trilum Conecta')
+  const titulo = textoOuPadrao(curriculo.titulo, candidato.cargo || 'Aluno em formação')
+  const tecnologiasPerfil = linhasTexto(perfilProfissional.tecnologiasComNivel || curriculo.tecnologias)
+  const tecnologiasFallback = Array.isArray(candidato.tecnologias) ? candidato.tecnologias : []
+  const tecnologias = (tecnologiasPerfil.length ? tecnologiasPerfil : tecnologiasFallback)
+    .map(normalizarLinhaTecnologiaCurriculo)
+    .filter(Boolean)
+  const certificadosExternosArquivos = Array.isArray(perfilProfissional.certificadosExternosArquivos)
+    ? perfilProfissional.certificadosExternosArquivos
+    : []
+
+  return {
+    nome,
+    titulo,
+    email: textoOuPadrao(curriculo.email, candidato.email),
+    telefone: textoOuPadrao(curriculo.telefone, perfilProfissional.telefone),
+    localizacao: textoOuPadrao(candidato.localizacao, 'Brasil'),
+    linkedin: textoOuPadrao(curriculo.linkedin, perfilProfissional.linkedin),
+    github: textoOuPadrao(curriculo.github, perfilProfissional.github),
+    portfolio: textoOuPadrao(curriculo.portfolio, perfilProfissional.portfolio),
+    fotoUrl: textoOuPadrao(curriculo.fotoUrl, candidato.fotoUrl),
+    objetivo: textoOuPadrao(
+      curriculo.objetivo,
+      'Conquistar uma oportunidade em tecnologia, aplicando meus estudos e evoluindo com projetos reais.',
+    ),
+    resumo: textoOuPadrao(curriculo.resumo, candidato.bio),
+    tecnologias,
+    cursos: Array.isArray(candidato.cursos) ? candidato.cursos : [],
+    certificadosTrilum: Array.isArray(candidato.certificados) ? candidato.certificados.map(nomeDoCurso) : [],
+    idiomas: linhasTexto(perfilProfissional.idiomas || curriculo.idiomas),
+    formacoes: linhasTexto(perfilProfissional.formacoes || curriculo.formacoes),
+    projetos: linhasTexto(perfilProfissional.projetos || curriculo.projetos),
+    experiencias: linhasTexto(perfilProfissional.experiencias || curriculo.experiencias),
+    certificadosExternos: [
+      ...linhasTexto(perfilProfissional.certificadosExternos || curriculo.certificadosExternos),
+      ...certificadosExternosArquivos.map((anexo) => `Anexo: ${anexo.nome}`),
+    ],
+    competencias: linhasTexto(curriculo.competencias || perfilProfissional.competencias || 'Comunicação\nOrganização\nAprendizado contínuo'),
+  }
+}
+
+function htmlCurriculoCandidato(candidato) {
+  const dados = montarDadosCurriculoCandidato(candidato)
+  const contatos = [
+    dados.email && `E-mail: ${dados.email}`,
+    dados.telefone && `Telefone: ${dados.telefone}`,
+    dados.localizacao && `Local: ${dados.localizacao}`,
+    dados.linkedin && `LinkedIn: ${dados.linkedin}`,
+    dados.github && `GitHub: ${dados.github}`,
+    dados.portfolio && `Portfolio: ${dados.portfolio}`,
+  ].filter(Boolean)
+  const formacao = dados.formacoes.length
+    ? dados.formacoes
+    : dados.cursos.length
+      ? ['Formação em desenvolvimento pela Trilum Conecta', ...dados.cursos.map((curso) => `${curso} - curso Trilum`)]
+      : ['Formação em desenvolvimento pela Trilum Conecta']
+
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Currículo - ${escaparHtml(dados.nome)}</title>
+  <style>
+    @page { size: A4; margin: 0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f4f6; color: #111827; font-family: Arial, Helvetica, sans-serif; }
+    .resume { width: 210mm; min-height: 297mm; margin: 0 auto; padding: 20mm 18mm; background: #fff; }
+    .resume-header { display: grid; grid-template-columns: 1fr 78mm; gap: 14mm; align-items: start; }
+    .identity { display: grid; grid-template-columns: ${dados.fotoUrl ? '28mm 1fr' : '1fr'}; gap: 9mm; align-items: center; }
+    .avatar { width: 28mm; height: 28mm; border: 2px solid #111827; border-radius: 50%; object-fit: cover; }
+    h1 { margin: 0; font-size: 30pt; line-height: .95; text-transform: uppercase; letter-spacing: 0; }
+    .title { margin: 7mm 0 0; max-width: 70mm; font-size: 11pt; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+    .contacts { display: grid; gap: 4mm; margin: 0; padding: 0; list-style: none; font-size: 9.6pt; font-weight: 700; overflow-wrap: anywhere; }
+    .intro { margin: 13mm 0 0; font-size: 10.2pt; line-height: 1.55; }
+    .intro strong { display: block; margin-top: 4mm; }
+    .divider { border: 0; border-top: 1.6px solid #111827; margin: 12mm 0; }
+    .resume-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18mm; }
+    .resume-section { break-inside: avoid; margin-bottom: 10mm; }
+    h2 { margin: 0 0 6mm; font-size: 18pt; line-height: 1; text-transform: uppercase; }
+    ul { margin: 0; padding-left: 5mm; font-size: 10pt; line-height: 1.55; }
+    li { margin-bottom: 2.6mm; }
+    @media print {
+      body { background: #fff; }
+      .resume { margin: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="resume">
+    <header class="resume-header">
+      <div class="identity">
+        ${dados.fotoUrl ? `<img class="avatar" src="${escaparHtml(dados.fotoUrl)}" alt="" />` : ''}
+        <div>
+          <h1>${escaparHtml(dados.nome)}</h1>
+          <p class="title">${escaparHtml(dados.titulo)}</p>
+        </div>
+      </div>
+      <ul class="contacts">${contatos.map((item) => `<li>${escaparHtml(item)}</li>`).join('')}</ul>
+    </header>
+
+    <section class="intro">
+      <p>${escaparHtml(dados.resumo)}</p>
+      <strong>${escaparHtml(dados.objetivo)}</strong>
+    </section>
+
+    <hr class="divider" />
+
+    <div class="resume-grid">
+      <div>
+        ${listaHtml('Educação', formacao)}
+        ${listaHtml('Projetos', dados.projetos)}
+        ${listaHtml('Experiências', dados.experiencias)}
+      </div>
+      <div>
+        ${listaHtml('Skills', [...dados.tecnologias, ...dados.competencias])}
+        ${listaHtml('Idiomas', dados.idiomas)}
+        ${listaHtml('Certificados', [...dados.certificadosTrilum.map((item) => `${item} - Curso Trilum`), ...dados.certificadosExternos])}
+      </div>
+    </div>
+  </main>
+  <script>
+    window.addEventListener('load', () => {
+      window.setTimeout(() => window.print(), 250)
+    })
+  </script>
+</body>
+</html>`
+}
+
+function exportarCurriculoCandidato(candidato) {
+  const janela = window.open('', '_blank')
+  if (!janela) return
+  janela.document.open()
+  janela.document.write(htmlCurriculoCandidato(candidato))
+  janela.document.close()
 }
 
 function statusClasse(status = '') {
@@ -651,6 +834,9 @@ export function ListaCandidatos() {
             </section>
 
             <footer>
+              <Botao variant="secondary" onClick={() => exportarCurriculoCandidato(perfilPreview)}>
+                <FileText size={18} /> Exportar currículo
+              </Botao>
               <Botao onClick={() => alterarStatus(perfilPreview, 'Selecionado')}>Aprovar candidato</Botao>
               <Botao variant="secondary" onClick={() => alterarStatus(perfilPreview, 'Reprovado')}>
                 Rejeitar
@@ -659,6 +845,13 @@ export function ListaCandidatos() {
           </article>
         </div>
       )}
+      <MentorEmpresaToast
+        empresaAtual={usuarioAtual}
+        tela="lista-candidatos"
+        vagaAtual={vaga}
+        candidatos={candidatos}
+        candidaturas={candidaturas}
+      />
     </section>
   )
 }
