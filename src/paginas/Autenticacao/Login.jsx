@@ -1,18 +1,17 @@
 import { useState } from 'react'
 import { LockKeyhole, Mail } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { MentorCompactadoButton } from '../../componentes/interface/MentorCompactadoButton'
+import { MentorFeedback } from '../../componentes/interface/MentorFeedback'
 import { useApp } from '../../contextos/AppContext'
 import ilustracaoCadastro3 from '../../ativos/imagens/imagem-teste-9.png'
 import ilustracaoCadastro4 from '../../ativos/imagens/imagem-teste-8.png'
+import { emailValido, mensagensSenha, progressoSenha, requisitosSenha } from '../../servicos/validacaoAuth'
 
 const estadoRecuperacaoInicial = {
   email: '',
   senha: '',
   repetirSenha: '',
-}
-
-function senhaValida(senha) {
-  return senha.length >= 8 && /[A-Z]/.test(senha) && /[^A-Za-z0-9]/.test(senha)
 }
 
 export function Login() {
@@ -21,25 +20,72 @@ export function Login() {
   const [form, setForm] = useState({ email: '', senha: '' })
   const [recuperacao, setRecuperacao] = useState(estadoRecuperacaoInicial)
   const [modoRecuperacao, setModoRecuperacao] = useState(false)
-  const [erro, setErro] = useState('')
+  const [erroConta, setErroConta] = useState('')
   const [mensagem, setMensagem] = useState('')
+  const [tentouLogin, setTentouLogin] = useState(false)
+  const [tentouRecuperacao, setTentouRecuperacao] = useState(false)
+  const [feedbackFechado, setFeedbackFechado] = useState(false)
+  const requisitosRecuperacao = requisitosSenha(recuperacao.senha)
+  const progressoRecuperacao = progressoSenha(recuperacao.senha)
+  const itensValidacao = modoRecuperacao
+    ? tentouRecuperacao
+      ? validarRecuperacao()
+      : []
+    : tentouLogin
+      ? validarLogin()
+      : []
+  const itensFeedback = [...itensValidacao, ...(erroConta ? [erroConta] : [])]
 
   function atualizar(campo, valor) {
     setForm((atual) => ({ ...atual, [campo]: valor }))
+    setErroConta('')
   }
 
   function atualizarRecuperacao(campo, valor) {
     setRecuperacao((atual) => ({ ...atual, [campo]: valor }))
+    setErroConta('')
+  }
+
+  function validarLogin() {
+    const pendencias = []
+    if (!form.email.trim()) pendencias.push('preciso do seu e-mail para encontrar sua conta')
+    else if (!emailValido(form.email)) pendencias.push('esse e-mail não parece válido, verifique')
+    if (!form.senha) pendencias.push('cadê a senha? preciso dela para liberar seu acesso')
+    return pendencias
+  }
+
+  function validarRecuperacao() {
+    const pendencias = []
+    if (!recuperacao.email.trim()) pendencias.push('preciso do seu e-mail para encontrar sua conta')
+    else if (!emailValido(recuperacao.email)) pendencias.push('esse e-mail não parece válido, verifique')
+    if (!recuperacao.senha) pendencias.push('cadê a nova senha? precisa criar uma')
+    else pendencias.push(...mensagensSenha(recuperacao.senha))
+    if (!recuperacao.repetirSenha) pendencias.push('confirme sua senha repetindo ela')
+    else if (recuperacao.senha && recuperacao.senha !== recuperacao.repetirSenha) {
+      pendencias.push('as senhas não batem, digite igual nas duas')
+    }
+    return pendencias
+  }
+
+  function saudacaoFeedback() {
+    return 'Ei humano que não sei o nome, você precisa fazer o seguinte:'
   }
 
   function enviar(evento) {
     evento.preventDefault()
-    setErro('')
+    setTentouLogin(true)
+    setErroConta('')
     setMensagem('')
+    setFeedbackFechado(false)
+
+    const pendencias = validarLogin()
+    if (pendencias.length) {
+      return
+    }
 
     const resposta = login(form.email, form.senha)
     if (!resposta.ok) {
-      setErro(resposta.mensagem)
+      setErroConta(resposta.mensagem)
       return
     }
 
@@ -48,27 +94,19 @@ export function Login() {
 
   function enviarRecuperacao(evento) {
     evento.preventDefault()
-    setErro('')
+    setTentouRecuperacao(true)
+    setErroConta('')
     setMensagem('')
+    setFeedbackFechado(false)
 
-    if (!recuperacao.email || !recuperacao.senha || !recuperacao.repetirSenha) {
-      setErro('Preencha o e-mail e a nova senha.')
-      return
-    }
-
-    if (recuperacao.senha !== recuperacao.repetirSenha) {
-      setErro('As senhas precisam ser iguais.')
-      return
-    }
-
-    if (!senhaValida(recuperacao.senha)) {
-      setErro('Use uma senha com pelo menos 8 caracteres, uma letra maiúscula e um símbolo.')
+    const pendencias = validarRecuperacao()
+    if (pendencias.length) {
       return
     }
 
     const resposta = redefinirSenha({ email: recuperacao.email, senha: recuperacao.senha })
     if (!resposta.ok) {
-      setErro(resposta.mensagem)
+      setErroConta(resposta.mensagem)
       return
     }
 
@@ -98,7 +136,7 @@ export function Login() {
           <img src={ilustracaoCadastro3} alt="Ilustração de pessoa usando notebook" />
         </div>
 
-        <form className="login-card-html" onSubmit={modoRecuperacao ? enviarRecuperacao : enviar}>
+        <form className="login-card-html" onSubmit={modoRecuperacao ? enviarRecuperacao : enviar} noValidate>
           <h2>{modoRecuperacao ? 'Recuperar senha' : 'Login'}</h2>
           <p className="subtitle-html">
             {modoRecuperacao ? 'Crie uma nova senha para sua conta cadastrada' : 'Entre para continuar sua jornada'}
@@ -120,7 +158,6 @@ export function Login() {
                   onChange={(e) => atualizar('email', e.target.value)}
                   placeholder="voce@email.com"
                   autoComplete="email"
-                  required
                 />
               </div>
 
@@ -138,7 +175,6 @@ export function Login() {
                   onChange={(e) => atualizar('senha', e.target.value)}
                   placeholder="Sua senha"
                   autoComplete="current-password"
-                  required
                 />
               </div>
             </>
@@ -158,7 +194,6 @@ export function Login() {
                   onChange={(e) => atualizarRecuperacao('email', e.target.value)}
                   placeholder="voce@email.com"
                   autoComplete="email"
-                  required
                 />
               </div>
 
@@ -176,8 +211,12 @@ export function Login() {
                   onChange={(e) => atualizarRecuperacao('senha', e.target.value)}
                   placeholder="Mínimo 8 caracteres, letra maiúscula e símbolo"
                   autoComplete="new-password"
-                  required
                 />
+              </div>
+              <div className="pw-strength-html" aria-label="Requisitos da senha">
+                {requisitosRecuperacao.map((requisito, index) => (
+                  <span className={index < progressoRecuperacao ? 'ativo' : ''} key={requisito.id} />
+                ))}
               </div>
 
               <label className="field-label-html" htmlFor="recuperar-repetir-senha">
@@ -194,21 +233,22 @@ export function Login() {
                   onChange={(e) => atualizarRecuperacao('repetirSenha', e.target.value)}
                   placeholder="Repita a nova senha"
                   autoComplete="new-password"
-                  required
                 />
               </div>
             </>
           )}
 
-          {erro && <p className="error-visible-html">{erro}</p>}
           {mensagem && <p className="success-visible-html">{mensagem}</p>}
 
           <button
             type="button"
             className="forgot-html forgot-button-html"
             onClick={() => {
-              setErro('')
+              setErroConta('')
               setMensagem('')
+              setTentouLogin(false)
+              setTentouRecuperacao(false)
+              setFeedbackFechado(false)
               setModoRecuperacao((atual) => !atual)
             }}
           >
@@ -220,6 +260,17 @@ export function Login() {
           </button>
         </form>
       </div>
+
+      {feedbackFechado && itensFeedback.length > 0 ? (
+        <MentorCompactadoButton posicao="direita" onClick={() => setFeedbackFechado(false)} />
+      ) : !feedbackFechado && (
+        <MentorFeedback
+          saudacao={saudacaoFeedback()}
+          itens={itensFeedback}
+          posicao="direita"
+          onClose={() => setFeedbackFechado(true)}
+        />
+      )}
     </section>
   )
 }

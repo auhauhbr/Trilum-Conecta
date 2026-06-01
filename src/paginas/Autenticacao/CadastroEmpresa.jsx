@@ -1,9 +1,18 @@
 import { useState } from 'react'
 import { Building2, LockKeyhole, Mail, MapPin, SquareUserRound } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { MentorCompactadoButton } from '../../componentes/interface/MentorCompactadoButton'
+import { MentorFeedback } from '../../componentes/interface/MentorFeedback'
 import { useApp } from '../../contextos/AppContext'
 import ilustracaoCadastro from '../../ativos/imagens/imagem-teste-4.png'
 import ilustracaoCadastro2 from '../../ativos/imagens/imagem-teste-2.png'
+import {
+  cnpjValido,
+  emailCorporativoValido,
+  mensagensSenha,
+  progressoSenha,
+  requisitosSenha,
+} from '../../servicos/validacaoAuth'
 
 const formInicial = {
   nome: '',
@@ -17,37 +26,57 @@ const formInicial = {
   descricao: '',
 }
 
-function senhaValida(senha) {
-  return senha.length >= 8 && /[A-Z]/.test(senha) && /[^A-Za-z0-9]/.test(senha)
-}
-
-function emailValido(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
-
 export function CadastroEmpresa() {
   const navigate = useNavigate()
   const { cadastrarEmpresa } = useApp()
   const [form, setForm] = useState(formInicial)
-  const [erro, setErro] = useState('')
+  const [tentouEnviar, setTentouEnviar] = useState(false)
+  const [erroConta, setErroConta] = useState('')
+  const [feedbackFechado, setFeedbackFechado] = useState(false)
+  const requisitos = requisitosSenha(form.senha)
+  const progresso = progressoSenha(form.senha)
+  const itensValidacao = tentouEnviar ? validarFormulario() : []
+  const itensFeedback = [...itensValidacao, ...(erroConta ? [erroConta] : [])]
 
   function atualizar(campo, valor) {
     setForm((atual) => ({ ...atual, [campo]: valor }))
+    setErroConta('')
+  }
+
+  function validarFormulario() {
+    const pendencias = []
+
+    if (!form.nome.trim()) pendencias.push('qual o nome da sua empresa?')
+    if (!form.cnpj.trim()) pendencias.push('preciso do CNPJ da empresa')
+    else if (!cnpjValido(form.cnpj)) pendencias.push('CNPJ parece incorreto, dá uma olhada')
+    if (!form.email.trim()) pendencias.push('informe o e-mail corporativo')
+    else if (!emailCorporativoValido(form.email)) pendencias.push('e-mail corporativo não parece válido')
+    if (!form.repetirEmail.trim()) pendencias.push('confirme o e-mail corporativo')
+    else if (form.email && form.email !== form.repetirEmail) pendencias.push('os e-mails corporativos não conferem')
+    if (!form.senha) pendencias.push('crie uma senha para acesso')
+    else pendencias.push(...mensagensSenha(form.senha))
+    if (!form.repetirSenha) pendencias.push('repita a senha criada')
+    else if (form.senha && form.senha !== form.repetirSenha) pendencias.push('as senhas estão diferentes, ajuste')
+    if (!form.localizacao.trim()) pendencias.push('selecione sua localização')
+
+    return pendencias
+  }
+
+  function saudacaoFeedback() {
+    const nomeEmpresa = form.nome.trim()
+    if (nomeEmpresa) return `Ei pessoal da ${nomeEmpresa}, você precisa fazer o seguinte:`
+    return 'Ei humano da empresa, você precisa fazer o seguinte:'
   }
 
   function enviar(evento) {
     evento.preventDefault()
-    setErro('')
+    setTentouEnviar(true)
+    setErroConta('')
+    setFeedbackFechado(false)
 
-    if (!form.nome || !form.cnpj || !form.email || !form.repetirEmail || !form.senha || !form.repetirSenha) {
-      return setErro('Preencha todos os campos obrigatórios.')
-    }
-
-    if (!emailValido(form.email)) return setErro('Informe um e-mail corporativo válido.')
-    if (form.email !== form.repetirEmail) return setErro('Os e-mails precisam ser iguais.')
-    if (form.senha !== form.repetirSenha) return setErro('As senhas precisam ser iguais.')
-    if (!senhaValida(form.senha)) {
-      return setErro('Use uma senha com pelo menos 8 caracteres, uma letra maiúscula e um símbolo.')
+    const pendencias = validarFormulario()
+    if (pendencias.length) {
+      return
     }
 
     const resposta = cadastrarEmpresa({
@@ -61,7 +90,7 @@ export function CadastroEmpresa() {
     })
 
     if (!resposta.ok) {
-      setErro(resposta.mensagem)
+      setErroConta(resposta.mensagem)
       return
     }
 
@@ -79,7 +108,7 @@ export function CadastroEmpresa() {
           <img src={ilustracaoCadastro} alt="Ilustração de boas-vindas para empresas" />
         </div>
 
-        <form className="cadastro-card-html" onSubmit={enviar}>
+        <form className="cadastro-card-html" onSubmit={enviar} noValidate>
           <div className="tab-switch-html">
             <Link to="/cadastro/aluno">Aluno</Link>
             <button className="active" type="button">
@@ -88,13 +117,18 @@ export function CadastroEmpresa() {
           </div>
 
           <label className="field-label-html" htmlFor="empresa-nome">
-            Razão social
+            Nome da empresa
           </label>
           <div className="input-wrap-html">
             <span>
               <Building2 size={16} color="#1a6bff" />
             </span>
-            <input id="empresa-nome" value={form.nome} onChange={(e) => atualizar('nome', e.target.value)} required />
+            <input
+              id="empresa-nome"
+              value={form.nome}
+              onChange={(e) => atualizar('nome', e.target.value)}
+              placeholder="Nome que os candidatos verão"
+            />
           </div>
 
           <label className="field-label-html" htmlFor="empresa-cnpj">
@@ -104,8 +138,9 @@ export function CadastroEmpresa() {
             <span>
               <SquareUserRound size={16} color="#1a6bff" />
             </span>
-            <input id="empresa-cnpj" value={form.cnpj} onChange={(e) => atualizar('cnpj', e.target.value)} required />
+            <input id="empresa-cnpj" value={form.cnpj} onChange={(e) => atualizar('cnpj', e.target.value)} />
           </div>
+          <small className="field-hint-html">ex: 00.000.000/0001-91</small>
 
           <label className="field-label-html" htmlFor="empresa-email">
             E-mail corporativo
@@ -120,7 +155,6 @@ export function CadastroEmpresa() {
               value={form.email}
               onChange={(e) => atualizar('email', e.target.value)}
               autoComplete="email"
-              required
             />
           </div>
 
@@ -137,7 +171,6 @@ export function CadastroEmpresa() {
               value={form.repetirEmail}
               onChange={(e) => atualizar('repetirEmail', e.target.value)}
               autoComplete="email"
-              required
             />
           </div>
 
@@ -154,14 +187,12 @@ export function CadastroEmpresa() {
               value={form.senha}
               onChange={(e) => atualizar('senha', e.target.value)}
               autoComplete="new-password"
-              required
             />
           </div>
-          <div className="pw-strength-html">
-            <span />
-            <span />
-            <span />
-            <span />
+          <div className="pw-strength-html" aria-label="Requisitos da senha">
+            {requisitos.map((requisito, index) => (
+              <span className={index < progresso ? 'ativo' : ''} key={requisito.id} />
+            ))}
           </div>
 
           <label className="field-label-html" htmlFor="empresa-repetir-senha">
@@ -177,7 +208,6 @@ export function CadastroEmpresa() {
               value={form.repetirSenha}
               onChange={(e) => atualizar('repetirSenha', e.target.value)}
               autoComplete="new-password"
-              required
             />
           </div>
 
@@ -196,7 +226,6 @@ export function CadastroEmpresa() {
             />
           </div>
 
-          {erro && <p className="error-visible-html">{erro}</p>}
           <button className="btn-submit-html" type="submit">
             Cadastrar
           </button>
@@ -206,6 +235,17 @@ export function CadastroEmpresa() {
           <img src={ilustracaoCadastro2} alt="Ilustração de boas-vindas para novas empresas" />
         </div>
       </div>
+
+      {feedbackFechado && itensFeedback.length > 0 ? (
+        <MentorCompactadoButton posicao="direita" onClick={() => setFeedbackFechado(false)} />
+      ) : !feedbackFechado && (
+        <MentorFeedback
+          saudacao={saudacaoFeedback()}
+          itens={itensFeedback}
+          posicao="direita"
+          onClose={() => setFeedbackFechado(true)}
+        />
+      )}
     </section>
   )
 }

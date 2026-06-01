@@ -1,9 +1,21 @@
 import { useState } from 'react'
 import { CalendarDays, LockKeyhole, Mail, SquareUserRound, UserRound } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { MentorCompactadoButton } from '../../componentes/interface/MentorCompactadoButton'
+import { MentorFeedback } from '../../componentes/interface/MentorFeedback'
 import { useApp } from '../../contextos/AppContext'
 import ilustracaoCadastro from '../../ativos/imagens/imagem-teste-4.png'
 import ilustracaoCadastro2 from '../../ativos/imagens/imagem-teste-2.png'
+import {
+  cpfValido,
+  dataNascimentoValida,
+  emailValido,
+  formatarDataNascimento,
+  mensagensSenha,
+  primeiroNome,
+  progressoSenha,
+  requisitosSenha,
+} from '../../servicos/validacaoAuth'
 
 const formInicial = {
   nome: '',
@@ -15,34 +27,58 @@ const formInicial = {
   repetirSenha: '',
 }
 
-function senhaValida(senha) {
-  return senha.length >= 8 && /[A-Z]/.test(senha) && /[^A-Za-z0-9]/.test(senha)
-}
-
-function emailValido(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
-
 export function CadastroAluno() {
   const navigate = useNavigate()
   const { cadastrarAluno } = useApp()
   const [form, setForm] = useState(formInicial)
-  const [erro, setErro] = useState('')
+  const [tentouEnviar, setTentouEnviar] = useState(false)
+  const [erroConta, setErroConta] = useState('')
+  const [feedbackFechado, setFeedbackFechado] = useState(false)
+  const requisitos = requisitosSenha(form.senha)
+  const progresso = progressoSenha(form.senha)
+  const nomeSaudacao = primeiroNome(form.nome)
+  const itensValidacao = tentouEnviar ? validarFormulario() : []
+  const itensFeedback = [...itensValidacao, ...(erroConta ? [erroConta] : [])]
 
   function atualizar(campo, valor) {
-    setForm((atual) => ({ ...atual, [campo]: valor }))
+    const valorFinal = campo === 'nascimento' ? formatarDataNascimento(valor) : valor
+    setForm((atual) => ({ ...atual, [campo]: valorFinal }))
+    setErroConta('')
+  }
+
+  function validarFormulario() {
+    const pendencias = []
+
+    if (!form.nome.trim()) pendencias.push('preencha seu nome, afinal, quero lhe conhecer')
+    if (!form.cpf.trim()) pendencias.push('informe seu CPF para identificação')
+    else if (!cpfValido(form.cpf)) pendencias.push('seu CPF parece inválido, revise por favor')
+    if (!form.nascimento.trim()) pendencias.push('qual é sua data de nascimento?')
+    else if (!dataNascimentoValida(form.nascimento)) pendencias.push('use o formato dd/mm/aaaa para a data')
+    if (!form.email.trim()) pendencias.push('preciso do seu e-mail para contato')
+    else if (!emailValido(form.email)) pendencias.push('esse e-mail não parece válido, verifique')
+    if (!form.repetirEmail.trim()) pendencias.push('confirme seu e-mail digitando novamente')
+    else if (form.email && form.email !== form.repetirEmail) pendencias.push('os e-mails não estão iguais, compare aí')
+    if (!form.senha) pendencias.push('cadê a senha? precisa criar uma')
+    else pendencias.push(...mensagensSenha(form.senha))
+    if (!form.repetirSenha) pendencias.push('confirme sua senha repetindo ela')
+    else if (form.senha && form.senha !== form.repetirSenha) pendencias.push('as senhas não batem, digite igual nas duas')
+
+    return pendencias
+  }
+
+  function saudacaoFeedback() {
+    return `Ei ${nomeSaudacao || 'humano que não sei o nome'}, você precisa fazer o seguinte:`
   }
 
   function enviar(evento) {
     evento.preventDefault()
-    setErro('')
+    setTentouEnviar(true)
+    setErroConta('')
+    setFeedbackFechado(false)
 
-    if (!Object.values(form).every(Boolean)) return setErro('Preencha todos os campos obrigatórios.')
-    if (!emailValido(form.email)) return setErro('Informe um e-mail válido.')
-    if (form.email !== form.repetirEmail) return setErro('Os e-mails precisam ser iguais.')
-    if (form.senha !== form.repetirSenha) return setErro('As senhas precisam ser iguais.')
-    if (!senhaValida(form.senha)) {
-      return setErro('Use uma senha com pelo menos 8 caracteres, uma letra maiúscula e um símbolo.')
+    const pendencias = validarFormulario()
+    if (pendencias.length) {
+      return
     }
 
     const resposta = cadastrarAluno({
@@ -57,7 +93,7 @@ export function CadastroAluno() {
     })
 
     if (!resposta.ok) {
-      setErro(resposta.mensagem)
+      setErroConta(resposta.mensagem)
       return
     }
 
@@ -75,7 +111,7 @@ export function CadastroAluno() {
           <img src={ilustracaoCadastro} alt="Ilustração de boas-vindas para novos alunos" />
         </div>
 
-        <form className="cadastro-card-html" onSubmit={enviar}>
+        <form className="cadastro-card-html" onSubmit={enviar} noValidate>
           <div className="tab-switch-html">
             <button className="active" type="button">
               Aluno
@@ -90,7 +126,7 @@ export function CadastroAluno() {
             <span>
               <UserRound size={16} color="#1a6bff" />
             </span>
-            <input id="aluno-nome" value={form.nome} onChange={(e) => atualizar('nome', e.target.value)} required />
+            <input id="aluno-nome" value={form.nome} onChange={(e) => atualizar('nome', e.target.value)} />
           </div>
 
           <label className="field-label-html" htmlFor="aluno-cpf">
@@ -100,7 +136,7 @@ export function CadastroAluno() {
             <span>
               <SquareUserRound size={16} color="#1a6bff" />
             </span>
-            <input id="aluno-cpf" value={form.cpf} onChange={(e) => atualizar('cpf', e.target.value)} required />
+            <input id="aluno-cpf" value={form.cpf} onChange={(e) => atualizar('cpf', e.target.value)} />
           </div>
 
           <label className="field-label-html" htmlFor="aluno-nascimento">
@@ -112,10 +148,12 @@ export function CadastroAluno() {
             </span>
             <input
               id="aluno-nascimento"
-              type="date"
+              type="text"
               value={form.nascimento}
               onChange={(e) => atualizar('nascimento', e.target.value)}
-              required
+              placeholder="dd/mm/aaaa"
+              inputMode="numeric"
+              maxLength="10"
             />
           </div>
 
@@ -132,7 +170,6 @@ export function CadastroAluno() {
               value={form.email}
               onChange={(e) => atualizar('email', e.target.value)}
               autoComplete="email"
-              required
             />
           </div>
 
@@ -149,7 +186,6 @@ export function CadastroAluno() {
               value={form.repetirEmail}
               onChange={(e) => atualizar('repetirEmail', e.target.value)}
               autoComplete="email"
-              required
             />
           </div>
 
@@ -166,14 +202,12 @@ export function CadastroAluno() {
               value={form.senha}
               onChange={(e) => atualizar('senha', e.target.value)}
               autoComplete="new-password"
-              required
             />
           </div>
-          <div className="pw-strength-html">
-            <span />
-            <span />
-            <span />
-            <span />
+          <div className="pw-strength-html" aria-label="Requisitos da senha">
+            {requisitos.map((requisito, index) => (
+              <span className={index < progresso ? 'ativo' : ''} key={requisito.id} />
+            ))}
           </div>
 
           <label className="field-label-html" htmlFor="aluno-repetir-senha">
@@ -189,11 +223,9 @@ export function CadastroAluno() {
               value={form.repetirSenha}
               onChange={(e) => atualizar('repetirSenha', e.target.value)}
               autoComplete="new-password"
-              required
             />
           </div>
 
-          {erro && <p className="error-visible-html">{erro}</p>}
           <button className="btn-submit-html" type="submit">
             Cadastrar
           </button>
@@ -203,6 +235,17 @@ export function CadastroAluno() {
           <img src={ilustracaoCadastro2} alt="Ilustração de boas-vindas para novos alunos" />
         </div>
       </div>
+
+      {feedbackFechado && itensFeedback.length > 0 ? (
+        <MentorCompactadoButton posicao="direita" onClick={() => setFeedbackFechado(false)} />
+      ) : !feedbackFechado && (
+        <MentorFeedback
+          saudacao={saudacaoFeedback()}
+          itens={itensFeedback}
+          posicao="direita"
+          onClose={() => setFeedbackFechado(true)}
+        />
+      )}
     </section>
   )
 }
