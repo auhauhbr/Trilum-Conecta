@@ -24,7 +24,3 @@ export const usuarios = [
     certificados: ['Informática Essencial'],
   },
 ]
-
-export const modoApresentacao = {
-  ativo: false
-};
