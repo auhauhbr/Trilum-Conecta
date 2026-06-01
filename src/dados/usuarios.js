@@ -1,5 +1,5 @@
 import jeffersonSantosPerfil from '../ativos/imagens/jefferson-santos-perfil.jpg'
-import macacoPhpCapa from '../ativos/imagens/macacophp.png'
+import macacoPhpCapa from '../ativos/imagens/macacophp.webp'
 
 export const bangobalango = {
   alunoId: 'aluno-1',
