@@ -56,6 +56,22 @@ function iniciais(nome = '') {
     .toUpperCase()
 }
 
+function AvatarCandidato({ candidato, grande = false }) {
+  const [imagemFalhou, setImagemFalhou] = useState(false)
+  const texto = candidato.foto || iniciais(candidato.nome)
+  const className = grande ? 'avatar avatar-grande candidato-avatar-img' : 'avatar candidato-avatar-img'
+
+  if (candidato.fotoUrl && !imagemFalhou) {
+    return (
+      <span className={className}>
+        <img src={candidato.fotoUrl} alt="" onError={() => setImagemFalhou(true)} />
+      </span>
+    )
+  }
+
+  return <span className={grande ? 'avatar avatar-grande' : 'avatar'}>{texto}</span>
+}
+
 function cursosDoUsuario(usuario) {
   const concluidos = Array.isArray(usuario?.cursosConcluidos) ? usuario.cursosConcluidos : []
   const certificados = Array.isArray(usuario?.certificados) ? usuario.certificados : []
@@ -617,9 +633,7 @@ export function ListaCandidatos() {
         {filtrados.map((candidato) => (
           <article className="empresa-candidato-row candidato-card-udemy" key={candidato.id}>
             <header>
-              <span className={candidato.fotoUrl ? 'avatar candidato-avatar-img' : 'avatar'}>
-                {candidato.fotoUrl ? <img src={candidato.fotoUrl} alt="" /> : candidato.foto || iniciais(candidato.nome)}
-              </span>
+              <AvatarCandidato candidato={candidato} />
               <div>
                 <span className={statusClasse(candidato.status)}>{candidato.status}</span>
                 <h3>{candidato.nome}</h3>
@@ -689,9 +703,7 @@ export function ListaCandidatos() {
               className="perfil-candidato-capa"
               style={perfilPreview.capaUrl ? { backgroundImage: `url("${perfilPreview.capaUrl}")` } : undefined}
             >
-              <span className={perfilPreview.fotoUrl ? 'avatar avatar-grande candidato-avatar-img' : 'avatar avatar-grande'}>
-                {perfilPreview.fotoUrl ? <img src={perfilPreview.fotoUrl} alt="" /> : perfilPreview.foto || iniciais(perfilPreview.nome)}
-              </span>
+              <AvatarCandidato candidato={perfilPreview} grande />
             </div>
             <header className="perfil-candidato-identidade">
               <div>

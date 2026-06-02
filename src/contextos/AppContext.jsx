@@ -21,10 +21,10 @@ const DEMO_ALUNO_ID = 'aluno-1'
 const DEMO_EMPRESA_ID = 'empresa-1'
 const CONTAS_MOCK_LOGIN = new Set(['empresa-2'])
 const CHAVE_RESET_WIZARD_DEMO = 'demoWizardResetadoV2'
-const CHAVE_DEMO_ALUNO_PERFIL = 'demoAlunoPerfilAtualizadoV2'
+const CHAVE_DEMO_ALUNO_PERFIL = 'demoAlunoPerfilAtualizadoV3'
 const CHAVE_AVANADE_EMPRESA = 'avanadeEmpresaAtualizadaV4'
 const CHAVE_AVANADE_VAGAS = 'avanadeVagasAtualizadasV5'
-const CHAVE_AVANADE_CANDIDATOS = 'avanadeCandidatosAtualizadosV3'
+const CHAVE_AVANADE_CANDIDATOS = 'avanadeCandidatosAtualizadosV4'
 const CHAVE_DEMO_CANDIDATURAS = 'demoCandidaturasAtualizadasV1'
 const VAGAS_MOCK_ANTIGAS = new Set(['vaga-2', 'vaga-3', 'vaga-4', 'vaga-5'])
 const CANDIDATOS_MOCK_ANTIGOS = new Set([
@@ -88,8 +88,8 @@ function normalizarAluno(usuario) {
 
   return {
     ...usuario,
-    fotoUrl: usuario.fotoUrl || base?.fotoUrl || '',
-    capaUrl: usuario.capaUrl || base?.capaUrl || '',
+    fotoUrl: usuario.id === DEMO_ALUNO_ID ? base?.fotoUrl || usuario.fotoUrl || '' : usuario.fotoUrl || base?.fotoUrl || '',
+    capaUrl: usuario.id === DEMO_ALUNO_ID ? base?.capaUrl || usuario.capaUrl || '' : usuario.capaUrl || base?.capaUrl || '',
     respostasWizard,
     wizardConcluido: Boolean(usuario.wizardConcluido || Object.keys(respostasWizard).length),
     cursosConcluidos: Array.isArray(usuario.cursosConcluidos) ? usuario.cursosConcluidos : [],
@@ -108,6 +108,24 @@ function normalizarAluno(usuario) {
       experiencias: perfilProfissionalBase.experiencias || '',
       certificadosExternos: perfilProfissionalBase.certificadosExternos || '',
       certificadosExternosArquivos: Array.isArray(perfilProfissionalBase.certificadosExternosArquivos) ? perfilProfissionalBase.certificadosExternosArquivos : [],
+    },
+  }
+}
+
+function sincronizarCandidatoBase(candidato) {
+  const base = candidatosMock.find((item) => item.id === candidato?.id)
+  if (!base) return candidato
+
+  return {
+    ...base,
+    ...candidato,
+    foto: candidato.foto || base.foto,
+    fotoUrl: base.fotoUrl || candidato.fotoUrl || '',
+    capaUrl: base.capaUrl || candidato.capaUrl || '',
+    curriculo: {
+      ...(base.curriculo || {}),
+      ...(candidato.curriculo || {}),
+      fotoUrl: base.curriculo?.fotoUrl || base.fotoUrl || candidato.curriculo?.fotoUrl || '',
     },
   }
 }
@@ -232,7 +250,7 @@ function carregarCandidatosIniciais() {
     return listaAtualizada
   }
 
-  const salvosLimpos = salvos.filter((candidato) => !CANDIDATOS_MOCK_ANTIGOS.has(candidato.id))
+  const salvosLimpos = salvos.filter((candidato) => !CANDIDATOS_MOCK_ANTIGOS.has(candidato.id)).map(sincronizarCandidatoBase)
   const idsSalvos = new Set(salvosLimpos.map((candidato) => candidato.id))
   const novosBase = candidatosMock.filter((candidato) => !idsSalvos.has(candidato.id))
   const normalizados = [...salvosLimpos, ...novosBase]

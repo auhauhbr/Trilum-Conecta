@@ -114,9 +114,15 @@ function listaSimples(valor) {
     .filter(Boolean)
 }
 
+
+
+
+
 function linkParecePlaceholder(link = '') {
   const texto = String(link).trim().toLowerCase()
   if (!texto) return true
+
+
   if (!texto.startsWith('http://') && !texto.startsWith('https://')) return true
 
   return ['link_do_video', 'exemplo', 'placeholder', 'abc7', 'abc8', 'abc9', 'watch?v=abc'].some((trecho) =>
@@ -127,6 +133,7 @@ function linkParecePlaceholder(link = '') {
 function trilhaEhProfissional(trilha) {
   return String(`${trilha.id} ${trilha.titulo}`).toLowerCase().includes('profissional')
 }
+//non ecziste
 
 export function validarCatalogo({ emitirAvisos = false } = {}) {
   const problemas = []
@@ -135,6 +142,7 @@ export function validarCatalogo({ emitirAvisos = false } = {}) {
 
   registrarDuplicados(cursos, 'Curso', problemas)
   registrarDuplicados(trilhas, 'Trilha', problemas)
+  ///
 
   trilhasObrigatoriasParaRecomendacao.forEach((id) => {
     if (!trilhasPorId.has(id)) {
