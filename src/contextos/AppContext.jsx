@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState } from 'react'
 import { empresas as empresasBase } from '../dados/empresas'
-import { candidatosMock, criarCandidatoDemoEmpresa, criarVagaDemoEmpresa, vagas as vagasBase } from '../dados/vagas'
+import { candidatosMock, criarCandidatosDemoEmpresa, criarVagaDemoEmpresa, vagas as vagasBase } from '../dados/vagas'
 import { usuarios as usuariosBase } from '../dados/usuarios'
 import { lerStorage, removerStorage, salvarStorage } from '../servicos/storage'
 
@@ -21,7 +21,7 @@ const DEMO_ALUNO_ID = 'aluno-1'
 const DEMO_EMPRESA_ID = 'empresa-1'
 const CONTAS_MOCK_LOGIN = new Set(['empresa-2'])
 const CHAVE_RESET_WIZARD_DEMO = 'demoWizardResetadoV2'
-const CHAVE_DEMO_ALUNO_PERFIL = 'demoAlunoPerfilAtualizadoV1'
+const CHAVE_DEMO_ALUNO_PERFIL = 'demoAlunoPerfilAtualizadoV2'
 const CHAVE_AVANADE_EMPRESA = 'avanadeEmpresaAtualizadaV4'
 const CHAVE_AVANADE_VAGAS = 'avanadeVagasAtualizadasV5'
 const CHAVE_AVANADE_CANDIDATOS = 'avanadeCandidatosAtualizadosV3'
@@ -313,7 +313,13 @@ function carregarEstadoInicial() {
           ? normalizarAluno({
               ...usuario,
               bio: alunoDemoBase.bio,
+              foto: alunoDemoBase.foto,
+              fotoUrl: alunoDemoBase.fotoUrl,
               capaUrl: alunoDemoBase.capaUrl,
+              curriculo: {
+                ...(usuario.curriculo || {}),
+                fotoUrl: alunoDemoBase.fotoUrl,
+              },
             })
           : usuario,
       )
@@ -476,11 +482,11 @@ export function AppProvider({ children }) {
       email: normalizarEmail(dados.email),
     }
     const vagaDemo = criarVagaDemoEmpresa(nova.id)
-    const candidatoDemo = criarCandidatoDemoEmpresa(vagaDemo.id)
+    const candidatosDemo = criarCandidatosDemoEmpresa(vagaDemo.id)
 
     setEmpresasPersistido((lista) => [...lista, nova])
     setVagasPersistidas((lista) => [vagaDemo, ...lista])
-    setCandidatosPersistidos((lista) => [candidatoDemo, ...lista])
+    setCandidatosPersistidos((lista) => [...candidatosDemo, ...lista])
     setUsuarioAtual(nova)
     salvarStorage('usuarioAtual', nova)
     return { ok: true, usuario: nova }

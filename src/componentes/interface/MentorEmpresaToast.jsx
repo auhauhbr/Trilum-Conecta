@@ -85,7 +85,7 @@ export function MentorEmpresaToast({
       if (semCandidatos) {
         return {
           mensagem:
-            'Uma das vagas ainda nao recebeu candidatos. Revise se o titulo esta claro, se o salário aparece e se as tecnologias estão bem marcadas.',
+            'Uma das vagas ainda não recebeu candidatos. Revise se o título é claro, se o salário aparece e se as tecnologias estão bem marcadas.',
         }
       }
     }

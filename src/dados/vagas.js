@@ -1,4 +1,5 @@
 import jeffersonSantosPerfil from '../ativos/imagens/jefferson-santos-perfil.jpg'
+import macacoPhpCapa from '../ativos/imagens/macacophp.webp'
 import rafaelSouzaPerfil from '../ativos/imagens/rafael-souza-perfil.webp'
 
 export const vagas = [
@@ -230,7 +231,7 @@ export function criarVagaDemoEmpresa(empresaId) {
     salario: 'R$ 2.200 - R$ 3.000',
     status: 'ativa',
     publicadaEm: new Date().toISOString().slice(0, 10),
-    candidatos: 1,
+    candidatos: 2,
     tags: ['suporte', 'redes', 'microsoft-365', 'windows', 'linux'],
     descricao:
       'Vaga demo criada automaticamente para a empresa testar gerenciamento, edicao, candidatos, perfil e exportacao de curriculo.',
@@ -249,14 +250,25 @@ export function criarVagaDemoEmpresa(empresaId) {
   }
 }
 
-export function criarCandidatoDemoEmpresa(vagaId) {
-  const base = candidatosMock.find((candidato) => candidato.id === 'cand-2')
+function criarCandidatoDemoPorBase(vagaId, idBase, sufixo) {
+  const base = candidatosMock.find((candidato) => candidato.id === idBase)
   return {
     ...base,
-    id: `cand-demo-${vagaId}`,
+    id: `cand-demo-${sufixo}-${vagaId}`,
     vagaId,
-    status: 'Em andamento',
+    status: base?.status || 'Em andamento',
   }
+}
+
+export function criarCandidatosDemoEmpresa(vagaId) {
+  return [
+    criarCandidatoDemoPorBase(vagaId, 'cand-2', 'rafael'),
+    criarCandidatoDemoPorBase(vagaId, 'cand-jefferson-avanade', 'jefferson'),
+  ].filter((candidato) => candidato.nome)
+}
+
+export function criarCandidatoDemoEmpresa(vagaId) {
+  return criarCandidatosDemoEmpresa(vagaId)[0]
 }
 
 export const candidatosMock = [
@@ -282,6 +294,7 @@ export const candidatosMock = [
     email: 'jefferson@riseup.demo',
     foto: 'JS',
     fotoUrl: jeffersonSantosPerfil,
+    capaUrl: macacoPhpCapa,
     bio:
       'Desenvolvedor Backend em transicao de carreira, focado na construcao de APIs robustas e escalaveis com Java e Spring Boot. Possui dominio solido nos fundamentos de HTTP e arquitetura REST, Clean Code e versionamento com Git/GitHub.',
     cursos: ['Front-end com HTML, CSS e JavaScript', 'Git e GitHub para Projetos', 'LinkedIn para Primeira Vaga'],
@@ -306,6 +319,7 @@ export const candidatosMock = [
       ],
     },
     curriculo: {
+      fotoUrl: jeffersonSantosPerfil,
       titulo: 'Estudante de tecnologia',
       objetivo: 'Conquistar uma primeira oportunidade em TI, aplicando meus estudos e evoluindo com projetos reais.',
       competencias: 'Comunicacao\nOrganizacao\nAprendizado continuo\nResolucao de problemas',
