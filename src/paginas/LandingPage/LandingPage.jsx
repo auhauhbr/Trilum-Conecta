@@ -1,12 +1,12 @@
 import { ArrowRight } from 'lucide-react'
-import { TbBrandGithub } from 'react-icons/tb'
+import { TbBrandGithub, TbBrandLinkedin } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
 import { MentorLandingToast } from '../../componentes/interface/MentorLandingToast'
 import brunoAvatar from '../../ativos/imagens/equipe/bruno-v-m-silva.jpg'
-import eduardoAvatar from '../../ativos/imagens/equipe/eduardo-farias.jpg'
-import eltonAvatar from '../../ativos/imagens/equipe/elton-bezerra-da-silva.jpg'
+import eduardoAvatar from '../../ativos/imagens/equipe/eduardo-farias.png'
+import eltonAvatar from '../../ativos/imagens/equipe/elton-bezerra-da-silva.png'
 import evertonAvatar from '../../ativos/imagens/equipe/everton-m-silva.jpg'
-import gabrielAvatar from '../../ativos/imagens/equipe/gabriel-monteiro.jpg'
+import gabrielAvatar from '../../ativos/imagens/equipe/gabriel-monteiro.png'
 import jeffersonAvatar from '../../ativos/imagens/equipe/jefferson-santos.jpg'
 import logoPlataforma from '../../ativos/imagens/logo-plataforma.png'
 import oportunidadesImg from '../../ativos/imagens/oportunidades-ia.webp'
@@ -55,6 +55,7 @@ const membrosEquipe = [
     foto: gabrielAvatar,
     iniciais: 'GM',
     github: 'https://github.com/gbrlmonteiron',
+    linkedin: 'https://www.linkedin.com/in/gabriel-monteiro-45b8411b8/',
   },
 ]
 
@@ -255,7 +256,22 @@ export function LandingPage() {
           {membrosEquipe.map((membro) => (
             <article className="team-card" key={membro.nome}>
               <div className="team-avatar" aria-hidden="true">
-                {membro.foto ? <img src={membro.foto} alt="" loading="lazy" /> : <span>{membro.iniciais}</span>}
+                {membro.foto ? (
+                  <>
+                    <img
+                      src={membro.foto}
+                      alt=""
+                      loading="lazy"
+                      onError={(evento) => {
+                        evento.currentTarget.hidden = true
+                        evento.currentTarget.nextElementSibling.hidden = false
+                      }}
+                    />
+                    <span hidden>{membro.iniciais}</span>
+                  </>
+                ) : (
+                  <span>{membro.iniciais}</span>
+                )}
               </div>
               <h3>{membro.nome}</h3>
               <p>{membro.faculdade}</p>
@@ -268,6 +284,11 @@ export function LandingPage() {
                   <span title="GitHub em breve" aria-label={`GitHub de ${membro.nome} em breve`}>
                     <TbBrandGithub size={20} />
                   </span>
+                )}
+                {membro.linkedin && (
+                  <a href={membro.linkedin} target="_blank" rel="noreferrer" aria-label={`LinkedIn de ${membro.nome}`}>
+                    <TbBrandLinkedin size={20} />
+                  </a>
                 )}
               </div>
             </article>
