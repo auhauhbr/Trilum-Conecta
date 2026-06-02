@@ -37,6 +37,8 @@ export function MentorEmpresaToast({
   candidatos = [],
   candidaturas = [],
   formularioVaga,
+  onEditarPerfil,
+  onAutocompletarPerfil,
 }) {
   const chave = `trilum:mentor-empresa:${empresaAtual?.id || 'empresa'}:${tela}`
   const [fechado, setFechado] = useState(() => lerStorage(chave, false))
@@ -56,7 +58,12 @@ export function MentorEmpresaToast({
       return {
         saudacao: 'Ei, pessoal da empresa, antes de acelerar as vagas vale revisar isso:',
         itens: perfil.avisos,
-        acao: { to: '/empresa/perfil', label: 'Atualizar perfil' },
+        acao: onEditarPerfil
+          ? { onClick: onEditarPerfil, label: 'Atualizar perfil' }
+          : { to: '/empresa/perfil', label: 'Atualizar perfil' },
+        acaoSecundaria: onAutocompletarPerfil
+          ? { onClick: onAutocompletarPerfil, label: 'Autocompletar vazios', prefixo: 'ou' }
+          : null,
       }
     }
 
@@ -93,7 +100,7 @@ export function MentorEmpresaToast({
     return {
       mensagem: mensagensPorTela[tela] || mensagensPorTela.painel,
     }
-  }, [candidatos, candidaturas, empresaAtual, formularioVaga, tela, vagaAtual, vagas])
+  }, [candidatos, candidaturas, empresaAtual, formularioVaga, onAutocompletarPerfil, onEditarPerfil, tela, vagaAtual, vagas])
 
   if (fechado) {
     return <MentorCompactadoButton posicao="direita" onClick={() => setFechado(false)} />
@@ -111,6 +118,7 @@ export function MentorEmpresaToast({
       itens={conteudo.itens || []}
       mensagem={conteudo.mensagem}
       acao={conteudo.acao}
+      acaoSecundaria={conteudo.acaoSecundaria}
       posicao="direita"
       onClose={fechar}
     />

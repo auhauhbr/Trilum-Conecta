@@ -86,6 +86,34 @@ const ajudaCamposEmpresa = {
   beneficios: 'Beneficios e atrativos para candidatos. Ex: Trabalho remoto, Certificacoes pagas, PLR. Separe por virgula.',
 }
 
+const perfilNexaFlow = {
+  nome: 'NexaFlow',
+  nomeOficial: 'NexaFlow Solucoes Inteligentes e Tecnologia Ltda.',
+  descricao:
+    'Nascida em 2022 com o proposito de desmistificar a Inteligencia Artificial, a NexaFlow e uma scale-up focada em criar ecossistemas de automacao para o mercado corporativo. Nos transformamos o caos de dados e processos manuais em fluxos de trabalho fluidos, eficientes e preditivos. Nossa cultura e pautada na autonomia, na transparencia radical e no equilibrio entre vida pessoal e profissional. Acreditamos que tecnologia de ponta so e feita por pessoas que tem espaco para criar, errar e evoluir.',
+  descricaoCurta: 'Transformando dados complexos em fluxos de trabalho inteligentes e automaticos.',
+  setor: 'Tecnologia e Inteligencia Artificial',
+  tamanho: '100-500 funcionarios',
+  sede: 'Recife, PE',
+  localizacao: 'Cais do Apolo, 222 - Bairro do Recife, Recife - PE, 50030-230',
+  hub: 'Porto Digital',
+  site: 'https://www.nexaflow.ficticio.com',
+  instagram: 'https://www.instagram.com/nexaflow.tech',
+  linkedin: 'https://www.linkedin.com/company/nexaflow-tech',
+  youtube: 'https://www.youtube.com/@nexaflow-inside',
+  logo: 'NF',
+  capa: 'linear-gradient(120deg, rgba(10, 37, 64, 0.96), rgba(20, 184, 166, 0.72))',
+  especialidades: 'Inteligencia Artificial, Automacao de Processos (RPA), Big Data, Cloud Architecture, Engenharia de Dados',
+  stackDetalhes: 'Python, TypeScript, React, Node.js, AWS (Lambda, S3, Redshift), Docker, Kubernetes, PostgreSQL',
+  beneficios:
+    'Trabalho 100% remoto com ajuda de custo, Horario flexivel, Short Friday, Participacao nos Lucros e Resultados semestral, Orcamento anual individual para cursos e certificacoes, Plano de saude e odontologico integral',
+}
+
+function estaVazio(valor) {
+  if (Array.isArray(valor)) return valor.length === 0
+  return !String(valor || '').trim()
+}
+
 export function PerfilEmpresa() {
   const navigate = useNavigate()
   const { usuarioAtual, atualizarEmpresa, vagasEmpresa, candidatos, candidaturas, logout } = useApp()
@@ -96,6 +124,19 @@ export function PerfilEmpresa() {
 
   function atualizar(campo, valor) {
     setForm((atual) => ({ ...atual, [campo]: valor }))
+  }
+
+  function autocompletarVazios() {
+    setEditando(true)
+    setForm((atual) => {
+      const preenchido = { ...atual }
+      Object.entries(perfilNexaFlow).forEach(([campo, valor]) => {
+        if (estaVazio(preenchido[campo])) {
+          preenchido[campo] = valor
+        }
+      })
+      return preenchido
+    })
   }
 
   function salvar() {
@@ -367,6 +408,8 @@ export function PerfilEmpresa() {
         vagas={vagas}
         candidatos={candidatos}
         candidaturas={candidaturas}
+        onEditarPerfil={() => setEditando(true)}
+        onAutocompletarPerfil={editando ? autocompletarVazios : null}
       />
     </section>
   )

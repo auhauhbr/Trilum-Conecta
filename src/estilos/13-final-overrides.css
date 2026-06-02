@@ -1732,13 +1732,33 @@
 }
 
 .mentor-feedback-action {
-  display: inline-block;
+  display: inline-flex;
   width: fit-content;
-  margin-top: 10px;
+  border: 0;
+  background: transparent;
   color: #7dd3fc;
   font-size: 13px;
   font-weight: 900;
   text-decoration: none;
+  cursor: pointer;
+}
+
+.mentor-feedback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.mentor-feedback-action-prefix {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mentor-feedback-action-secondary {
+  color: #fff;
 }
 
 .mentor-feedback-close {

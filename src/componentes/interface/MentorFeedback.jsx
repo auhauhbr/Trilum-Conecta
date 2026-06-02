@@ -56,7 +56,16 @@ function exemploDoItem(item) {
   return exemplosPorCaso.find((caso) => caso.termos.some((termo) => texto.includes(termo)))
 }
 
-export function MentorFeedback({ saudacao, titulo = 'Mentor', itens = [], mensagem = '', acao, posicao = 'direita', onClose }) {
+export function MentorFeedback({
+  saudacao,
+  titulo = 'Mentor',
+  itens = [],
+  mensagem = '',
+  acao,
+  acaoSecundaria,
+  posicao = 'direita',
+  onClose,
+}) {
   const [exemplosAbertos, setExemplosAbertos] = useState({})
   const [verMais, setVerMais] = useState({})
   const temConteudo = itens.length > 0 || mensagem
@@ -128,15 +137,31 @@ export function MentorFeedback({ saudacao, titulo = 'Mentor', itens = [], mensag
               {mensagemDetalhe && <p className="mentor-feedback-message-detail">{mensagemDetalhe}</p>}
             </>
           )}
-          {acao?.to ? (
-            <Link className="mentor-feedback-action" to={acao.to}>
-              {acao.label}
-            </Link>
-          ) : acao ? (
-            <a className="mentor-feedback-action" href={acao.href}>
-              {acao.label}
-            </a>
-          ) : null}
+          {(acao || acaoSecundaria) && (
+            <div className="mentor-feedback-actions">
+              {acao?.to ? (
+                <Link className="mentor-feedback-action" to={acao.to}>
+                  {acao.label}
+                </Link>
+              ) : acao?.onClick ? (
+                <button type="button" className="mentor-feedback-action" onClick={acao.onClick}>
+                  {acao.label}
+                </button>
+              ) : acao ? (
+                <a className="mentor-feedback-action" href={acao.href}>
+                  {acao.label}
+                </a>
+              ) : null}
+              {acaoSecundaria?.onClick && (
+                <>
+                  {acaoSecundaria.prefixo && <span className="mentor-feedback-action-prefix">{acaoSecundaria.prefixo}</span>}
+                  <button type="button" className="mentor-feedback-action mentor-feedback-action-secondary" onClick={acaoSecundaria.onClick}>
+                    {acaoSecundaria.label}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
         <img className="mentor-feedback-robot" src={robo} alt="" aria-hidden="true" />
       </div>
