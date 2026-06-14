@@ -52,14 +52,207 @@ function modulosDeCursos(ids) {
   return ids.flatMap(modulosDoCurso)
 }
 
-function criarTrilhaComCursos({ cursoIds = [], duracao, ...trilha }) {
-  const duracaoCalculada = duracaoDeCursos(cursoIds)
+const estruturaPorTrilha = {
+  'informatica-essencial': { familia: 'fundamentos' },
+  'logica-algoritmos': { familia: 'fundamentos' },
+  'git-github': { familia: 'git' },
+  'javascript-frontend': {
+    familia: 'frontend-base',
+    preRequisitos: ['curso-logica-zero', 'curso-git-github'],
+    cursoIds: ['curso-html-css-js', 'curso-js-dom'],
+    complementos: ['fundamentos-http-api-web', 'curso-portfolio-entrevista'],
+  },
+  'frontend-base-portfolio': {
+    familia: 'frontend-base',
+    preRequisitos: ['curso-git-github'],
+    cursoIds: ['curso-html-css-js', 'curso-js-dom', 'curso-portfolio-entrevista'],
+    complementos: ['curso-git-github-equipes', 'curso-linkedin-sem-experiencia'],
+  },
+  'react-frontend': {
+    familia: 'frontend-react',
+    tecnologias: ['nextjs', 'tailwind'],
+    preRequisitos: ['curso-html-css-js', 'curso-js-dom', 'curso-git-github'],
+    cursoIds: ['curso-react-basico', 'curso-react-dashboard', 'curso-nextjs-14-completo'],
+    complementos: ['curso-tailwind-css-basico', 'fundamentos-http-api-web', 'curso-portfolio-entrevista'],
+  },
+  'angular-frontend': {
+    familia: 'frontend-angular',
+    preRequisitos: ['curso-html-css-js', 'curso-logica-typescript', 'curso-git-github'],
+    cursoIds: ['curso-angular-basico', 'curso-rest-api-fundamentos'],
+    complementos: ['curso-docker-basico', 'curso-portfolio-entrevista'],
+  },
+  'frontend-angular-profissional': {
+    familia: 'frontend-angular',
+    preRequisitos: ['curso-html-css-js', 'curso-logica-typescript', 'curso-git-github'],
+    cursoIds: ['curso-angular-basico', 'curso-design-system-figma', 'devops-cloud-ci-cd', 'curso-portfolio-entrevista'],
+    complementos: ['curso-docker-basico'],
+  },
+  'node-backend': {
+    familia: 'backend-node',
+    preRequisitos: ['curso-git-github', 'fundamentos-http-api-web', 'curso-sql-consultas'],
+    cursoIds: ['curso-node-api', 'curso-node-crud', 'curso-mongodb-basico-avancado'],
+    complementos: ['seguranca-software-owasp', 'curso-docker-basico', 'curso-portfolio-entrevista'],
+  },
+  'backend-node-api-profissional': {
+    familia: 'backend-node',
+    preRequisitos: ['curso-git-github', 'fundamentos-http-api-web', 'curso-sql-consultas'],
+    cursoIds: ['curso-node-api', 'curso-node-crud', 'curso-mongodb-basico-avancado', 'seguranca-software-owasp'],
+    complementos: ['curso-docker-basico', 'curso-portfolio-entrevista'],
+  },
+  'backend-api-base': {
+    familia: 'backend-base',
+    preRequisitos: ['curso-logica-zero', 'curso-git-github'],
+    cursoIds: ['fundamentos-http-api-web', 'curso-rest-api-fundamentos', 'curso-sql-consultas'],
+    complementos: ['curso-node-api', 'curso-portfolio-entrevista'],
+  },
+  'java-spring': {
+    familia: 'backend-java',
+    preRequisitos: ['curso-git-github', 'fundamentos-http-api-web', 'curso-sql-consultas'],
+    cursoIds: ['curso-java-poo', 'curso-java-spring-api', 'curso-spring-boot-api-erudio', 'curso-testes-unitarios-junit-mockito'],
+    complementos: ['curso-docker-basico'],
+  },
+  'backend-java-profissional': {
+    familia: 'backend-java',
+    preRequisitos: ['curso-logica-zero', 'curso-git-github', 'fundamentos-http-api-web', 'curso-sql-consultas'],
+    cursoIds: [
+      'curso-java-poo',
+      'curso-java-spring-api',
+      'curso-spring-boot-api-erudio',
+      'curso-testes-unitarios-junit-mockito',
+      'curso-design-patterns-poo',
+      'curso-arquitetura-limpa-java',
+      'curso-mensageria-microservices',
+    ],
+    complementos: ['curso-docker-basico', 'devops-cloud-ci-cd', 'seguranca-software-owasp', 'curso-portfolio-entrevista'],
+  },
+  'php-backend': {
+    familia: 'backend-php',
+    preRequisitos: ['curso-git-github', 'curso-sql-consultas', 'fundamentos-http-api-web'],
+    cursoIds: ['curso-php-iniciante', 'curso-jwt-php'],
+    complementos: ['seguranca-software-owasp'],
+  },
+  'backend-php-web-profissional': {
+    familia: 'backend-php',
+    preRequisitos: ['curso-git-github', 'curso-sql-consultas', 'fundamentos-http-api-web'],
+    cursoIds: ['curso-php-iniciante', 'curso-rest-api-fundamentos', 'curso-jwt-php', 'seguranca-software-owasp'],
+    complementos: ['curso-portfolio-entrevista'],
+  },
+  'go-backend': {
+    familia: 'backend-go',
+    preRequisitos: ['curso-git-github', 'fundamentos-http-api-web'],
+    cursoIds: ['curso-go-basico', 'curso-go-api'],
+  },
+  'backend-csharp-dotnet': {
+    familia: 'backend-csharp',
+    preRequisitos: ['curso-git-github', 'fundamentos-http-api-web', 'curso-sql-consultas'],
+    cursoIds: ['curso-csharp-dotnet-iniciantes', 'curso-dotnet-api-crud', 'curso-postgresql-basico'],
+    complementos: ['seguranca-software-owasp'],
+  },
+  'python-dados': {
+    familia: 'dados',
+    tecnologias: ['postgresql', 'power-bi', 'fastapi'],
+    preRequisitos: ['curso-git-github', 'curso-sql-consultas'],
+    cursoIds: ['curso-python-basico', 'curso-python-dados', 'curso-power-bi-basico'],
+    complementos: ['curso-postgresql-basico', 'curso-fastapi-python', 'curso-portfolio-entrevista'],
+  },
+  'dados-base-primeira-vaga': {
+    familia: 'dados',
+    tecnologias: ['postgresql', 'power-bi'],
+    preRequisitos: ['curso-logica-zero', 'curso-git-github'],
+    cursoIds: ['curso-python-basico', 'curso-sql-consultas', 'curso-power-bi-basico'],
+    complementos: ['curso-linkedin-sem-experiencia', 'curso-portfolio-entrevista'],
+  },
+  'dados-python-sql-profissional': {
+    familia: 'dados',
+    tecnologias: ['postgresql', 'power-bi', 'fastapi'],
+    preRequisitos: ['curso-git-github'],
+    cursoIds: ['curso-python-dados', 'curso-postgresql-basico', 'curso-power-bi-basico', 'curso-mongodb-basico-avancado'],
+    complementos: ['curso-fastapi-python', 'curso-portfolio-entrevista'],
+  },
+  'sql-banco-dados': {
+    familia: 'dados-sql',
+    tecnologias: ['postgresql'],
+    cursoIds: ['curso-sql-consultas', 'curso-postgresql-basico'],
+  },
+  'devops-base-docker': {
+    familia: 'devops',
+    preRequisitos: ['curso-git-github'],
+    cursoIds: ['linux-para-iniciantes', 'curso-docker-basico'],
+    complementos: ['curso-seguranca-informacao-pratica', 'fundamentos-http-api-web'],
+  },
+  'devops-docker-cloud': {
+    familia: 'devops',
+    preRequisitos: ['curso-git-github'],
+    cursoIds: ['linux-para-iniciantes', 'curso-docker-basico', 'curso-cloud-deploy', 'curso-aws-cloud-practitioner', 'devops-cloud-ci-cd'],
+    complementos: ['curso-seguranca-informacao-pratica', 'seguranca-software-owasp', 'fundamentos-http-api-web'],
+  },
+  'devops-cloud-profissional': {
+    familia: 'devops',
+    preRequisitos: ['curso-git-github'],
+    cursoIds: ['curso-docker-basico', 'curso-cloud-deploy', 'curso-aws-cloud-practitioner', 'devops-cloud-ci-cd'],
+    complementos: ['linux-para-iniciantes', 'curso-seguranca-informacao-pratica', 'seguranca-software-owasp', 'fundamentos-http-api-web'],
+  },
+  'linux-fundamentos': {
+    familia: 'devops-linux',
+    preRequisitos: ['curso-git-github'],
+    cursoIds: ['linux-para-iniciantes'],
+  },
+  'seguranca-informacao': { familia: 'seguranca' },
+  'api-http-rest': { familia: 'api' },
+  'qa-testes': {
+    familia: 'qa',
+    preRequisitos: ['curso-git-github'],
+    cursoIds: ['qa-manual-e-automacao-completo', 'fundamentos-http-api-web', 'testes-api-rest-completo'],
+    complementos: ['curso-portfolio-entrevista'],
+  },
+  'qa-base-primeira-vaga': {
+    familia: 'qa',
+    preRequisitos: ['curso-logica-zero', 'curso-git-github'],
+    cursoIds: ['qa-manual-e-automacao-completo', 'fundamentos-http-api-web', 'curso-rest-api-fundamentos'],
+    complementos: ['curso-linkedin-sem-experiencia', 'curso-portfolio-entrevista'],
+  },
+  'qa-automacao-profissional': {
+    familia: 'qa',
+    tecnologias: ['playwright'],
+    preRequisitos: ['curso-git-github', 'fundamentos-http-api-web'],
+    cursoIds: ['qa-manual-e-automacao-completo', 'curso-cypress-automacao-testes', 'curso-playwright-automacao-testes', 'testes-api-rest-completo'],
+    complementos: ['devops-cloud-ci-cd', 'curso-docker-basico', 'seguranca-software-owasp'],
+  },
+  'suporte-tecnico-inicial': { familia: 'suporte' },
+  'produto-suporte-carreira': {
+    familia: 'suporte',
+    cursoIds: ['curso-info-computador', 'qa-manual-e-automacao-completo', 'curso-oratoria-kultivi', 'curso-ingles-docs'],
+    complementos: ['curso-git-github', 'curso-portfolio-entrevista'],
+  },
+  'ingles-tech': { familia: 'carreira' },
+  'carreira-comunicacao': { familia: 'carreira' },
+  'primeira-vaga-portfolio': {
+    familia: 'carreira',
+    preRequisitos: ['curso-git-github'],
+    cursoIds: ['curso-linkedin-sem-experiencia', 'curso-empregabilidade-linkedin-ia', 'curso-portfolio-entrevista'],
+  },
+}
+
+function criarTrilhaComCursos({ id, cursoIds = [], preRequisitos = [], complementos = [], duracao, ...trilha }) {
+  const estrutura = estruturaPorTrilha[id] || {}
+  const cursosPrincipais = estrutura.cursoIds || cursoIds
+  const requisitos = estrutura.preRequisitos || preRequisitos
+  const cursosComplementares = estrutura.complementos || complementos
+  const cursoPrincipal = cursoPorId(cursosPrincipais[0])
+  const duracaoCalculada = duracaoDeCursos(cursosPrincipais)
 
   return {
+    id,
     ...trilha,
+    familia: estrutura.familia || trilha.familia || 'fundamentos',
+    tecnologias: [...new Set([...(trilha.tecnologias || []), ...(estrutura.tecnologias || [])])],
     duracao: duracaoCalculada || duracao || '0m',
-    cursoIds,
-    modulos: modulosDeCursos(cursoIds),
+    preRequisitos: requisitos,
+    cursoIds: cursosPrincipais,
+    complementos: cursosComplementares,
+    cursoPrincipal,
+    thumbnailUrl: trilha.thumbnailUrl || cursoPrincipal?.thumbnailUrl,
+    modulos: modulosDeCursos(cursosPrincipais),
   }
 }
 
@@ -369,6 +562,20 @@ export const trilhas = [
     descricao: 'Aprenda Go com fundamentos, APIs, HTTP e Git para construir servicos simples e publicaveis.',
     destaque: 'Escolha direta para quem tem interesse explicito em Go.',
     cursoIds: ['curso-go-basico', 'fundamentos-http-api-web', 'curso-go-api', 'curso-git-github'],
+  }),
+  criarTrilhaComCursos({
+    id: 'backend-csharp-dotnet',
+    titulo: 'Back-end com C# e .NET',
+    categoria: 'Back-end',
+    area: 'backend',
+    nivel: 'Intermediario',
+    tempoSugerido: '9 semanas',
+    tecnologias: ['csharp', 'dotnet', 'api-rest', 'sql', 'postgresql'],
+    ordemBase: 37,
+    tags: ['csharp', 'dotnet', 'backend', 'api', 'api-rest', 'crud', 'sql', 'postgresql', 'seguranca'],
+    descricao: 'Evolua dos fundamentos de C# e .NET para uma API CRUD conectada a banco de dados e boas praticas de seguranca.',
+    destaque: 'Jornada direcionada para quem escolheu explicitamente C# ou .NET.',
+    cursoIds: ['curso-csharp-dotnet-iniciantes', 'curso-dotnet-api-crud', 'curso-postgresql-basico'],
   }),
   criarTrilhaComCursos({
     id: 'python-dados',

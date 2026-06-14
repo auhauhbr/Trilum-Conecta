@@ -33,6 +33,7 @@ const trilhasObrigatoriasParaRecomendacao = [
   'php-backend',
   'backend-php-web-profissional',
   'go-backend',
+  'backend-csharp-dotnet',
   'python-dados',
   'dados-base-primeira-vaga',
   'dados-python-sql-profissional',
@@ -139,6 +140,8 @@ export function validarCatalogo({ emitirAvisos = false } = {}) {
   const problemas = []
   const cursosPorId = new Map(cursos.map((curso) => [curso.id, curso]))
   const trilhasPorId = new Map(trilhas.map((trilha) => [trilha.id, trilha]))
+  const usosComoCursoPrincipal = new Map()
+  const tecnologiasNovas = ['csharp', 'dotnet', 'nextjs', 'postgresql', 'fastapi', 'power-bi', 'playwright', 'tailwind']
 
   registrarDuplicados(cursos, 'Curso', problemas)
   registrarDuplicados(trilhas, 'Trilha', problemas)
@@ -183,11 +186,45 @@ export function validarCatalogo({ emitirAvisos = false } = {}) {
 
   trilhas.forEach((trilha) => {
     if (!trilha.tecnologias?.length) problemas.push(`Trilha sem tecnologia: ${trilha.id}`)
+    if (!trilha.familia) problemas.push(`Trilha sem familia: ${trilha.id}`)
     if (!niveisValidos.has(String(trilha.nivel || '').toLowerCase())) problemas.push(`Trilha com nivel fora do padrao: ${trilha.id}`)
     if ('cursoIds' in trilha && !trilha.cursoIds?.length) problemas.push(`Trilha com cursoIds vazio: ${trilha.id}`)
+    if (!Array.isArray(trilha.preRequisitos)) problemas.push(`Trilha sem lista de preRequisitos: ${trilha.id}`)
+    if (!Array.isArray(trilha.complementos)) problemas.push(`Trilha sem lista de complementos: ${trilha.id}`)
 
-    if (trilhasJornadaObrigatoria.has(trilha.id) && (!trilha.cursoIds || trilha.cursoIds.length < 3)) {
-      problemas.push(`Trilha de jornada com menos de 3 cursos: ${trilha.id}`)
+    const listasDaTrilha = [
+      ['curso principal', trilha.cursoIds],
+      ['pre-requisito', trilha.preRequisitos],
+      ['complemento', trilha.complementos],
+    ]
+
+    listasDaTrilha.forEach(([tipo, ids]) => {
+      ids?.forEach((cursoId) => {
+        if (!cursosPorId.has(cursoId)) problemas.push(`Trilha ${trilha.id} aponta para ${tipo} inexistente: ${cursoId}`)
+      })
+    })
+
+    const requisitos = new Set(trilha.preRequisitos || [])
+    const complementos = new Set(trilha.complementos || [])
+    trilha.cursoIds?.forEach((cursoId) => {
+      const usos = usosComoCursoPrincipal.get(cursoId) || []
+      usos.push(trilha.id)
+      usosComoCursoPrincipal.set(cursoId, usos)
+
+      if (requisitos.has(cursoId)) problemas.push(`Trilha ${trilha.id} repete curso principal como pre-requisito: ${cursoId}`)
+      if (complementos.has(cursoId)) problemas.push(`Trilha ${trilha.id} repete curso principal como complemento: ${cursoId}`)
+    })
+
+    if (trilha.id !== 'git-github' && trilha.cursoIds?.[0] === 'curso-git-github') {
+      problemas.push(`Trilha usa Git como primeiro curso principal em vez de pre-requisito: ${trilha.id}`)
+    }
+
+    if (trilha.preRequisitos?.includes(trilha.cursoPrincipal?.id)) {
+      problemas.push(`Thumbnail/curso principal da trilha usa pre-requisito: ${trilha.id}`)
+    }
+
+    if (trilhasJornadaObrigatoria.has(trilha.id) && (!trilha.cursoIds || trilha.cursoIds.length < 2)) {
+      problemas.push(`Trilha de jornada com menos de 2 cursos principais: ${trilha.id}`)
     }
 
     if (trilhaEhProfissional(trilha)) {
@@ -195,10 +232,6 @@ export function validarCatalogo({ emitirAvisos = false } = {}) {
       if ((trilha.cursoIds?.length || 0) < 4) problemas.push(`Trilha profissional com menos de 4 cursos: ${trilha.id}`)
       if (!trilhasProfissionaisComGate.has(trilha.id)) problemas.push(`Trilha profissional sem gate mapeado no recomendador: ${trilha.id}`)
     }
-
-    trilha.cursoIds?.forEach((cursoId) => {
-      if (!cursosPorId.has(cursoId)) problemas.push(`Trilha ${trilha.id} aponta para curso inexistente: ${cursoId}`)
-    })
 
     if (trilha.cursoIds?.length) {
       const duracaoCalculada = duracaoDosCursos(trilha.cursoIds.map((cursoId) => cursosPorId.get(cursoId)).filter(Boolean))
@@ -208,6 +241,18 @@ export function validarCatalogo({ emitirAvisos = false } = {}) {
         problemas.push(`Trilha com duracao divergente da soma dos cursos: ${trilha.id}`)
       }
     }
+  })
+
+  usosComoCursoPrincipal.forEach((trilhasDoCurso, cursoId) => {
+    if (trilhasDoCurso.length > 4) {
+      problemas.push(`Curso principal repetido em muitas trilhas (${trilhasDoCurso.length}): ${cursoId}`)
+    }
+  })
+
+  tecnologiasNovas.forEach((tecnologia) => {
+    const existeNoCatalogo = cursos.some((curso) => String(curso.tecnologia).toLowerCase() === tecnologia)
+    const existeEmTrilha = trilhas.some((trilha) => trilha.tecnologias?.includes(tecnologia))
+    if (existeNoCatalogo && !existeEmTrilha) problemas.push(`Tecnologia nova sem mapeamento em trilha: ${tecnologia}`)
   })
 
   if (emitirAvisos && problemas.length) {

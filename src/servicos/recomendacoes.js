@@ -5,11 +5,11 @@ import { vagas } from '../dados/vagas'
 
 const areasExploratorias = ['frontend', 'backend', 'dados', 'qa', 'produto-suporte']
 const tecnologiasPorArea = {
-  frontend: ['javascript', 'react', 'angular', 'html', 'css', 'typescript', 'design-system'],
-  backend: ['node', 'java', 'java-spring', 'php', 'go', 'sql', 'api', 'api-rest', 'mongodb', 'mensageria', 'seguranca', 'design-patterns'],
-  dados: ['python', 'sql', 'mongodb'],
+  frontend: ['javascript', 'react', 'nextjs', 'angular', 'html', 'css', 'tailwind', 'typescript', 'design-system'],
+  backend: ['node', 'java', 'java-spring', 'csharp', 'dotnet', 'fastapi', 'php', 'go', 'sql', 'postgresql', 'api', 'api-rest', 'mongodb', 'mensageria', 'seguranca', 'design-patterns'],
+  dados: ['python', 'sql', 'postgresql', 'mongodb', 'power-bi'],
   devops: ['docker-cloud', 'git-github', 'linux', 'seguranca', 'aws', 'cloud', 'ci-cd', 'devops'],
-  qa: ['qa', 'git-github', 'api', 'api-rest', 'testes-unitarios', 'cypress', 'docker-cloud'],
+  qa: ['qa', 'git-github', 'api', 'api-rest', 'testes-unitarios', 'cypress', 'playwright', 'docker-cloud'],
   'produto-suporte': ['informatica', 'git-github', 'qa', 'carreira', 'linux', 'seguranca'],
 }
 
@@ -40,19 +40,27 @@ const tecnologiaCanonica = {
   'testes-unitarios': 'qa',
   'arquitetura-software': 'java',
   'estrutura-de-dados': 'logica',
-  csharp: 'java',
+  dotnet: 'csharp',
+  nextjs: 'react',
+  postgresql: 'sql',
+  fastapi: 'python',
+  playwright: 'qa',
+  tailwind: 'css',
   aws: 'docker-cloud',
   cloud: 'docker-cloud',
   'ci-cd': 'docker-cloud',
 }
 
-const stacksProtegidasDevOps = ['angular', 'react', 'go', 'java', 'java-spring', 'php']
-const stacksExclusivas = ['angular', 'react', 'node', 'go', 'java', 'java-spring', 'php']
+const stacksProtegidasDevOps = ['angular', 'react', 'nextjs', 'node', 'go', 'java', 'java-spring', 'csharp', 'dotnet', 'fastapi', 'php']
+const stacksExclusivas = ['angular', 'react', 'nextjs', 'node', 'go', 'java', 'java-spring', 'csharp', 'dotnet', 'python', 'fastapi', 'php']
 const trilhasProtegidasDevOps = [
   'angular-frontend',
   'frontend-angular-profissional',
   'react-frontend',
+  'node-backend',
+  'backend-node-api-profissional',
   'go-backend',
+  'backend-csharp-dotnet',
   'java-spring',
   'backend-java-profissional',
   'backend-php-web-profissional',
@@ -105,16 +113,21 @@ const tecnologiasDeduplicaveis = new Set([
   'javascript',
   'typescript',
   'react',
+  'nextjs',
   'angular',
   'node',
   'python',
+  'fastapi',
   'java',
   'java-spring',
+  'csharp',
+  'dotnet',
   'testes-unitarios',
   'arquitetura-software',
   'php',
   'go',
   'sql',
+  'postgresql',
   'mongodb',
   'api',
   'api-rest',
@@ -127,6 +140,9 @@ const tecnologiasDeduplicaveis = new Set([
   'docker-cloud',
   'git-github',
   'qa',
+  'playwright',
+  'power-bi',
+  'tailwind',
 ])
 
 const dependenciasPorTecnologia = {
@@ -135,6 +151,14 @@ const dependenciasPorTecnologia = {
   typescript: ['javascript'],
   node: ['javascript', 'api'],
   'java-spring': ['java', 'sql', 'api-rest'],
+  csharp: ['api-rest', 'sql'],
+  dotnet: ['csharp', 'api-rest', 'sql'],
+  nextjs: ['react', 'javascript', 'typescript'],
+  postgresql: ['sql'],
+  fastapi: ['python', 'api-rest'],
+  'power-bi': ['sql'],
+  playwright: ['qa', 'javascript'],
+  tailwind: ['css', 'html'],
   'api-rest': ['api', 'sql'],
   mongodb: ['sql'],
   linux: ['git-github'],
@@ -150,6 +174,14 @@ const complementosPorTecnologia = {
   node: ['sql', 'git-github', 'mongodb', 'api-rest', 'mensageria', 'seguranca', 'docker-cloud'],
   'java-spring': ['sql', 'git-github', 'api-rest', 'testes-unitarios', 'arquitetura-software', 'design-patterns', 'mensageria', 'seguranca', 'docker-cloud'],
   java: ['sql', 'git-github', 'java-spring', 'api-rest', 'testes-unitarios', 'arquitetura-software', 'design-patterns', 'mensageria', 'seguranca', 'docker-cloud'],
+  csharp: ['dotnet', 'sql', 'git-github', 'api-rest', 'testes-unitarios', 'docker-cloud'],
+  dotnet: ['csharp', 'sql', 'git-github', 'api-rest', 'testes-unitarios', 'docker-cloud'],
+  nextjs: ['react', 'typescript', 'git-github', 'api-rest', 'docker-cloud'],
+  postgresql: ['sql', 'python', 'node', 'java', 'csharp'],
+  fastapi: ['python', 'sql', 'postgresql', 'git-github', 'api-rest', 'docker-cloud'],
+  'power-bi': ['sql', 'python'],
+  playwright: ['qa', 'javascript', 'typescript', 'git-github'],
+  tailwind: ['css', 'javascript', 'react', 'nextjs'],
   php: ['sql', 'git-github', 'api-rest', 'mongodb', 'seguranca'],
   go: ['sql', 'git-github', 'api-rest', 'design-patterns', 'docker-cloud'],
   python: ['sql', 'mongodb', 'git-github'],
@@ -176,7 +208,14 @@ const aliasesTecnologia = {
   'testes-unitarios': ['java'],
   'arquitetura-software': ['java'],
   'estrutura-de-dados': ['logica'],
-  csharp: ['java', 'api-rest'],
+  csharp: ['dotnet', 'api-rest'],
+  dotnet: ['csharp', 'api-rest'],
+  nextjs: ['react', 'javascript', 'typescript'],
+  postgresql: ['sql'],
+  fastapi: ['python', 'api-rest'],
+  'power-bi': ['dados', 'sql'],
+  playwright: ['qa'],
+  tailwind: ['css', 'frontend'],
   cypress: ['qa'],
   aws: ['docker-cloud'],
   cloud: ['docker-cloud'],
@@ -231,6 +270,11 @@ function chaveTecnologiaDeduplicacao(curso) {
   if (tecnologia === 'java-spring') return 'java'
   if (tecnologia === 'typescript') return 'javascript'
   if (tecnologia === 'api-rest') return 'api'
+  if (tecnologia === 'dotnet') return 'csharp'
+  if (tecnologia === 'nextjs') return 'react'
+  if (tecnologia === 'postgresql') return 'sql'
+  if (tecnologia === 'fastapi') return 'python'
+  if (tecnologia === 'playwright') return 'qa'
   if (!tecnologiasDeduplicaveis.has(tecnologia)) return ''
 
   return tecnologia
@@ -804,6 +848,7 @@ function pontuarCurso(curso, perfil, trilhasRecomendadas) {
   const ehCursoStackAlternativaExplicita =
     usuarioEscolheuStackExclusiva &&
     (stacksExclusivas.includes(tecnologiaCurso) || stacksExclusivas.includes(tecnologiaCursoCanonica)) &&
+    tecnologiaCursoCanonica !== tecnologiaPrincipalCanonica &&
     !ehCursoStackPrincipal
   const ehCursoBase = nivelCurso === 'iniciante' || nivelCurso === 'basico'
   const ehCursoIntermediario = nivelCurso === 'intermediario'
@@ -813,6 +858,8 @@ function pontuarCurso(curso, perfil, trilhasRecomendadas) {
 
   if (ehCursoStackPrincipal) pontos += 90
   if (ehCursoStackPrincipal && tecnologiaInteresse) pontos += 36
+  if (trilhasRecomendadas[0]?.cursoIds?.includes(curso.id)) pontos += 220
+  if (trilhasRecomendadas[0]?.complementos?.includes(curso.id)) pontos += 70
   if (tecnologiaPrincipal && curso.tags?.includes(tecnologiaPrincipal)) pontos += 30
   if (curso.trilhaIds?.some((id) => trilhaIdsRecomendadas.has(id))) pontos += 34
   if (categoriaCursoArea === areaDesejadaNormalizada) pontos += 38
@@ -828,7 +875,14 @@ function pontuarCurso(curso, perfil, trilhasRecomendadas) {
     pontos += tecnologiaPrincipal === 'php' ? 64 : 44
   }
   if (ehStackAlternativa) pontos -= categoriaCursoArea === areaDesejadaNormalizada ? 35 : 48
-  if (ehCursoStackAlternativaExplicita) pontos -= 200
+  if (ehCursoStackAlternativaExplicita) return 0
+
+  if (
+    ['csharp', 'dotnet'].includes(tecnologiaPrincipal) &&
+    (curso.tags?.includes('java') || curso.tags?.includes('spring') || tecnologiaCurso === 'java')
+  ) {
+    return 0
+  }
 
   if ((conheceBanco || temBaseBanco) && ['sql', 'mongodb'].some((tecnologia) => itemCombinaTecnologiaPrincipal(curso, tecnologia))) pontos += 35
   if ((conheceApi || temBaseApi) && ['api', 'api-rest', 'qa'].some((tecnologia) => itemTemAfinidadeTecnologia(curso, tecnologia))) {
@@ -863,11 +917,31 @@ function pontuarCurso(curso, perfil, trilhasRecomendadas) {
   if (perfilDevOps) {
     const ehCursoDevOps = [...tecnologiasPrincipaisDevOps, ...tecnologiasComplementaresDevOps].includes(tecnologiaCurso)
     const ehEscolhaExplicita = tecnologiaEscolhidaExplicitamente(perfil) && ehCursoStackPrincipal
+    const stacksExplicitas = new Set([
+      normalizarTexto(tecnologiaEscolhidaExplicitamente(perfil)),
+      normalizarTexto(respostas.linguagem),
+    ])
+    const stackDoCursoFoiEscolhida =
+      stacksExplicitas.has(tecnologiaCurso) ||
+      stacksExplicitas.has(tecnologiaCursoCanonica) ||
+      [...stacksExplicitas].some((stack) => tecnologiaCanonicaDe(stack) === tecnologiaCursoCanonica)
     const tagsDevOps = ['aws', 'cloud', 'ci-cd', 'github-actions', 'terraform', 'deploy', 'nginx']
     const bonusTagsDevOps = tagsDevOps.reduce((total, tag) => total + (curso.tags?.includes(tag) ? 8 : 0), 0)
 
+    if (
+      !stackDoCursoFoiEscolhida &&
+      (stacksProtegidasDevOps.includes(tecnologiaCurso) || stacksProtegidasDevOps.includes(tecnologiaCursoCanonica))
+    ) {
+      return 0
+    }
+
+    if (tecnologiaCurso === 'git-github' && conheceProjetos) return 0
+
     if (ehCursoDevOps) pontos += 110
     if (tecnologiaCurso === 'linux') pontos += 90
+    if (trilhasRecomendadas[0]?.cursoIds?.includes(curso.id)) pontos += 120
+    if (tecnologiaCurso === 'linux') pontos += 100
+    if (tecnologiaCurso === 'git-github' && conheceProjetos) pontos -= 100
     pontos += bonusTagsDevOps
 
     if (
@@ -1018,7 +1092,7 @@ export function recomendarCursos(respostas = {}) {
     }))
     .sort((a, b) => b.pontuacao - a.pontuacao || a.titulo.localeCompare(b.titulo))
 
-  return removerCursosRedundantes(ordenados, perfil)
+  return removerCursosRedundantes(ordenados, perfil, trilhasRecomendadas)
 }
 
 export function recomendarVagas(respostas = {}, candidaturas = [], vagasFonte = vagas, empresasFonte = empresas) {
@@ -1090,6 +1164,23 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
   function adicionar(trilha) {
     if (!trilha || selecionadas.some((item) => item.id === trilha.id)) return
     if (trilha.pontuacao <= 0) return
+    if (trilha.id === 'git-github' && conheceProjetos && !perfilInicial) return
+
+    const mesmaFamilia = selecionadas.find((item) => item.familia && item.familia === trilha.familia)
+    const candidataProfissional = trilhasProfissionais.has(trilha.id)
+    const selecionadaProfissional = mesmaFamilia && trilhasProfissionais.has(mesmaFamilia.id)
+
+    if (mesmaFamilia && selecionadaProfissional && !candidataProfissional) return
+
+    if (mesmaFamilia && candidataProfissional && !selecionadaProfissional) {
+      selecionadas.splice(selecionadas.indexOf(mesmaFamilia), 1)
+    } else if (mesmaFamilia && trilha.familia !== 'fundamentos') {
+      return
+    }
+
+    const cursosPrincipaisSelecionados = new Set(selecionadas.flatMap((item) => item.cursoIds || []))
+    if (trilha.cursoIds?.some((cursoId) => cursosPrincipaisSelecionados.has(cursoId))) return
+
     selecionadas.push(trilha)
   }
 
@@ -1207,10 +1298,12 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
   if (perfilDevOps) {
     const priorizarProfissionalDevOps = ['projetos', 'avancar'].includes(nivelTecnologia) || respostas.objetivo === 'especializar'
 
-    if (priorizarProfissionalDevOps) adicionar(porId('devops-cloud-profissional'))
-    adicionar(porId('devops-base-docker'))
-    adicionar(porId('devops-docker-cloud'))
-    adicionar(porId('git-github'))
+    if (priorizarProfissionalDevOps) {
+      adicionar(porId('devops-cloud-profissional'))
+    } else {
+      adicionar(porId('devops-base-docker'))
+    }
+
     adicionar(porId('linux-fundamentos'))
     adicionar(porId('seguranca-informacao'))
 
@@ -1218,18 +1311,21 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
       adicionar(porId('api-http-rest'))
     }
 
-    if (respostas.focoCarreira === 'apis' && respostas.linguagem === 'javascript') {
-      adicionar(porId('backend-node-api-profissional'))
+    if (temBaseBanco) {
+      adicionar(porId('sql-banco-dados'))
+    }
+
+    if (!conheceProjetos && respostas.programacao === 'nenhum') {
+      adicionar(porId('git-github'))
     }
 
     for (const trilha of ordenadas) {
       if (selecionadas.length >= limite) break
       if (trilha.pontuacao < 70) continue
       if (
-        trilha.area === 'devops' ||
+        ['devops', 'seguranca', 'devops-linux'].includes(trilha.familia) ||
         trilha.id === 'api-http-rest' ||
-        trilha.id === 'git-github' ||
-        trilha.area === 'fundamentos'
+        trilha.id === 'sql-banco-dados'
       ) {
         adicionar(trilha)
       }
@@ -1239,26 +1335,29 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
   }
 
   if (perfilFrontend) {
-    if (objetivoDeCarreira()) adicionar(porId('frontend-base-portfolio'))
+    if (objetivoDeCarreira() && !['projetos', 'avancar'].includes(nivelTecnologia)) adicionar(porId('frontend-base-portfolio'))
 
     if (tecnologiaPrincipal === 'angular' || tecnologiaPrincipalCanonica === 'angular') {
       adicionar(porId('javascript-frontend'))
       if (nivelTecnologia !== 'quero-comecar') adicionar(porId('angular-frontend'))
       if (['projetos', 'avancar'].includes(nivelTecnologia)) adicionar(porId('frontend-angular-profissional'))
-      adicionar(porId('git-github'))
-      adicionarPorTecnologias(complementosStack)
     } else if (tecnologiaPrincipal === 'react') {
-      adicionar(porId('javascript-frontend'))
+      if (!['projetos', 'avancar'].includes(nivelTecnologia)) adicionar(porId('javascript-frontend'))
       adicionar(porId('react-frontend'))
-      adicionar(porId('git-github'))
-      adicionarPorTecnologias(complementosStack)
     } else {
       adicionar(porId('javascript-frontend'))
     }
 
     for (const trilha of ordenadas) {
       if (selecionadas.length >= limite) break
-      if (trilha.pontuacao >= 70 && (trilha.area === 'frontend' || trilha.id === 'git-github' || trilha.area === 'carreira')) {
+      const familiaFrontendEsperada =
+        tecnologiaPrincipal === 'react'
+          ? ['frontend-base', 'frontend-react', 'carreira'].includes(trilha.familia)
+          : tecnologiaPrincipal === 'angular'
+            ? ['frontend-base', 'frontend-angular', 'carreira'].includes(trilha.familia)
+            : ['frontend-base', 'carreira'].includes(trilha.familia)
+
+      if (trilha.pontuacao >= 70 && familiaFrontendEsperada) {
         adicionar(trilha)
       }
     }
@@ -1268,11 +1367,12 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
 
   if (perfilQA) {
     if (precisaBaseLogica) adicionar(porId('logica-algoritmos'))
-    adicionar(porId('git-github'))
-    adicionar(porId('qa-base-primeira-vaga'))
-    adicionar(porId('qa-testes'))
+    if (['projetos', 'avancar'].includes(nivelTecnologia) || conheceProjetos) {
+      adicionar(porId('qa-automacao-profissional'))
+    } else {
+      adicionar(porId('qa-base-primeira-vaga'))
+    }
     adicionar(porId('api-http-rest'))
-    if (['projetos', 'avancar'].includes(nivelTecnologia) || conheceProjetos) adicionar(porId('qa-automacao-profissional'))
 
     for (const trilha of ordenadas) {
       if (selecionadas.length >= limite) break
@@ -1294,7 +1394,6 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
     if (['projetos', 'avancar'].includes(nivelTecnologia) || conheceProjetos) adicionar(porId('dados-python-sql-profissional'))
     adicionar(porId('python-dados'))
     adicionar(porId('sql-banco-dados'))
-    adicionar(porId('git-github'))
     if (nivelTecnologia === 'quero-comecar' || perfilInicial || inicianteCodigo) {
       adicionar(porId('logica-algoritmos'))
     }
@@ -1316,6 +1415,14 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
       }
     }
 
+    return selecionadas.slice(0, limite)
+  }
+
+  if (['csharp', 'dotnet'].includes(tecnologiaPrincipal) || ['csharp', 'dotnet'].includes(tecnologiaPrincipalCanonica)) {
+    adicionar(porId('backend-csharp-dotnet'))
+    adicionar(porId('api-http-rest'))
+    adicionar(porId('sql-banco-dados'))
+    adicionar(porId('seguranca-informacao'))
     return selecionadas.slice(0, limite)
   }
 
@@ -1359,15 +1466,21 @@ function selecionarTrilhasEssenciais(ordenadas, perfil) {
   return ordenadas.slice(0, limite)
 }
 
-function removerCursosRedundantes(cursosOrdenados, perfil) {
+function removerCursosRedundantes(cursosOrdenados, perfil, trilhasRecomendadas = []) {
   const { nivelTecnologia, nivelUsuarioPeso, tecnologiaPrincipal, tecnologiaPrincipalCanonica } = perfil
   const melhoresPorTecnologia = new Map()
   const cursosComplementares = []
   const focoDevops = perfil.perfilDevOps
+  const cursosDaTrilhaPrincipal = new Set(trilhasRecomendadas[0]?.cursoIds || [])
 
   for (const curso of cursosOrdenados) {
     const chaveTecnologia = chaveTecnologiaDeduplicacao(curso)
-    if (focoDevops && ['docker-cloud', 'git-github', 'linux', 'seguranca', 'api'].includes(chaveTecnologia)) {
+    if (cursosDaTrilhaPrincipal.has(curso.id)) {
+      cursosComplementares.push(curso)
+      continue
+    }
+
+    if (focoDevops && ['docker-cloud', 'linux', 'seguranca'].includes(chaveTecnologia)) {
       cursosComplementares.push(curso)
       continue
     }
@@ -1453,7 +1566,7 @@ function motivoDaTrilha(trilha, perfil) {
 
   if (perfil.perfilDevOps) {
     if (trilha.id === 'devops-cloud-profissional') {
-      return 'Voce escolheu Docker/Cloud e tem maturidade para aprofundar em containers, Linux, AWS, CI/CD, deploy e seguranca.'
+      return 'Voce escolheu DevOps e ja tem pratica com projetos, por isso esta trilha prioriza Docker, Cloud, CI/CD, deploy e seguranca.'
     }
 
     if (trilha.id === 'devops-docker-cloud' || trilha.area === 'devops') {
@@ -1461,11 +1574,11 @@ function motivoDaTrilha(trilha, perfil) {
     }
 
     if (trilha.id === 'git-github') {
-      return 'Git e GitHub entram como base para versionar projetos e trabalhar com deploys e automacoes.'
+      return 'Git e pre-requisito para versionar projetos e colaborar, mas nao substitui sua trilha principal.'
     }
 
     if (trilha.id === 'api-http-rest') {
-      return 'Como voce marcou foco em APIs, este conteudo ajuda a entender aplicacoes que serao publicadas ou testadas.'
+      return 'Como voce marcou foco em APIs, este conteudo entra como complemento para entender servicos publicados, testados ou monitorados.'
     }
   }
 
@@ -1501,12 +1614,16 @@ function motivoDoCurso(curso, perfil) {
   const complementosStack = complementosPorTecnologia[tecnologiaPrincipal] || []
 
   if (perfil.perfilDevOps) {
-    if (['docker-cloud', 'linux', 'git-github', 'seguranca'].includes(curso.tecnologia)) {
+    if (curso.tecnologia === 'git-github') {
+      return 'Git entra como pre-requisito de colaboracao e versionamento, sem substituir seu foco principal em DevOps.'
+    }
+
+    if (['docker-cloud', 'linux', 'seguranca'].includes(curso.tecnologia)) {
       return 'Voce escolheu Docker/Cloud; este curso fortalece publicacao, operacao, infraestrutura e seguranca.'
     }
 
     if (['api', 'api-rest'].includes(curso.tecnologia)) {
-      return 'Como voce marcou foco em APIs, este conteudo ajuda a entender aplicacoes que serao publicadas ou testadas.'
+      return 'Como voce marcou foco em APIs, este conteudo entra como complemento para entender servicos publicados, testados ou monitorados.'
     }
   }
 
