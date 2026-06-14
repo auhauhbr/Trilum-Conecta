@@ -14,7 +14,7 @@ function obterThumbnail(curso) {
   return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : ''
 }
 
-export function CursoCard({ curso, motivo }) {
+export function CursoCard({ curso, motivo, origem = 'catalogo' }) {
   const thumbnail = obterThumbnail(curso)
   const conteudo = (
     <>
@@ -40,7 +40,7 @@ export function CursoCard({ curso, motivo }) {
   }
 
   return (
-    <Link className="curso-card card-interativo" to={`/aluno/cursos/${curso.id}`}>
+    <Link className="curso-card card-interativo" to={`/aluno/cursos/${curso.id}?origem=${origem}`}>
       {conteudo}
     </Link>
   )

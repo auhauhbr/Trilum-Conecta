@@ -9,6 +9,13 @@ import { VagaCard } from '../../../componentes/vagas/VagaCard'
 import { useApp } from '../../../contextos/AppContext'
 import { modoApresentacao } from '../../../dados/usuarios'
 import { contarCandidatosDaVaga } from '../../../servicos/candidaturas'
+import { criarOrientacaoPainel } from '../../../servicos/mentorAlunoContextual'
+import {
+  gerarExplicacaoCurso,
+  gerarExplicacaoRecomendacoes,
+  gerarExplicacaoTrilha,
+  montarContextoMentorAluno,
+} from '../../../servicos/mentorIA'
 import { calcularProgresso, recomendarCursos, recomendarTrilhas, recomendarVagas } from '../../../servicos/recomendacoes'
 
 const rotulos = {
@@ -29,6 +36,50 @@ export function PainelAluno() {
   const iniciais = usuarioAtual?.foto || primeiroNome.slice(0, 2).toUpperCase()
   const trilhaPrincipal = recomendadas[0]
   const cursoPrincipal = cursosSugeridos[0]
+  const contextoMentor = montarContextoMentorAluno({
+    usuarioAtual,
+    respostasWizard,
+    trilhasRecomendadas: recomendadas,
+    cursosRecomendados: cursosSugeridos,
+    vagasRecomendadas: vagas,
+    curriculo: usuarioAtual?.curriculo,
+  })
+  const orientacaoContextual = criarOrientacaoPainel({
+    usuarioAtual,
+    perfilProfissional: usuarioAtual?.perfilProfissional,
+    curriculo: usuarioAtual?.curriculo,
+    progresso: progressoCursos,
+    respostasWizard,
+    trilhasRecomendadas: recomendadas,
+    cursosRecomendados: cursosSugeridos,
+    candidaturas,
+  })
+  const cenariosMentor = [
+    {
+      id: 'geral',
+      label: 'Visão geral',
+      titulo: 'Seus próximos passos',
+      gerar: (opcoes) => gerarExplicacaoRecomendacoes(contextoMentor, opcoes),
+    },
+    trilhaPrincipal && {
+      id: 'trilha',
+      label: 'Trilha principal',
+      titulo: `Por que ${trilhaPrincipal.titulo}?`,
+      resumo: `${trilhaPrincipal.titulo} é sua jornada principal porque combina melhor com seu perfil e momento atual.`,
+      detalhe: trilhaPrincipal.motivo,
+      acao: { label: 'Ir para trilha principal', to: `#/aluno/cursos/${trilhaPrincipal.id}` },
+      gerar: (opcoes) => gerarExplicacaoTrilha({ ...contextoMentor, trilhas: contextoMentor.trilhas.slice(0, 1) }, opcoes),
+    },
+    cursoPrincipal && {
+      id: 'curso',
+      label: 'Curso principal',
+      titulo: `Por que começar por ${cursoPrincipal.titulo}?`,
+      resumo: `${cursoPrincipal.titulo} é o próximo passo prático dentro da sua jornada atual.`,
+      detalhe: cursoPrincipal.motivo,
+      acao: { label: 'Ver curso recomendado', to: `#/aluno/cursos/${cursoPrincipal.id}` },
+      gerar: (opcoes) => gerarExplicacaoCurso({ ...contextoMentor, cursos: contextoMentor.cursos.slice(0, 1) }, opcoes),
+    },
+  ].filter(Boolean)
   const resumoPerfil = Object.entries(rotulos)
     .map(([chave, rotulo]) => ({ rotulo, valor: respostasWizard[chave] }))
     .filter((item) => item.valor)
@@ -116,7 +167,7 @@ export function PainelAluno() {
         </div>
         <div className="grade-cards">
           {recomendadas.map((trilha) => (
-            <TrilhaCard key={trilha.id} trilha={trilha} progresso={calcularProgresso(trilha, progressoCursos)} />
+            <TrilhaCard key={trilha.id} trilha={trilha} progresso={calcularProgresso(trilha, progressoCursos)} origem="recomendacao" />
           ))}
         </div>
       </section>
@@ -133,7 +184,7 @@ export function PainelAluno() {
         </div>
         <div className="grade-cards">
           {cursosSugeridos.map((curso) => (
-            <CursoCard key={curso.id} curso={curso} motivo={curso.motivo} />
+            <CursoCard key={curso.id} curso={curso} motivo={curso.motivo} origem="recomendacao" />
           ))}
         </div>
       </section>
@@ -174,6 +225,8 @@ export function PainelAluno() {
           respostasWizard={respostasWizard}
           trilhasRecomendadas={recomendadas}
           cursosRecomendados={cursosSugeridos}
+          cenariosInteligentes={cenariosMentor}
+          orientacaoContextual={orientacaoContextual}
         />
       )}
     </section>

@@ -89,7 +89,7 @@ export function ModulosAccordion({
             {grupo.curso && (
               <div className="modulos-curso-topo">
                 <span>Curso {grupoIndice + 1}</span>
-                <Link to={`/aluno/cursos/${grupo.curso.id}`}>
+                <Link to={`/aluno/cursos/${grupo.curso.id}?origem=trilha&trilhaOrigem=${conteudo.id}`}>
                   <Layers3 size={17} />
                   {grupo.curso.titulo}
                 </Link>

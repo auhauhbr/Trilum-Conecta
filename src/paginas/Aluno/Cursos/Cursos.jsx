@@ -1,10 +1,12 @@
 import { Search } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CursoCard } from '../../../componentes/cursos/CursoCard'
 import { MentorPaginaAlunoToast } from '../../../componentes/interface/MentorPaginaAlunoToast'
+import { useApp } from '../../../contextos/AppContext'
 import { cursos } from '../../../dados/cursos'
 import { mensagensCursos } from '../../../dados/mensagensMentorAluno'
 import { filtrarCursos } from '../../../servicos/filtros'
+import { criarOrientacaoCatalogo } from '../../../servicos/mentorAlunoContextual'
 
 const mapaMentorCursos = {
   topo: 'cursos-intro',
@@ -13,6 +15,7 @@ const mapaMentorCursos = {
 }
 
 export function Cursos() {
+  const { respostasWizard } = useApp()
   const [busca, setBusca] = useState('')
   const [categoria, setCategoria] = useState('todas')
   const [tecnologia, setTecnologia] = useState('todas')
@@ -21,6 +24,18 @@ export function Cursos() {
   const tecnologias = ['todas', ...new Set(cursos.map((curso) => curso.tecnologia))]
   const niveis = ['todos', ...new Set(cursos.map((curso) => curso.nivel))]
   const cursosFiltrados = filtrarCursos(cursos, busca, categoria, tecnologia, nivel)
+  const orientacaoContextual = useMemo(
+    () =>
+      criarOrientacaoCatalogo({
+        busca,
+        categoria,
+        tecnologia,
+        nivel,
+        total: cursosFiltrados.length,
+        respostasWizard,
+      }),
+    [busca, categoria, cursosFiltrados.length, nivel, respostasWizard, tecnologia],
+  )
 
   return (
     <section className="pagina">
@@ -82,7 +97,11 @@ export function Cursos() {
         </div>
       )}
 
-      <MentorPaginaAlunoToast mensagens={mensagensCursos} mapaSecoes={mapaMentorCursos} />
+      <MentorPaginaAlunoToast
+        mensagens={mensagensCursos}
+        mapaSecoes={mapaMentorCursos}
+        orientacaoContextual={orientacaoContextual}
+      />
     </section>
   )
 }

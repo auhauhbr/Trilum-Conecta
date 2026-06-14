@@ -131,6 +131,12 @@ O MVP usa dados mockados e `localStorage`. Isso permite testar cadastro, login, 
 
 Os dados ficam salvos no navegador usado no teste. Para reiniciar a demo, limpe o armazenamento local do site nas ferramentas do navegador.
 
+## Mentor IA local opcional
+
+O projeto possui uma camada opcional de explicações personalizadas com Ollama local. O recomendador por regras continua decidindo cursos, trilhas e vagas; o mentor apenas explica os resultados e usa dicas padrão quando a IA local está desativada ou indisponível.
+
+Veja configuração, proteções e testes em [docs/MENTOR_IA.md](docs/MENTOR_IA.md).
+
 ## Observações Para Avaliação
 
 * As recomendações de cursos, trilhas e vagas são baseadas em regras manuais.

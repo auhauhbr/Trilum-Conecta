@@ -1,15 +1,18 @@
 import { BookOpen, Code2, PlayCircle, Rocket } from 'lucide-react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { ModulosAccordion } from '../../../componentes/cursos/ModulosAccordion'
 import { Badge } from '../../../componentes/interface/Badge'
 import { Botao } from '../../../componentes/interface/Botao'
+import { MentorPaginaAlunoToast } from '../../../componentes/interface/MentorPaginaAlunoToast'
 import { useApp } from '../../../contextos/AppContext'
 import { cursosDaTrilha, encontrarConteudo } from '../../../servicos/conteudosCurso'
-import { calcularProgresso } from '../../../servicos/recomendacoes'
+import { analisarConteudoNoContexto, analisarTrilhaNoContexto } from '../../../servicos/mentorConteudoContextual'
+import { calcularProgresso, recomendarCursos, recomendarTrilhas } from '../../../servicos/recomendacoes'
 
 export function DetalheCurso() {
   const { trilhaId } = useParams()
-  const { progressoCursos } = useApp()
+  const location = useLocation()
+  const { progressoCursos, respostasWizard } = useApp()
   const conteudo = encontrarConteudo(trilhaId)
 
   if (!conteudo) return <section className="pagina">Curso ou trilha nao encontrada.</section>
@@ -24,6 +27,23 @@ export function DetalheCurso() {
   const professores = [...new Set(professoresDasAulas.length ? professoresDasAulas : [conteudo.professor].filter(Boolean))]
   const professoresTexto = professores.length ? professores.join(', ') : 'Professores externos'
   const iniciaisProfessores = professores.length === 1 ? professores[0].slice(0, 2).toUpperCase() : `${professores.length}P`
+  const parametros = new URLSearchParams(location.search)
+  const origem = parametros.get('origem') || 'catalogo'
+  const trilhaOrigem = encontrarConteudo(parametros.get('trilhaOrigem'))
+  const trilhasRecomendadas = recomendarTrilhas(respostasWizard)
+  const cursosRecomendados = recomendarCursos(respostasWizard)
+  const orientacaoContextual =
+    conteudo.tipoConteudo === 'trilha'
+      ? analisarTrilhaNoContexto({ trilhaAtual: conteudo, respostasWizard, trilhasRecomendadas, progresso })
+      : analisarConteudoNoContexto({
+          cursoAtual: conteudo,
+          trilhaAtual: trilhaOrigem?.tipoConteudo === 'trilha' ? trilhaOrigem : null,
+          origem,
+          respostasWizard,
+          trilhasRecomendadas,
+          cursosRecomendados,
+          progresso,
+        })
 
   function cursoRelacionadoDoModulo(modulo) {
     if (!cursosRelacionados.length) return null
@@ -101,6 +121,17 @@ export function DetalheCurso() {
           />
         </aside>
       </main>
+      <MentorPaginaAlunoToast
+        mensagens={[
+          {
+            id: 'conteudo-aberto',
+            titulo: orientacaoContextual?.titulo,
+            msg: orientacaoContextual?.resumo,
+            detalhe: orientacaoContextual?.detalhe,
+          },
+        ]}
+        orientacaoContextual={orientacaoContextual}
+      />
     </section>
   )
 }

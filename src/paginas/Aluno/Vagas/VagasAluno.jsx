@@ -16,6 +16,7 @@ import { MentorPaginaAlunoToast } from '../../../componentes/interface/MentorPag
 import { useApp } from '../../../contextos/AppContext'
 import { mensagensVagas } from '../../../dados/mensagensMentorAluno'
 import { filtrarVagas } from '../../../servicos/filtros'
+import { gerarExplicacaoVaga, montarContextoMentorAluno } from '../../../servicos/mentorIA'
 import { recomendarVagas } from '../../../servicos/recomendacoes'
 
 const mapaMentorVagas = {
@@ -87,6 +88,13 @@ export function VagasAluno() {
   const vagaAtiva = filtradas.find((vaga) => vaga.id === selecionadaId) || filtradas[0]
   const candidatura = candidaturasDoAluno.find((item) => item.vagaId === vagaAtiva?.id)
   const empresaAtiva = vagaAtiva?.empresa
+  const contextoMentorVaga = vagaAtiva
+    ? montarContextoMentorAluno({
+        usuarioAtual,
+        respostasWizard,
+        vagasRecomendadas: [vagaAtiva],
+      })
+    : null
 
   useEffect(() => {
     if (!selecionadaId) return undefined
@@ -402,7 +410,24 @@ export function VagasAluno() {
         )}
       </div>
 
-      <MentorPaginaAlunoToast mensagens={mensagensVagas} mapaSecoes={mapaMentorVagas} />
+      <MentorPaginaAlunoToast
+        mensagens={mensagensVagas}
+        mapaSecoes={mapaMentorVagas}
+        cenariosInteligentes={
+          vagaAtiva
+            ? [
+                {
+                  id: vagaAtiva.id,
+                  label: 'Compatibilidade',
+                  titulo: `Compatibilidade com ${vagaAtiva.titulo}`,
+                  descricao: 'Veja como esta vaga se aproxima do seu perfil e quais requisitos podem orientar seus estudos.',
+                  acao: { label: 'Ver vaga selecionada', to: `#/aluno/vagas?vaga=${vagaAtiva.id}` },
+                  gerar: (opcoes) => gerarExplicacaoVaga(contextoMentorVaga, opcoes),
+                },
+              ]
+            : []
+        }
+      />
     </section>
   )
 }

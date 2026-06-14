@@ -16,7 +16,7 @@ function professoresDaTrilha(trilha) {
   return [...new Set(nomes)].join(', ') || 'Professores externos'
 }
 
-export function TrilhaCard({ trilha, progresso = 0 }) {
+export function TrilhaCard({ trilha, progresso = 0, origem = 'catalogo' }) {
   const aula = primeiraAula(trilha)
   const videoId = obterYoutubeId(aula?.videoUrl)
   const thumbnail = trilha.thumbnailUrl || (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : '')
@@ -47,7 +47,7 @@ export function TrilhaCard({ trilha, progresso = 0 }) {
   }
 
   return (
-    <Link className="trilha-card card-interativo" to={`/aluno/cursos/${trilha.id}`}>
+    <Link className="trilha-card card-interativo" to={`/aluno/cursos/${trilha.id}?origem=${origem}`}>
       {conteudo}
     </Link>
   )
