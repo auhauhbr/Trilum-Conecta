@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { LockKeyhole, Mail } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { AuthSplitLayout } from '../../componentes/autenticacao/AuthSplitLayout'
 import { MentorCompactadoButton } from '../../componentes/interface/MentorCompactadoButton'
 import { MentorFeedback } from '../../componentes/interface/MentorFeedback'
 import { useApp } from '../../contextos/AppContext'
-import ilustracaoCadastro3 from '../../ativos/imagens/imagem-teste-9.png'
 import ilustracaoCadastro4 from '../../ativos/imagens/imagem-teste-8.png'
 import { emailValido, mensagensSenha, progressoSenha, requisitosSenha } from '../../servicos/validacaoAuth'
 
@@ -117,30 +117,28 @@ export function Login() {
   }
 
   return (
-    <section className="auth-html login-page-html">
-      <div className="login-hero-html">
-        <div className="login-headline-html">
-          <h1>
-            Seu próximo passo profissional começa <br /> <span className="destaque-login">aqui.</span>
-          </h1>
-          <p>
-            <span className="destaque-login-2">Transforme experiência em novas oportunidades.</span>
-          </p>
-        </div>
-
-        <div className="login-illustration-html">
-          <img src={ilustracaoCadastro4} alt="Ilustração de pessoa estudando com tecnologia" />
-        </div>
-
-        <div className="login-illustration-html-center">
-          <img src={ilustracaoCadastro3} alt="Ilustração de pessoa usando notebook" />
-        </div>
-
+    <>
+      <AuthSplitLayout
+        imagem={ilustracaoCadastro4}
+        imagemAlt="Pessoa estudando com notebook"
+        etiqueta="Continue sua jornada"
+        titulo="Seu próximo passo profissional começa aqui."
+        descricao="Entre para continuar seus estudos, acompanhar oportunidades e fortalecer seu perfil."
+        beneficios={[
+          'Retome sua trilha de onde parou',
+          'Acompanhe cursos, progresso e certificados',
+          'Explore oportunidades compatíveis com você',
+        ]}
+        compacto
+      >
         <form className="login-card-html" onSubmit={modoRecuperacao ? enviarRecuperacao : enviar} noValidate>
+          <header className="auth-form-header">
+            <span>{modoRecuperacao ? 'Recupere seu acesso' : 'Bem-vindo de volta'}</span>
           <h2>{modoRecuperacao ? 'Recuperar senha' : 'Login'}</h2>
           <p className="subtitle-html">
             {modoRecuperacao ? 'Crie uma nova senha para sua conta cadastrada' : 'Entre para continuar sua jornada'}
           </p>
+          </header>
 
           {!modoRecuperacao ? (
             <>
@@ -258,8 +256,9 @@ export function Login() {
           <button className="btn-submit-html" type="submit">
             {modoRecuperacao ? 'Salvar nova senha' : 'Entrar'}
           </button>
+          {!modoRecuperacao && <p className="auth-form-footer">Ainda não tem conta? <Link to="/cadastro/aluno">Cadastre-se</Link></p>}
         </form>
-      </div>
+      </AuthSplitLayout>
 
       {feedbackFechado && itensFeedback.length > 0 ? (
         <MentorCompactadoButton posicao="direita" onClick={() => setFeedbackFechado(false)} />
@@ -271,6 +270,6 @@ export function Login() {
           onClose={() => setFeedbackFechado(true)}
         />
       )}
-    </section>
+    </>
   )
 }

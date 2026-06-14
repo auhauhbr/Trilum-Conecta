@@ -9,8 +9,9 @@ export function AppLayout({ tipo = 'publico' }) {
   const rotaInicial = tipo === 'aluno' ? '/aluno/painel' : tipo === 'empresa' ? '/empresa/painel' : '/'
   const mostrarVoltar = !apresentacaoAtiva && tipo !== 'publico' && location.pathname !== rotaInicial
   const telaDeAula = /^\/aluno\/cursos\/[^/]+\/aula\/[^/]+/.test(location.pathname)
+  const telaAutenticacao = tipo === 'publico' && ['/entrar', '/cadastro/aluno', '/cadastro/empresa'].includes(location.pathname)
   const mainClassName = tipo === 'publico' ? undefined : telaDeAula ? 'main-com-nav nav-aula' : 'main-com-nav'
-  const navClassName = 'public-nav nav-fixa'
+  const navClassName = `public-nav nav-fixa${telaAutenticacao ? ' public-nav-auth' : ''}`
 
   const linksPublicos = [
     { to: '/', label: 'Início' },
@@ -37,7 +38,7 @@ export function AppLayout({ tipo = 'publico' }) {
     tipo === 'aluno' ? (apresentacaoAtiva ? linksAlunoApresentacao : linksAluno) : tipo === 'empresa' ? linksEmpresa : linksPublicos
 
   return (
-    <div className="app-shell public-shell">
+    <div className={`app-shell public-shell${telaAutenticacao ? ' auth-shell' : ''}`}>
       {!telaDeAula && (
         <header className={navClassName}>
           <nav className="public-nav-links">
@@ -57,7 +58,7 @@ export function AppLayout({ tipo = 'publico' }) {
       <main className={mainClassName}>
         <Outlet />
       </main>
-      {!telaDeAula && (
+      {!telaDeAula && !telaAutenticacao && (
         <footer className="site-footer">
           <strong>
             Rise<span>Up</span>

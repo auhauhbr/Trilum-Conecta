@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { CalendarDays, LockKeyhole, Mail, SquareUserRound, UserRound } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { AuthSplitLayout } from '../../componentes/autenticacao/AuthSplitLayout'
 import { MentorCompactadoButton } from '../../componentes/interface/MentorCompactadoButton'
 import { MentorFeedback } from '../../componentes/interface/MentorFeedback'
 import { useApp } from '../../contextos/AppContext'
 import ilustracaoCadastro from '../../ativos/imagens/imagem-teste-4.png'
-import ilustracaoCadastro2 from '../../ativos/imagens/imagem-teste-2.png'
 import {
   cpfValido,
   dataNascimentoValida,
@@ -101,17 +101,25 @@ export function CadastroAluno() {
   }
 
   return (
-    <section className="auth-html cadastro-page-html">
-      <h1 className="cadastro-title-html">
-        Cadastre-se <span>para começar sua jornada!</span>
-      </h1>
-
-      <div className="cadastro-container-layout">
-        <div className="coluna-imagem lateral-esquerda">
-          <img src={ilustracaoCadastro} alt="Ilustração de boas-vindas para novos alunos" />
-        </div>
-
+    <>
+      <AuthSplitLayout
+        imagem={ilustracaoCadastro}
+        imagemAlt="Pessoa estudando com notebook"
+        etiqueta="Crie sua conta gratuita"
+        titulo="Cadastre-se para começar sua jornada."
+        descricao="Trilhas personalizadas, cursos e vagas compatíveis com seu perfil, tudo em um só lugar."
+        beneficios={[
+          'Cursos e trilhas organizados para seu momento',
+          'Jornada personalizada a partir do seu perfil',
+          'Vagas compatíveis com suas habilidades e objetivo',
+        ]}
+      >
         <form className="cadastro-card-html" onSubmit={enviar} noValidate>
+          <header className="auth-form-header">
+            <span>Bem-vindo à Trilum</span>
+            <h2>Criar conta</h2>
+            <p>Preencha seus dados para começar.</p>
+          </header>
           <div className="tab-switch-html">
             <button className="active" type="button">
               Aluno
@@ -229,12 +237,9 @@ export function CadastroAluno() {
           <button className="btn-submit-html" type="submit">
             Cadastrar
           </button>
+          <p className="auth-form-footer">Já tem uma conta? <Link to="/entrar">Entrar</Link></p>
         </form>
-
-        <div className="coluna-imagem lateral-direita">
-          <img src={ilustracaoCadastro2} alt="Ilustração de boas-vindas para novos alunos" />
-        </div>
-      </div>
+      </AuthSplitLayout>
 
       {feedbackFechado && itensFeedback.length > 0 ? (
         <MentorCompactadoButton posicao="direita" onClick={() => setFeedbackFechado(false)} />
@@ -246,6 +251,6 @@ export function CadastroAluno() {
           onClose={() => setFeedbackFechado(true)}
         />
       )}
-    </section>
+    </>
   )
 }

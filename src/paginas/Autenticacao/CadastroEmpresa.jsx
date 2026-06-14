@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Building2, LockKeyhole, Mail, MapPin, SquareUserRound } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { AuthSplitLayout } from '../../componentes/autenticacao/AuthSplitLayout'
 import { MentorCompactadoButton } from '../../componentes/interface/MentorCompactadoButton'
 import { MentorFeedback } from '../../componentes/interface/MentorFeedback'
 import { useApp } from '../../contextos/AppContext'
-import ilustracaoCadastro from '../../ativos/imagens/imagem-teste-4.png'
 import ilustracaoCadastro2 from '../../ativos/imagens/imagem-teste-2.png'
 import {
   cnpjValido,
@@ -98,17 +98,25 @@ export function CadastroEmpresa() {
   }
 
   return (
-    <section className="auth-html cadastro-page-html">
-      <h1 className="cadastro-title-html">
-        Cadastre sua empresa <span>e encontre novos talentos.</span>
-      </h1>
-
-      <div className="cadastro-container-layout">
-        <div className="coluna-imagem lateral-esquerda">
-          <img src={ilustracaoCadastro} alt="Ilustração de boas-vindas para empresas" />
-        </div>
-
+    <>
+      <AuthSplitLayout
+        imagem={ilustracaoCadastro2}
+        imagemAlt="Profissional usando notebook"
+        etiqueta="Conecte sua empresa"
+        titulo="Encontre talentos alinhados às suas vagas."
+        descricao="Publique oportunidades mais claras e acompanhe candidatos com contexto profissional."
+        beneficios={[
+          'Crie vagas com tecnologias e requisitos objetivos',
+          'Encontre perfis compatíveis com suas oportunidades',
+          'Acompanhe candidaturas em um único espaço',
+        ]}
+      >
         <form className="cadastro-card-html" onSubmit={enviar} noValidate>
+          <header className="auth-form-header">
+            <span>Área da empresa</span>
+            <h2>Criar conta</h2>
+            <p>Cadastre sua empresa para publicar oportunidades.</p>
+          </header>
           <div className="tab-switch-html">
             <Link to="/cadastro/aluno">Aluno</Link>
             <button className="active" type="button">
@@ -229,12 +237,9 @@ export function CadastroEmpresa() {
           <button className="btn-submit-html" type="submit">
             Cadastrar
           </button>
+          <p className="auth-form-footer">Já possui uma conta? <Link to="/entrar">Entrar</Link></p>
         </form>
-
-        <div className="coluna-imagem lateral-direita">
-          <img src={ilustracaoCadastro2} alt="Ilustração de boas-vindas para novas empresas" />
-        </div>
-      </div>
+      </AuthSplitLayout>
 
       {feedbackFechado && itensFeedback.length > 0 ? (
         <MentorCompactadoButton posicao="direita" onClick={() => setFeedbackFechado(false)} />
@@ -246,6 +251,6 @@ export function CadastroEmpresa() {
           onClose={() => setFeedbackFechado(true)}
         />
       )}
-    </section>
+    </>
   )
 }
