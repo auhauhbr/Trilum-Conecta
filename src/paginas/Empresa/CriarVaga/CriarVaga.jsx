@@ -1,9 +1,11 @@
-import { Send } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Copy, Gauge, RefreshCw, Send, Sparkles, X } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
 import { MentorEmpresaToast } from '../../../componentes/interface/MentorEmpresaToast'
 import { useApp } from '../../../contextos/AppContext'
+import { analisarQualidadeVaga } from '../../../servicos/empresaInteligencia'
+import { melhorarVagaComIA } from '../../../servicos/empresaIA'
 
 const formVazio = {
   titulo: '',
@@ -139,6 +141,9 @@ export function CriarVaga() {
   const [erro, setErro] = useState('')
   const [tituloInvalido, setTituloInvalido] = useState(false)
   const [form, setForm] = useState(() => vagaParaForm(vagaEditada))
+  const [sugestaoMentor, setSugestaoMentor] = useState(null)
+  const [carregandoSugestao, setCarregandoSugestao] = useState(false)
+  const [mensagemSugestao, setMensagemSugestao] = useState('')
 
   const camposPreenchidos = camposProgresso.filter((campo) => String(form[campo] || '').trim()).length
   const progresso = Math.round((camposPreenchidos / camposProgresso.length) * 100)
@@ -149,6 +154,17 @@ export function CriarVaga() {
   const etapa2Classe = etapa1Completa ? (etapa2Completa ? 'step-item done' : 'step-item active') : 'step-item'
   const etapa3Classe = etapa2Completa ? 'step-item active' : 'step-item'
   const salarioPreview = form.salario ? normalizarSalario(form.salario) : ''
+  const vagaParaAnalise = useMemo(
+    () => ({
+      ...form,
+      salario: normalizarSalario(form.salario),
+      tags: separarTags(form.tags),
+      requisitos: linhasFormulario(form.requisitos),
+      atividades: linhasFormulario(form.atividades),
+    }),
+    [form],
+  )
+  const raioX = useMemo(() => analisarQualidadeVaga(vagaParaAnalise), [vagaParaAnalise])
 
   function atualizar(campo, valor) {
     setErro('')
@@ -162,6 +178,49 @@ export function CriarVaga() {
       const existe = tagsAtuais.some((item) => item.toLowerCase() === tag.toLowerCase())
       return existe ? atual : { ...atual, tags: [...tagsAtuais, tag].join(', ') }
     })
+  }
+
+  async function gerarSugestaoMentor() {
+    setCarregandoSugestao(true)
+    setMensagemSugestao('')
+    try {
+      const sugestao = await melhorarVagaComIA({
+        vaga: vagaParaAnalise,
+        empresa: usuarioAtual,
+        analiseAtual: raioX,
+      })
+      setSugestaoMentor(sugestao)
+    } finally {
+      setCarregandoSugestao(false)
+    }
+  }
+
+  function aplicarSugestaoMentor() {
+    if (!sugestaoMentor) return
+    setForm((atual) => ({
+      ...atual,
+      titulo: sugestaoMentor.titulo || atual.titulo,
+      descricao: sugestaoMentor.descricao || atual.descricao,
+      requisitos: sugestaoMentor.requisitos || atual.requisitos,
+      atividades: sugestaoMentor.atividades || atual.atividades,
+      tags: sugestaoMentor.tags?.length ? sugestaoMentor.tags.join(', ') : atual.tags,
+    }))
+    setMensagemSugestao('Sugestão aplicada ao formulário. Revise os campos antes de salvar ou publicar.')
+    setSugestaoMentor(null)
+  }
+
+  async function copiarSugestaoMentor() {
+    if (!sugestaoMentor) return
+    const conteudo = [
+      sugestaoMentor.titulo, '', sugestaoMentor.descricao, '', 'Requisitos:', sugestaoMentor.requisitos,
+      '', 'Atividades:', sugestaoMentor.atividades, '', `Tags: ${sugestaoMentor.tags.join(', ')}`,
+    ].join('\n')
+    try {
+      await navigator.clipboard.writeText(conteudo)
+      setMensagemSugestao('Sugestão copiada.')
+    } catch {
+      setMensagemSugestao('Não foi possível copiar automaticamente. Você ainda pode revisar e aplicar a sugestão.')
+    }
   }
 
   function enviar(evento) {
@@ -252,6 +311,11 @@ export function CriarVaga() {
             <p className="page-eyebrow">{modoEdicao ? 'Editar vaga' : 'Nova vaga'}</p>
             <h1 className="page-title">{modoEdicao ? 'Editar vaga' : 'Criar vaga'}</h1>
             <p className="page-sub">Preencha os dados para publicar uma oportunidade clara e atrativa.</p>
+            <button className="vaga-mentor-trigger" type="button" onClick={gerarSugestaoMentor} disabled={carregandoSugestao}>
+              {carregandoSugestao ? <RefreshCw className="girando" size={17} /> : <Sparkles size={17} />}
+              {carregandoSugestao ? 'Analisando vaga...' : 'Melhorar vaga com mentor'}
+            </button>
+            {mensagemSugestao && <p className="vaga-mentor-status">{mensagemSugestao}</p>}
           </div>
 
           <section className="vaga-editor-card" id="card-informacoes">
@@ -401,6 +465,34 @@ export function CriarVaga() {
         </main>
 
         <aside className="criar-vaga-preview">
+          <section className="empresa-inteligencia-card raio-x-vaga">
+            <header>
+              <div>
+                <span className="empresa-inteligencia-label"><Gauge size={15} /> Raio-X da vaga</span>
+                <strong>{raioX.pontuacao}%</strong>
+              </div>
+              <span className={`empresa-inteligencia-nivel nivel-${raioX.pontuacao >= 65 ? 'forte' : 'atencao'}`}>
+                {raioX.nivel}
+              </span>
+            </header>
+            <div className="empresa-inteligencia-metricas">
+              <div><span>Qualidade</span><strong>{raioX.pontuacao}%</strong></div>
+              <div><span>Atratividade</span><strong>{raioX.atratividade.nivel}</strong></div>
+              <div><span>Coerência</span><strong>{raioX.coerencia.nivel}</strong></div>
+            </div>
+            <div className="empresa-inteligencia-barra"><i style={{ width: `${raioX.pontuacao}%` }} /></div>
+            {raioX.erros.length || raioX.alertas.length ? (
+              <ul className="empresa-inteligencia-alertas">
+                {[...raioX.erros, ...raioX.alertas].slice(0, 3).map((aviso) => <li key={aviso}><AlertTriangle size={14} /> {aviso}</li>)}
+              </ul>
+            ) : raioX.sugestoes.length ? (
+              <ul className="empresa-inteligencia-alertas empresa-inteligencia-sugestoes">
+                {raioX.sugestoes.slice(0, 2).map((sugestao) => <li key={sugestao}><CheckCircle2 size={14} /> Sugestão: {sugestao}</li>)}
+              </ul>
+            ) : (
+              <p className="empresa-inteligencia-ok"><CheckCircle2 size={15} /> {raioX.mensagemPositiva}</p>
+            )}
+          </section>
           <p className="preview-panel-title">Preview da vaga</p>
           <article className="preview-card">
             <div className="preview-card-top">
@@ -455,9 +547,48 @@ export function CriarVaga() {
             </div>
           </article>
 
-          <div className="tip-box">
-            <strong>Dica de conversão</strong>
-            Vagas com faixa salarial visível recebem até 3x mais candidatos qualificados.
+          <div className="tip-box transparencia-salarial-card">
+            <strong>Transparência salarial</strong>
+            <h3>Por que informar a faixa salarial?</h3>
+            <p>
+              A transparência ajuda candidatos a comparar oportunidades e permite que o RH receba pessoas
+              mais alinhadas, reduzindo tempo e retrabalho no processo seletivo.
+            </p>
+
+            <details>
+              <summary>Ver análise completa</summary>
+              <div className="transparencia-salarial-detalhes">
+                <section>
+                  <h4>Para o trabalhador</h4>
+                  <ul>
+                    <li>Garante clareza desde o início do processo.</li>
+                    <li>Evita frustrações e perda de tempo.</li>
+                    <li>Ajuda a comparar oportunidades com critérios reais e justos.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h4>Para o RH</h4>
+                  <ul>
+                    <li>Recebe candidatos mais alinhados à faixa salarial.</li>
+                    <li>Reduz retrabalho e sobrecarga operacional.</li>
+                    <li>Melhora a experiência dos candidatos e a reputação empregadora.</li>
+                  </ul>
+                </section>
+                <section>
+                  <h4>Para a empresa</h4>
+                  <ul>
+                    <li>Agiliza contratações e otimiza o funil de recrutamento.</li>
+                    <li>Reduz custos e tempo de processo.</li>
+                    <li>Fortalece uma imagem mais ética e atrativa no mercado.</li>
+                    <li>Contribui para práticas de ESG e equidade salarial.</li>
+                  </ul>
+                </section>
+              </div>
+            </details>
+
+            <a href="https://www.alelo.com.br/blog/rh-e-gestao/qual-a-importancia-da-transparencia-salarial" target="_blank" rel="noreferrer">
+              Fonte: Alelo — Qual a importância da transparência salarial?
+            </a>
           </div>
         </aside>
       </form>
@@ -466,13 +597,43 @@ export function CriarVaga() {
         empresaAtual={usuarioAtual}
         tela="criar-vaga"
         formularioVaga={{
-          ...form,
-          salario: normalizarSalario(form.salario),
-          tags: separarTags(form.tags),
-          requisitos: linhasFormulario(form.requisitos),
-          atividades: linhasFormulario(form.atividades),
+          ...vagaParaAnalise,
         }}
+        onMelhorarVaga={gerarSugestaoMentor}
       />
+
+      {sugestaoMentor && (
+        <div className="vaga-mentor-modal" role="presentation" onMouseDown={(evento) => {
+          if (evento.target === evento.currentTarget) setSugestaoMentor(null)
+        }}>
+          <section className="vaga-mentor-modal-card" role="dialog" aria-modal="true" aria-labelledby="vaga-mentor-titulo">
+            <header>
+              <div>
+                <span className="empresa-inteligencia-label"><Sparkles size={15} /> Mentor da empresa</span>
+                <h2 id="vaga-mentor-titulo">Sugestão do mentor para esta vaga</h2>
+                <p>Revise a sugestão antes de aplicar. O mentor não publica nem salva a vaga automaticamente.</p>
+              </div>
+              <button type="button" aria-label="Fechar sugestão" onClick={() => setSugestaoMentor(null)}><X size={20} /></button>
+            </header>
+
+            <div className="vaga-mentor-sugestoes">
+              <article className="span-2"><span>Título sugerido</span><strong>{sugestaoMentor.titulo}</strong></article>
+              <article className="span-2"><span>Descrição sugerida</span><p>{sugestaoMentor.descricao}</p></article>
+              <article><span>Requisitos sugeridos</span><ul>{linhasFormulario(sugestaoMentor.requisitos).map((item) => <li key={item}>{item}</li>)}</ul></article>
+              <article><span>Atividades sugeridas</span><ul>{linhasFormulario(sugestaoMentor.atividades).map((item) => <li key={item}>{item}</li>)}</ul></article>
+              <article><span>Tags sugeridas</span><div className="vaga-mentor-tags">{sugestaoMentor.tags.map((tag) => <i key={tag}>{tag}</i>)}</div></article>
+              <article><span>Observações do mentor</span><ul>{sugestaoMentor.observacoes.map((item) => <li key={item}>{item}</li>)}</ul></article>
+            </div>
+
+            <footer>
+              <button className="botao botao-secondary" type="button" onClick={() => setSugestaoMentor(null)}>Cancelar</button>
+              <button className="botao botao-secondary" type="button" onClick={copiarSugestaoMentor}><Copy size={16} /> Copiar texto</button>
+              <button className="botao botao-secondary" type="button" onClick={gerarSugestaoMentor} disabled={carregandoSugestao}><RefreshCw size={16} /> Gerar outra versão</button>
+              <button className="botao botao-primary" type="button" onClick={aplicarSugestaoMentor}><CheckCircle2 size={16} /> Aplicar sugestão</button>
+            </footer>
+          </section>
+        </div>
+      )}
     </section>
   )
 }

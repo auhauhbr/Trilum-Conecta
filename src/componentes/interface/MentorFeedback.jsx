@@ -5,6 +5,26 @@ import mentorLadoEsquerdo from '../../ativos/imagens/mentores/mentor-lado-esquer
 
 const exemplosPorCaso = [
   {
+    termos: ['nome oficial', 'razão social', 'razao social', 'nome empresarial', 'nome jurídico', 'nome juridico'],
+    rotulo: 'Nome oficial da empresa',
+    exemplos: ['Trilum Tecnologia Ltda.', 'Avanade Brasil Ltda.', 'NexaFlow Soluções Digitais S.A.'],
+  },
+  {
+    termos: ['setor de atuação', 'informar setor', 'setor'],
+    rotulo: 'Setor da empresa',
+    exemplos: ['Consultoria de Tecnologia', 'Desenvolvimento de Software', 'Dados e Inteligência Artificial'],
+  },
+  {
+    termos: ['especialidades reais', 'listar especialidades', 'especialidades'],
+    rotulo: 'Especialidades da empresa',
+    exemplos: ['Cloud Computing', 'Desenvolvimento Web', 'Engenharia de Dados'],
+  },
+  {
+    termos: ['stack usada', 'detalhar a stack', 'stack do dia a dia', 'stack'],
+    rotulo: 'Stack em prática',
+    exemplos: ['React, TypeScript e .NET', 'Azure, Docker e Kubernetes', 'Python, SQL e Power BI'],
+  },
+  {
     termos: ['nome comercial', 'nome da empresa'],
     rotulo: 'Nome de empresa válido',
     exemplos: ['Trilum Conecta', 'Avanade Brasil', 'Porto Digital Lab'],

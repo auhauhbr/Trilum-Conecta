@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, CalendarDays, CheckCircle2, Clock3, Eye, MapPin, Pencil, Power, Search, Trash2, UsersRound, X } from 'lucide-react'
+import { AlertTriangle, BriefcaseBusiness, CalendarDays, CheckCircle2, Clock3, Eye, MapPin, Pencil, Power, Search, Trash2, UsersRound, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
@@ -6,6 +6,7 @@ import { MentorEmpresaToast } from '../../../componentes/interface/MentorEmpresa
 import { useApp } from '../../../contextos/AppContext'
 import { metricasCandidatosDaVaga } from '../../../servicos/candidaturas'
 import { filtrarPorTextoEStatus } from '../../../servicos/filtros'
+import { analisarQualidadeVaga } from '../../../servicos/empresaInteligencia'
 
 function statusRotulo(status) {
   return status === 'ativa' ? 'Ativa' : 'Encerrada'
@@ -232,6 +233,7 @@ export function GerenciarVagas() {
       <div className="empresa-gerenciar-lista">
         {filtradas.map((vaga) => {
           const metricas = metricasCandidatosDaVaga(vaga.id, candidatos, candidaturas)
+          const diagnostico = analisarQualidadeVaga(vaga)
 
           return (
             <article className="empresa-job-manage-card" key={vaga.id}>
@@ -260,6 +262,19 @@ export function GerenciarVagas() {
                   {tagsDaVaga(vaga).map((tag) => (
                     <span className="job-tag" key={tag}>{tag}</span>
                   ))}
+                </div>
+                <div className="empresa-vaga-diagnostico">
+                  <div>
+                    <span>Qualidade da vaga</span>
+                    <strong>{diagnostico.pontuacao}% · {diagnostico.nivel}</strong>
+                  </div>
+                  <div className="empresa-inteligencia-barra"><i style={{ width: `${diagnostico.pontuacao}%` }} /></div>
+                  <p className={`empresa-vaga-diagnostico-${metricas.total === 0 ? 'alerta' : diagnostico.severidade}`}>
+                    {metricas.total === 0 || diagnostico.severidade === 'erro' || diagnostico.severidade === 'alerta'
+                      ? <AlertTriangle size={14} />
+                      : <CheckCircle2 size={14} />}
+                    {metricas.total === 0 ? 'Ainda sem candidatos. Revise atratividade e tags.' : diagnostico.alertaPrincipal}
+                  </p>
                 </div>
               </div>
 

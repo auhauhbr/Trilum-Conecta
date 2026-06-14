@@ -1,4 +1,4 @@
-import { Award, BookOpen, Check, Clock3, Eye, FileText, Search, SlidersHorizontal, X } from 'lucide-react'
+import { Award, BookOpen, Check, Clock3, Copy, Eye, FileText, MessageSquareText, RefreshCw, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
@@ -8,6 +8,12 @@ import { cursos } from '../../../dados/cursos'
 import { trilhas } from '../../../dados/trilhas'
 import { cursoComoConteudo } from '../../../servicos/conteudosCurso'
 import { duracaoParaMinutos, minutosParaDuracao } from '../../../servicos/duracao'
+import {
+  analisarCompatibilidadeCandidatoVaga,
+  gerarDossieCandidato,
+  gerarFeedbackCandidatoFallback,
+} from '../../../servicos/analiseCandidaturaEmpresa'
+import { gerarFeedbackCandidatoComIA, resumirDossieCandidatoComIA } from '../../../servicos/empresaIA'
 
 function normalizarTexto(valor = '') {
   return String(valor)
@@ -281,6 +287,8 @@ function candidatoDaCandidatura(candidatura, usuario, progressoCursos) {
     tecnologiasEstudadas: calcularTecnologiasEstudadas(progressoDoPerfil),
     progressoCursos: progressoDoPerfil,
     atualizadoEm: candidatura.atualizadoEm,
+    motivoInterno: candidatura.motivoInterno || '',
+    observacaoInterna: candidatura.observacaoInterna || '',
     origem: 'candidatura',
   }
 }
@@ -474,14 +482,6 @@ function statusClasse(status = '') {
   return 'status-chip status-analise'
 }
 
-function termosDaEmpresa(empresa) {
-  return [
-    ...(empresa?.especialidades || []),
-    ...(empresa?.stackDetalhes || []),
-    ...(empresa?.beneficios || []),
-  ]
-}
-
 function textoDoCandidato(candidato) {
   return normalizarTexto([
     candidato.nome,
@@ -493,30 +493,11 @@ function textoDoCandidato(candidato) {
   ].join(' '))
 }
 
-function termosDeBuscaDaVaga(vaga, empresa) {
-  return [...(vaga?.tags || []), vaga?.titulo, vaga?.descricao, ...termosDaEmpresa(empresa)]
-    .flatMap((item) => String(item || '').split(/[,.;:()/-]|\s+/))
-    .map((item) => item.trim())
-    .filter((item) => item.length >= 3)
-}
-
 function combinaStack(texto, stack) {
   return normalizarTexto(stack)
     .split(/\s+/)
     .filter((termo) => termo.length >= 3)
     .some((termo) => texto.includes(termo))
-}
-
-function calcularCompatibilidade(candidato, vaga, empresa) {
-  const texto = textoDoCandidato(candidato)
-  const termos = termosDeBuscaDaVaga(vaga, empresa)
-  const encontrados = [...new Set(termos.filter((termo) => texto.includes(normalizarTexto(termo))))]
-  const tecnologiasDiretas = (vaga?.tags || []).filter((tag) => texto.includes(normalizarTexto(tag)))
-  const pontos = new Set([...encontrados, ...tecnologiasDiretas]).size
-
-  if (pontos >= 3) return { nivel: 'alta', rotulo: 'Alta compatibilidade', motivos: encontrados.slice(0, 4) }
-  if (pontos >= 1) return { nivel: 'boa', rotulo: 'Boa compatibilidade', motivos: encontrados.slice(0, 3) }
-  return { nivel: 'inicial', rotulo: 'Compatibilidade inicial', motivos: [] }
 }
 
 function removerCandidatosDuplicados(lista = []) {
@@ -545,6 +526,11 @@ export function ListaCandidatos() {
   const [perfilPreview, setPerfilPreview] = useState(null)
   const [cursoPreview, setCursoPreview] = useState(null)
   const [abaCursoPreview, setAbaCursoPreview] = useState('conteudo')
+  const [redacaoDossie, setRedacaoDossie] = useState(null)
+  const [carregandoDossie, setCarregandoDossie] = useState(false)
+  const [decisao, setDecisao] = useState(null)
+  const [carregandoFeedback, setCarregandoFeedback] = useState(false)
+  const [mensagemDecisao, setMensagemDecisao] = useState('')
   const vaga = vagasEmpresa.find((item) => item.id === vagaId)
   const opcoesStack = stackOptions(vaga, usuarioAtual)
 
@@ -558,10 +544,14 @@ export function ListaCandidatos() {
           candidatura.perfilSnapshot?.progresso || {},
         ),
       )
-  const candidatosDaVaga = removerCandidatosDuplicados([...mockados, ...candidatosReais]).map((candidato) => ({
-    ...candidato,
-    compatibilidade: calcularCompatibilidade(candidato, vaga, usuarioAtual),
-  }))
+  const candidatosDaVaga = removerCandidatosDuplicados([...mockados, ...candidatosReais]).map((candidato) => {
+    const compatibilidade = analisarCompatibilidadeCandidatoVaga({ candidato, vaga, empresa: usuarioAtual })
+    return { ...candidato, compatibilidade: { ...compatibilidade, nivel: compatibilidade.nivelChave } }
+  })
+  const dossieBase = perfilPreview
+    ? gerarDossieCandidato({ candidato: perfilPreview, vaga, empresa: usuarioAtual })
+    : null
+  const dossie = dossieBase && redacaoDossie ? { ...dossieBase, ...redacaoDossie } : dossieBase
 
   const filtrados = candidatosDaVaga.filter((candidato) => {
     const texto = textoDoCandidato(candidato)
@@ -573,14 +563,83 @@ export function ListaCandidatos() {
     return combinaBusca && combinaCompatibilidade && passaStack
   })
 
-  function alterarStatus(candidato, status) {
-    atualizarStatusCandidato(candidato.id, status)
-    setPerfilPreview((atual) => (atual?.id === candidato.id ? { ...atual, status } : atual))
+  function abrirDecisao(candidato, status) {
+    const analise = gerarDossieCandidato({ candidato, vaga, empresa: usuarioAtual })
+    setDecisao({
+      candidato,
+      status,
+      motivo: candidato.motivoInterno || '',
+      observacaoInterna: candidato.observacaoInterna || '',
+      feedback: gerarFeedbackCandidatoFallback({ candidato, vaga, status, analiseCompatibilidade: analise }),
+      analise,
+    })
+    setMensagemDecisao('')
+  }
+
+  function atualizarDecisao(campo, valor) {
+    setDecisao((atual) => (atual ? { ...atual, [campo]: valor } : atual))
+  }
+
+  async function gerarFeedbackAssistido() {
+    if (!decisao) return
+    setCarregandoFeedback(true)
+    setMensagemDecisao('')
+    try {
+      const feedback = await gerarFeedbackCandidatoComIA({
+        candidato: decisao.candidato,
+        vaga,
+        status: decisao.status,
+        motivo: decisao.motivo,
+        analiseCompatibilidade: decisao.analise,
+      })
+      atualizarDecisao('feedback', feedback)
+      setMensagemDecisao('Feedback preparado para revisão. Nenhuma mensagem foi enviada.')
+    } finally {
+      setCarregandoFeedback(false)
+    }
+  }
+
+  async function copiarFeedback() {
+    if (!decisao?.feedback) return
+    try {
+      await navigator.clipboard.writeText(decisao.feedback)
+      setMensagemDecisao('Feedback copiado. Revise antes de usar.')
+    } catch {
+      setMensagemDecisao('Não foi possível copiar automaticamente. O texto continua disponível para revisão.')
+    }
+  }
+
+  function confirmarDecisao() {
+    if (!decisao) return
+    const detalhes = {
+      motivoInterno: decisao.motivo,
+      observacaoInterna: decisao.observacaoInterna,
+    }
+    atualizarStatusCandidato(decisao.candidato.id, decisao.status, detalhes)
+    setPerfilPreview((atual) => (atual?.id === decisao.candidato.id ? { ...atual, status: decisao.status, ...detalhes } : atual))
+    setDecisao(null)
+  }
+
+  async function aprimorarDossie() {
+    if (!perfilPreview || !dossieBase) return
+    setCarregandoDossie(true)
+    try {
+      const redacao = await resumirDossieCandidatoComIA({
+        candidato: perfilPreview,
+        vaga,
+        empresa: usuarioAtual,
+        analiseCompatibilidade: dossieBase,
+      })
+      setRedacaoDossie(redacao)
+    } finally {
+      setCarregandoDossie(false)
+    }
   }
 
   function abrirPerfil(candidato) {
     setPerfilPreview(candidato)
     setCursoPreview(null)
+    setRedacaoDossie(null)
     setAbaCursoPreview('conteudo')
   }
 
@@ -588,6 +647,7 @@ export function ListaCandidatos() {
     setPerfilPreview(null)
     setCursoPreview(null)
     setAbaCursoPreview('conteudo')
+    setRedacaoDossie(null)
   }
 
   function abrirCursoPreview(nomeCurso) {
@@ -674,10 +734,10 @@ export function ListaCandidatos() {
               <button type="button" onClick={() => abrirPerfil(candidato)}>
                 <Eye size={18} /> Ver perfil
               </button>
-              <button type="button" onClick={() => alterarStatus(candidato, 'Selecionado')}>
+              <button type="button" onClick={() => abrirDecisao(candidato, 'Selecionado')}>
                 <Check size={18} /> Aprovar
               </button>
-              <button type="button" onClick={() => alterarStatus(candidato, 'Reprovado')}>
+              <button type="button" onClick={() => abrirDecisao(candidato, 'Reprovado')}>
                 <X size={18} /> Rejeitar
               </button>
             </footer>
@@ -858,12 +918,66 @@ export function ListaCandidatos() {
               </div>
             </section>
 
+            {dossie && (
+              <section className="candidato-dossie">
+                <header>
+                  <div>
+                    <span className="eyebrow">Assistente de recrutamento</span>
+                    <h3>Dossiê do candidato para esta vaga</h3>
+                    <small>{dossie.nivel} · análise de apoio à decisão humana</small>
+                  </div>
+                  <strong>{dossie.score}%</strong>
+                </header>
+                <p>{dossie.resumo}</p>
+                <div className="candidato-dossie-grid">
+                  <div>
+                    <h4>Compatibilidades</h4>
+                    <ul>{dossie.compatibilidades.length ? dossie.compatibilidades.map((item) => <li key={item}>{item}</li>) : <li>Validar conhecimentos durante a conversa inicial.</li>}</ul>
+                  </div>
+                  <div>
+                    <h4>Lacunas para validar</h4>
+                    <ul>{dossie.lacunas.length ? dossie.lacunas.slice(0, 5).map((item) => <li key={item}>{item}</li>) : <li>Nenhuma lacuna principal identificada pelas tags.</li>}</ul>
+                  </div>
+                  <div>
+                    <h4>Evidências no perfil</h4>
+                    <ul>{dossie.evidencias.length ? dossie.evidencias.map((item) => <li key={item}>{item}</li>) : <li>O perfil ainda tem poucas evidências registradas.</li>}</ul>
+                  </div>
+                  <div>
+                    <h4>Pontos de atenção</h4>
+                    <ul>{dossie.riscos.length ? dossie.riscos.map((item) => <li key={item}>{item}</li>) : <li>Nenhum ponto adicional identificado no perfil.</li>}</ul>
+                  </div>
+                  <div className="candidato-dossie-recomendacao">
+                    <h4>Recomendação interna cuidadosa</h4>
+                    <p>{dossie.recomendacaoInterna}</p>
+                  </div>
+                  {perfilPreview.observacaoInterna && (
+                    <div className="candidato-dossie-recomendacao">
+                      <h4>Observação interna registrada</h4>
+                      <p>{perfilPreview.observacaoInterna}</p>
+                    </div>
+                  )}
+                </div>
+                <div className="candidato-assistente-acoes">
+                  <button type="button" onClick={aprimorarDossie} disabled={carregandoDossie}>
+                    {carregandoDossie ? <RefreshCw className="girando" size={16} /> : <Sparkles size={16} />}
+                    {carregandoDossie ? 'Preparando resumo...' : 'Aprimorar resumo'}
+                  </button>
+                  <button type="button" onClick={() => abrirDecisao(perfilPreview, 'Selecionado')}>
+                    <Check size={16} /> Avaliar aprovação
+                  </button>
+                  <button type="button" onClick={() => abrirDecisao(perfilPreview, 'Reprovado')}>
+                    <MessageSquareText size={16} /> Avaliar rejeição
+                  </button>
+                </div>
+              </section>
+            )}
+
             <footer>
               <Botao variant="secondary" onClick={() => exportarCurriculoCandidato(perfilPreview)}>
                 <FileText size={18} /> Exportar currículo
               </Botao>
-              <Botao onClick={() => alterarStatus(perfilPreview, 'Selecionado')}>Aprovar candidato</Botao>
-              <Botao variant="secondary" onClick={() => alterarStatus(perfilPreview, 'Reprovado')}>
+              <Botao onClick={() => abrirDecisao(perfilPreview, 'Selecionado')}>Aprovar candidato</Botao>
+              <Botao variant="secondary" onClick={() => abrirDecisao(perfilPreview, 'Reprovado')}>
                 Rejeitar
               </Botao>
             </footer>
@@ -874,9 +988,93 @@ export function ListaCandidatos() {
         empresaAtual={usuarioAtual}
         tela="lista-candidatos"
         vagaAtual={vaga}
+        candidatoAtual={perfilPreview}
+        analiseCandidato={dossie}
         candidatos={candidatos}
         candidaturas={candidaturas}
       />
+
+      {decisao && (
+        <div className="candidato-decisao-modal" role="presentation" onMouseDown={(evento) => {
+          if (evento.target === evento.currentTarget) setDecisao(null)
+        }}>
+          <section className="candidato-decisao-card" role="dialog" aria-modal="true" aria-labelledby="candidato-decisao-titulo">
+            <header>
+              <div>
+                <span className="eyebrow">Decisão humana assistida</span>
+                <h2 id="candidato-decisao-titulo">
+                  {decisao.status === 'Selecionado' ? 'Avaliar aprovação para próxima etapa' : 'Avaliar rejeição da candidatura'}
+                </h2>
+                <p>Revise os dados e o feedback antes de confirmar. Nenhuma mensagem será enviada automaticamente.</p>
+              </div>
+              <button type="button" onClick={() => setDecisao(null)} aria-label="Fechar decisão"><X size={19} /></button>
+            </header>
+
+            <div className="candidato-decisao-resumo">
+              <strong>{decisao.candidato.nome}</strong>
+              <span>{decisao.analise.nivel}</span>
+              <p>{decisao.analise.resumo}</p>
+            </div>
+
+            <label>
+              <span>{decisao.status === 'Selecionado' ? 'Motivo da aprovação' : 'Motivo da rejeição'}</span>
+              <select value={decisao.motivo} onChange={(evento) => atualizarDecisao('motivo', evento.target.value)}>
+                <option value="">Selecione ou deixe para revisar depois</option>
+                {decisao.status === 'Selecionado' ? (
+                  <>
+                    <option>Boa compatibilidade técnica</option>
+                    <option>Perfil alinhado à vaga</option>
+                    <option>Bons projetos</option>
+                    <option>Currículo coerente</option>
+                    <option>Potencial para próxima etapa</option>
+                  </>
+                ) : (
+                  <>
+                    <option>Falta tecnologia principal</option>
+                    <option>Pouca evidência prática</option>
+                    <option>Perfil incompleto</option>
+                    <option>Currículo desalinhado</option>
+                    <option>Fora da senioridade</option>
+                    <option>Fora da modalidade ou localização</option>
+                    <option>Vaga seguiu com outro perfil</option>
+                    <option>Outro</option>
+                  </>
+                )}
+              </select>
+            </label>
+
+            <label>
+              <span>Observação interna</span>
+              <textarea
+                rows="3"
+                value={decisao.observacaoInterna}
+                onChange={(evento) => atualizarDecisao('observacaoInterna', evento.target.value)}
+                placeholder="Ex: Validar conhecimento prático em APIs REST. Esta observação não aparece para o candidato."
+              />
+            </label>
+
+            <label>
+              <span>Feedback assistido para revisar</span>
+              <textarea rows="6" value={decisao.feedback} onChange={(evento) => atualizarDecisao('feedback', evento.target.value)} />
+            </label>
+            <div className="candidato-decisao-assistente">
+              <button type="button" onClick={gerarFeedbackAssistido} disabled={carregandoFeedback}>
+                {carregandoFeedback ? <RefreshCw className="girando" size={16} /> : <Sparkles size={16} />}
+                {carregandoFeedback ? 'Preparando feedback...' : 'Gerar feedback assistido'}
+              </button>
+              <button type="button" onClick={copiarFeedback}><Copy size={16} /> Copiar feedback</button>
+              {mensagemDecisao && <small>{mensagemDecisao}</small>}
+            </div>
+
+            <footer>
+              <Botao variant="secondary" onClick={() => setDecisao(null)}>Cancelar</Botao>
+              <Botao onClick={confirmarDecisao}>
+                {decisao.status === 'Selecionado' ? 'Confirmar aprovação' : 'Confirmar rejeição'}
+              </Botao>
+            </footer>
+          </section>
+        </div>
+      )}
     </section>
   )
 }

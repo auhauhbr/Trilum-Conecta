@@ -63,10 +63,10 @@ function sincronizarEmpresaBase(empresa) {
   return {
     ...base,
     ...empresa,
-    logo: empresa.logo || base.logo,
-    logoUrl: empresa.logoUrl || base.logoUrl || '',
-    capaUrl: empresa.capaUrl || base.capaUrl || '',
-    capa: empresa.capa || base.capa || '',
+    logo: base.logo || empresa.logo,
+    logoUrl: base.logoUrl || empresa.logoUrl || '',
+    capaUrl: base.capaUrl || empresa.capaUrl || '',
+    capa: base.capa || empresa.capa || '',
     especialidades: Array.isArray(empresa.especialidades) && empresa.especialidades.length
       ? empresa.especialidades
       : base.especialidades || [],
@@ -665,13 +665,18 @@ export function AppProvider({ children }) {
     setVagasPersistidas((lista) => lista.filter((vaga) => vaga.id !== vagaId))
   }
 
-  function atualizarStatusCandidato(candidatoId, status) {
+  function atualizarStatusCandidato(candidatoId, status, detalhes = {}) {
+    const atualizacao = {
+      status,
+      ...detalhes,
+      atualizadoEm: new Date().toLocaleString('pt-BR'),
+    }
     setCandidatosPersistidos((lista) =>
-      lista.map((candidato) => (candidato.id === candidatoId ? { ...candidato, status } : candidato)),
+      lista.map((candidato) => (candidato.id === candidatoId ? { ...candidato, ...atualizacao } : candidato)),
     )
     setCandidaturasPersistidas((lista) =>
       lista.map((candidatura) =>
-        candidatura.id === candidatoId ? { ...candidatura, status, atualizadoEm: new Date().toLocaleString('pt-BR') } : candidatura,
+        candidatura.id === candidatoId ? { ...candidatura, ...atualizacao } : candidatura,
       ),
     )
   }

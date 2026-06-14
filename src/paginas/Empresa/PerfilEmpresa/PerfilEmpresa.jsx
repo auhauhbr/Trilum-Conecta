@@ -1,5 +1,5 @@
-import { Globe2 } from 'lucide-react'
-import { useState } from 'react'
+import { AlertCircle, CheckCircle2, Copy, Globe2, RefreshCw, ShieldCheck, Sparkles, X } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Botao } from '../../../componentes/interface/Botao'
 import { Campo } from '../../../componentes/interface/Campo'
@@ -7,6 +7,8 @@ import { MentorEmpresaToast } from '../../../componentes/interface/MentorEmpresa
 import { Avatar } from '../../../componentes/perfis/Avatar'
 import { useApp } from '../../../contextos/AppContext'
 import { contarCandidatosDaVaga } from '../../../servicos/candidaturas'
+import { analisarForcaPerfilEmpresa } from '../../../servicos/empresaInteligencia'
+import { melhorarPerfilEmpresaComIA } from '../../../servicos/empresaIA'
 
 function listaParaTexto(valor) {
   return Array.isArray(valor) ? valor.join(', ') : valor || ''
@@ -116,11 +118,25 @@ function estaVazio(valor) {
 
 export function PerfilEmpresa() {
   const navigate = useNavigate()
+  const edicaoPerfilRef = useRef(null)
   const { usuarioAtual, atualizarEmpresa, vagasEmpresa, candidatos, candidaturas, logout } = useApp()
   const [editando, setEditando] = useState(false)
   const [form, setForm] = useState(() => dadosEmpresa(usuarioAtual))
+  const [sugestaoMentor, setSugestaoMentor] = useState(null)
+  const [carregandoSugestao, setCarregandoSugestao] = useState(false)
+  const [mensagemSugestao, setMensagemSugestao] = useState('')
   const perfil = previewEmpresa(form)
+  const forcaPerfil = analisarForcaPerfilEmpresa(perfil)
   const vagas = vagasEmpresa.filter((vaga) => vaga.empresaId === usuarioAtual?.id)
+
+  function abrirEdicaoPerfil() {
+    setEditando(true)
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        edicaoPerfilRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    })
+  }
 
   function atualizar(campo, valor) {
     setForm((atual) => ({ ...atual, [campo]: valor }))
@@ -137,6 +153,50 @@ export function PerfilEmpresa() {
       })
       return preenchido
     })
+  }
+
+  async function gerarSugestaoMentor() {
+    setEditando(true)
+    setCarregandoSugestao(true)
+    setMensagemSugestao('')
+    try {
+      const sugestao = await melhorarPerfilEmpresaComIA({
+        empresa: perfil,
+        analisePerfil: forcaPerfil,
+      })
+      setSugestaoMentor(sugestao)
+    } finally {
+      setCarregandoSugestao(false)
+    }
+  }
+
+  function aplicarSugestaoMentor() {
+    if (!sugestaoMentor) return
+    setForm((atual) => ({
+      ...atual,
+      descricaoCurta: sugestaoMentor.descricaoCurta || atual.descricaoCurta,
+      descricao: sugestaoMentor.descricaoEmpresa || atual.descricao,
+      especialidades: sugestaoMentor.especialidades?.length ? sugestaoMentor.especialidades.join(', ') : atual.especialidades,
+      stackDetalhes: sugestaoMentor.stackPratica || atual.stackDetalhes,
+      beneficios: sugestaoMentor.diferenciais || atual.beneficios,
+    }))
+    setMensagemSugestao('Sugestões aplicadas ao formulário. Revise os textos e clique em Atualizar perfil para salvar.')
+    setSugestaoMentor(null)
+  }
+
+  async function copiarSugestaoMentor() {
+    if (!sugestaoMentor) return
+    const conteudo = [
+      'Descrição curta:', sugestaoMentor.descricaoCurta, '', 'Descrição da empresa:', sugestaoMentor.descricaoEmpresa,
+      '', 'Especialidades:', sugestaoMentor.especialidades.join(', '), '', 'Stack em prática:', sugestaoMentor.stackPratica,
+      '', 'Diferenciais:', sugestaoMentor.diferenciais,
+    ].join('\n')
+    try {
+      await navigator.clipboard.writeText(conteudo)
+      setMensagemSugestao('Textos sugeridos copiados.')
+    } catch {
+      setMensagemSugestao('Não foi possível copiar automaticamente. Você ainda pode revisar e aplicar as sugestões.')
+    }
   }
 
   function salvar() {
@@ -181,7 +241,7 @@ export function PerfilEmpresa() {
             <p>{perfil.descricaoCurta || perfil.descricao}</p>
           </div>
           <div className="perfil-empresa-acoes">
-            <Botao className="botao botao-primary botao-quadrado" onClick={() => setEditando(true)}>
+            <Botao className="botao botao-primary botao-quadrado" onClick={abrirEdicaoPerfil}>
               Atualizar perfil
             </Botao>
             <Botao className="botao botao-secondary botao-quadrado" variant="secondary" onClick={sair}>
@@ -190,6 +250,33 @@ export function PerfilEmpresa() {
           </div>
         </div>
       </div>
+
+      <section className="empresa-inteligencia-card empresa-forca-perfil">
+        <header>
+          <div>
+            <span className="empresa-inteligencia-label"><ShieldCheck size={16} /> Força do perfil da empresa</span>
+            <strong>{forcaPerfil.score}%</strong>
+          </div>
+          <span className={`empresa-inteligencia-nivel nivel-${forcaPerfil.score >= 65 ? 'forte' : 'atencao'}`}>{forcaPerfil.nivel}</span>
+        </header>
+        <div className="empresa-inteligencia-barra"><i style={{ width: `${forcaPerfil.score}%` }} /></div>
+        <div className="empresa-forca-grid">
+          <div>
+            <h3><CheckCircle2 size={15} /> Pontos fortes</h3>
+            <ul>{forcaPerfil.pontosFortes.slice(0, 3).map((item) => <li key={item}>{item}</li>)}</ul>
+          </div>
+          <div>
+            <h3><AlertCircle size={15} /> Próximos ajustes</h3>
+            <ul>{forcaPerfil.lacunas.slice(0, 3).map((item) => <li key={item}>{item}</li>)}</ul>
+          </div>
+          {forcaPerfil.proximaAcao && (
+            <button type="button" onClick={abrirEdicaoPerfil}>
+              Melhorar perfil
+              <small>{forcaPerfil.proximaAcao.label}</small>
+            </button>
+          )}
+        </div>
+      </section>
 
       <div className="perfil-empresa-conteudo">
         <section className="perfil-empresa-info-card perfil-empresa-sobre">
@@ -285,11 +372,16 @@ export function PerfilEmpresa() {
       </div>
 
       {editando && (
-        <section className="empresa-editar-perfil empresa-editar-inline">
+        <section className="empresa-editar-perfil empresa-editar-inline" ref={edicaoPerfilRef}>
           <header>
             <div>
               <span className="eyebrow">Editar</span>
               <h2>Atualizar perfil</h2>
+              <button className="vaga-mentor-trigger" type="button" onClick={gerarSugestaoMentor} disabled={carregandoSugestao}>
+                {carregandoSugestao ? <RefreshCw className="girando" size={17} /> : <Sparkles size={17} />}
+                {carregandoSugestao ? 'Analisando perfil...' : 'Melhorar perfil com mentor'}
+              </button>
+              {mensagemSugestao && <p className="vaga-mentor-status">{mensagemSugestao}</p>}
               <p>Revise as informações sem sair da visualização pública do perfil.</p>
             </div>
             <button type="button" onClick={cancelar} aria-label="Fechar edição">
@@ -408,9 +500,43 @@ export function PerfilEmpresa() {
         vagas={vagas}
         candidatos={candidatos}
         candidaturas={candidaturas}
-        onEditarPerfil={() => setEditando(true)}
+        onEditarPerfil={abrirEdicaoPerfil}
         onAutocompletarPerfil={editando ? autocompletarVazios : null}
+        onMelhorarPerfil={gerarSugestaoMentor}
       />
+
+      {sugestaoMentor && (
+        <div className="vaga-mentor-modal" role="presentation" onMouseDown={(evento) => {
+          if (evento.target === evento.currentTarget) setSugestaoMentor(null)
+        }}>
+          <section className="vaga-mentor-modal-card perfil-mentor-modal-card" role="dialog" aria-modal="true" aria-labelledby="perfil-mentor-titulo">
+            <header>
+              <div>
+                <span className="empresa-inteligencia-label"><Sparkles size={15} /> Mentor da empresa</span>
+                <h2 id="perfil-mentor-titulo">Sugestão do mentor para o perfil</h2>
+                <p>Revise antes de aplicar. O mentor não salva o perfil automaticamente.</p>
+              </div>
+              <button type="button" aria-label="Fechar sugestão" onClick={() => setSugestaoMentor(null)}><X size={20} /></button>
+            </header>
+
+            <div className="vaga-mentor-sugestoes">
+              <article className="span-2"><span>Descrição curta sugerida</span><strong>{sugestaoMentor.descricaoCurta}</strong></article>
+              <article className="span-2"><span>Descrição da empresa sugerida</span><p>{sugestaoMentor.descricaoEmpresa}</p></article>
+              <article><span>Especialidades sugeridas</span><div className="vaga-mentor-tags">{sugestaoMentor.especialidades.map((item) => <i key={item}>{item}</i>)}</div></article>
+              <article><span>Stack em prática sugerida</span><p className="vaga-mentor-texto-linhas">{sugestaoMentor.stackPratica}</p></article>
+              <article><span>Diferenciais sugeridos</span><p className="vaga-mentor-texto-linhas">{sugestaoMentor.diferenciais}</p></article>
+              <article><span>Observações do mentor</span><ul>{sugestaoMentor.observacoes.map((item) => <li key={item}>{item}</li>)}</ul></article>
+            </div>
+
+            <footer>
+              <button className="botao botao-secondary" type="button" onClick={() => setSugestaoMentor(null)}>Cancelar</button>
+              <button className="botao botao-secondary" type="button" onClick={copiarSugestaoMentor}><Copy size={16} /> Copiar textos</button>
+              <button className="botao botao-secondary" type="button" onClick={gerarSugestaoMentor} disabled={carregandoSugestao}><RefreshCw size={16} /> Gerar outra versão</button>
+              <button className="botao botao-primary" type="button" onClick={aplicarSugestaoMentor}><CheckCircle2 size={16} /> Aplicar sugestões</button>
+            </footer>
+          </section>
+        </div>
+      )}
     </section>
   )
 }

@@ -37,8 +37,12 @@ export function MentorEmpresaToast({
   candidatos = [],
   candidaturas = [],
   formularioVaga,
+  candidatoAtual,
+  analiseCandidato,
   onEditarPerfil,
   onAutocompletarPerfil,
+  onMelhorarVaga,
+  onMelhorarPerfil,
 }) {
   const chave = `trilum:mentor-empresa:${empresaAtual?.id || 'empresa'}:${tela}`
   const [fechado, setFechado] = useState(() => lerStorage(chave, false))
@@ -48,35 +52,66 @@ export function MentorEmpresaToast({
     const qualidade = vagaBase ? analisarQualidadeVaga(vagaBase) : null
 
     if (tela === 'lista-candidatos') {
+      if (candidatoAtual && analiseCandidato) {
+        return {
+          mensagem: analiseCandidato.nivel === 'Alta compatibilidade'
+            ? 'O perfil apresenta boa aderência aos requisitos principais. Revise projetos, currículo e evidências antes de decidir.'
+            : analiseCandidato.nivel === 'Dados insuficientes'
+              ? 'Ainda há poucos dados para uma conclusão. Use o dossiê para identificar o que precisa ser validado antes de decidir.'
+              : 'O dossiê organiza compatibilidades, lacunas e evidências. Use essa análise como apoio, nunca como decisão automática.',
+        }
+      }
       return {
         mensagem:
-          'Nesta tela voce avalia pessoas candidatas e acompanha status. Clique em Ver perfil para abrir o perfil do aluno; dentro dele voce pode exportar o currículo atualizado em PDF.',
+          'Abra o perfil para consultar o dossiê de compatibilidade, revisar evidências e preparar um feedback seguro antes de alterar o status.',
       }
     }
 
     if ((tela === 'painel' || tela === 'perfil-empresa') && perfil.incompleto) {
       return {
-        saudacao: 'Ei, pessoal da empresa, antes de acelerar as vagas vale revisar isso:',
+        saudacao: `Diagnóstico: a força do perfil está em ${perfil.score}% (${perfil.nivel}). Próxima ação:`,
         itens: perfil.avisos,
-        acao: onEditarPerfil
+        acao: onMelhorarPerfil
+          ? { onClick: onMelhorarPerfil, label: 'Melhorar perfil' }
+          : onEditarPerfil
           ? { onClick: onEditarPerfil, label: 'Atualizar perfil' }
           : { to: '/empresa/perfil', label: 'Atualizar perfil' },
-        acaoSecundaria: onAutocompletarPerfil
+        acaoSecundaria: onMelhorarPerfil && onEditarPerfil
+          ? { onClick: onEditarPerfil, label: 'Editar manualmente', prefixo: 'ou' }
+          : onAutocompletarPerfil
           ? { onClick: onAutocompletarPerfil, label: 'Autocompletar vazios', prefixo: 'ou' }
           : null,
       }
     }
 
-    if (tela === 'criar-vaga' && qualidade?.avisos?.length) {
+    if (tela === 'criar-vaga' && qualidade?.erros?.length) {
       return {
-        saudacao: 'Ei, essa vaga pode ficar mais forte com estes ajustes:',
-        itens: itensUnicos([...qualidade.avisos, ...qualidade.dicas]),
+        saudacao: 'Essa vaga precisa de ajustes antes de publicar:',
+        itens: itensUnicos(qualidade.erros),
+        acao: onMelhorarVaga ? { onClick: onMelhorarVaga, label: 'Melhorar vaga' } : null,
+      }
+    }
+
+    if (tela === 'criar-vaga' && qualidade?.alertas?.length) {
+      return {
+        saudacao: 'Essa vaga está boa, mas pode confundir candidatos em alguns pontos:',
+        itens: itensUnicos(qualidade.alertas),
+        acao: onMelhorarVaga ? { onClick: onMelhorarVaga, label: 'Melhorar vaga' } : null,
+      }
+    }
+
+    if (tela === 'criar-vaga' && qualidade?.sugestoes?.length) {
+      return {
+        saudacao: 'Essa vaga está forte. O próximo ajuste fino é melhorar a conversão:',
+        itens: itensUnicos(qualidade.sugestoes),
+        acao: onMelhorarVaga ? { onClick: onMelhorarVaga, label: 'Melhorar vaga' } : null,
       }
     }
 
     if (tela === 'criar-vaga') {
       return {
-        mensagem: mensagemCompatibilidade,
+        mensagem: `Essa vaga está clara e pronta para candidatos. ${mensagemCompatibilidade}`,
+        acao: onMelhorarVaga ? { onClick: onMelhorarVaga, label: 'Revisar com mentor' } : null,
       }
     }
 
@@ -85,22 +120,29 @@ export function MentorEmpresaToast({
       if (semCandidatos) {
         return {
           mensagem:
-            'Uma das vagas ainda não recebeu candidatos. Revise se o título é claro, se o salário aparece e se as tecnologias estão bem marcadas.',
+            `A vaga "${semCandidatos.titulo}" ainda não recebeu candidatos. Próxima ação: revisar título, salário, descrição e tags para melhorar a atratividade.`,
         }
+      }
+    }
+
+    if (tela === 'perfil-empresa' && !perfil.incompleto && onMelhorarPerfil) {
+      return {
+        mensagem: `Seu perfil já está forte (${perfil.score}%). O mentor pode sugerir ajustes finos de comunicação sem alterar automaticamente os dados.`,
+        acao: { onClick: onMelhorarPerfil, label: 'Revisar textos' },
       }
     }
 
     if (tela === 'perfil-empresa') {
       return {
         mensagem:
-          'Use o perfil para mostrar produto, mercado, stack, diferenciais e hub principal. Isso aumenta a confiança antes da candidatura.',
+          `A força atual do perfil é ${perfil.score}% (${perfil.nivel}). Use os próximos ajustes indicados para aumentar a confiança antes da candidatura.`,
       }
     }
 
     return {
       mensagem: mensagensPorTela[tela] || mensagensPorTela.painel,
     }
-  }, [candidatos, candidaturas, empresaAtual, formularioVaga, onAutocompletarPerfil, onEditarPerfil, tela, vagaAtual, vagas])
+  }, [analiseCandidato, candidatoAtual, candidatos, candidaturas, empresaAtual, formularioVaga, onAutocompletarPerfil, onEditarPerfil, onMelhorarPerfil, onMelhorarVaga, tela, vagaAtual, vagas])
 
   if (fechado) {
     return <MentorCompactadoButton posicao="direita" onClick={() => setFechado(false)} />
