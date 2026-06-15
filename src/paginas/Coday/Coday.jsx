@@ -39,16 +39,18 @@ const materiaisCoday = [
   {
     id: 'slides',
     titulo: 'Slides da apresentação',
-    descricao: 'Resumo visual usado durante a apresentação do Coday.',
-    href: `${import.meta.env.BASE_URL}materiais/trilum-conecta-coday-2026-apresentacao.pptx`,
+    descricao: 'Apresentação resumida usada durante o Coday, com os principais fluxos e diferenciais do projeto.',
+    paginas: '11 páginas',
+    href: 'https://drive.google.com/file/d/1ZvMnWteT7lnOrgJq_GQYmOZB_p9J00KW/view?usp=sharing',
     disponivel: true,
     Icone: Presentation,
   },
   {
     id: 'documentacao',
-    titulo: 'Documentação completa',
-    descricao: 'Visão detalhada da proposta, arquitetura e principais fluxos.',
-    href: `${import.meta.env.BASE_URL}materiais/trilum-conecta-documentacao-visual.pptx`,
+    titulo: 'Documentação visual completa',
+    descricao: 'Apresentação detalhada da proposta, arquitetura, jornadas, regras, IA e principais funcionalidades.',
+    paginas: '36 páginas',
+    href: 'https://drive.google.com/file/d/1lhtqJuuEM68KanhU55ACK4ZJfSK7UGj-/view?usp=sharing',
     disponivel: true,
     Icone: FileText,
   },
@@ -233,10 +235,14 @@ export function Coday() {
             <p>Os materiais podem ser atualizados sem alterar a estrutura desta página.</p>
           </div>
           <div className="coday-materials-grid">
-            {materiaisCoday.map(({ id, titulo, descricao, href, disponivel, Icone }) => (
+            {materiaisCoday.map(({ id, titulo, descricao, paginas, href, disponivel, Icone }) => (
               <article className="coday-material-card" key={id}>
                 <div className="coday-material-icon"><Icone size={22} aria-hidden="true" /></div>
-                <div><h3>{titulo}</h3><p>{descricao}</p></div>
+                <div>
+                  <h3>{titulo}</h3>
+                  {paginas && <span className="coday-card-kicker">{paginas}</span>}
+                  <p>{descricao}</p>
+                </div>
                 {disponivel ? (
                   <a href={href} target="_blank" rel="noreferrer">
                     Acessar material <ExternalLink size={16} aria-hidden="true" />
