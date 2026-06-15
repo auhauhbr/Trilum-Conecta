@@ -45,7 +45,12 @@ export function MentorEmpresaToast({
   onMelhorarPerfil,
 }) {
   const chave = `trilum:mentor-empresa:${empresaAtual?.id || 'empresa'}:${tela}`
-  const [fechado, setFechado] = useState(() => lerStorage(chave, false))
+  const [fechado, setFechado] = useState(() => {
+    const preferenciaSalva = lerStorage(chave, null)
+    if (typeof preferenciaSalva === 'boolean') return preferenciaSalva
+
+    return typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches
+  })
   const conteudo = useMemo(() => {
     const perfil = analisarPerfilEmpresa(empresaAtual)
     const vagaBase = formularioVaga || vagaAtual
@@ -145,7 +150,15 @@ export function MentorEmpresaToast({
   }, [analiseCandidato, candidatoAtual, candidatos, candidaturas, empresaAtual, formularioVaga, onAutocompletarPerfil, onEditarPerfil, onMelhorarPerfil, onMelhorarVaga, tela, vagaAtual, vagas])
 
   if (fechado) {
-    return <MentorCompactadoButton posicao="direita" onClick={() => setFechado(false)} />
+    return (
+      <MentorCompactadoButton
+        posicao="direita"
+        onClick={() => {
+          setFechado(false)
+          salvarStorage(chave, false)
+        }}
+      />
+    )
   }
 
   function fechar() {

@@ -6552,6 +6552,32 @@ body,
   font-weight: 500;
 }
 
+@media (max-width: 700px) {
+  .main-com-nav .criar-vaga-layout {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .main-com-nav .criar-vaga-sidebar,
+  .main-com-nav .criar-vaga-preview {
+    display: none;
+  }
+
+  .main-com-nav .criar-vaga-main {
+    width: 100%;
+    min-width: 0;
+    padding: 1.25rem 0.875rem 5.5rem;
+  }
+
+  .main-com-nav .vaga-fields.grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .main-com-nav .criar-vaga-page .span-2 {
+    grid-column: auto;
+  }
+}
+
 .raio-x-vaga {
   margin-bottom: 20px;
   padding: 17px;
