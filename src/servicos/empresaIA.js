@@ -187,7 +187,7 @@ export function validarSugestaoVagaIA(sugestao, vaga = {}) {
   return true
 }
 
-export async function melhorarVagaComIA({ vaga = {}, empresa = {}, analiseAtual = {} } = {}) {
+export async function melhorarVagaComIA({ vaga = {}, empresa = {}, analiseAtual = {}, variacao = 1 } = {}) {
   const fallback = gerarVagaFallback({ vaga, empresa, analiseAtual })
   const contextoSeguro = {
     empresa: { nome: texto(empresa.nome || empresa.nomeOficial, 80), setor: texto(empresa.setor, 80), descricaoCurta: texto(empresa.descricaoCurta, 180) },
@@ -200,6 +200,7 @@ export async function melhorarVagaComIA({ vaga = {}, empresa = {}, analiseAtual 
       tags: linhas(vaga.tags),
     },
     diagnostico: { erros: analiseAtual.erros || [], alertas: analiseAtual.alertas || [], sugestoes: analiseAtual.sugestoes || [] },
+    variacao: Number(variacao) || 1,
   }
   return executarConteudoIAComFallback({
     tipo: TIPOS_IA.MELHORAR_VAGA,
@@ -208,13 +209,14 @@ export async function melhorarVagaComIA({ vaga = {}, empresa = {}, analiseAtual 
     prompt: `Melhore somente os textos da vaga abaixo. Preserve tecnologias e fatos informados.
 Não inclua salário, benefícios, modalidade ou localização nos textos.
 Se algo não foi informado, registre apenas uma observação para a empresa revisar.
+Esta é a versão ${contextoSeguro.variacao}. Varie a redação e a organização sem alterar fatos, tecnologias ou requisitos reais.
 Contexto: ${JSON.stringify(contextoSeguro)}`,
     fallback,
     formato: 'json',
     camposObrigatorios: ['titulo', 'descricao', 'requisitos', 'atividades', 'tags'],
     validarResposta: (resposta) => validarSugestaoVagaIA(resposta, vaga),
     transformarResposta: normalizarSugestao,
-    opcoes: { temperature: 0.25, num_predict: 900 },
+    opcoes: { temperature: 0.45, num_predict: 900 },
   })
 }
 

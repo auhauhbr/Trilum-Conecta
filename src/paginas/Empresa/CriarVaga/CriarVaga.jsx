@@ -144,6 +144,7 @@ export function CriarVaga() {
   const [sugestaoMentor, setSugestaoMentor] = useState(null)
   const [carregandoSugestao, setCarregandoSugestao] = useState(false)
   const [mensagemSugestao, setMensagemSugestao] = useState('')
+  const [versaoSugestao, setVersaoSugestao] = useState(0)
 
   const camposPreenchidos = camposProgresso.filter((campo) => String(form[campo] || '').trim()).length
   const progresso = Math.round((camposPreenchidos / camposProgresso.length) * 100)
@@ -182,14 +183,22 @@ export function CriarVaga() {
 
   async function gerarSugestaoMentor() {
     setCarregandoSugestao(true)
-    setMensagemSugestao('')
+    setMensagemSugestao('Preparando uma nova sugestão...')
     try {
+      const proximaVersao = versaoSugestao + 1
       const sugestao = await melhorarVagaComIA({
         vaga: vagaParaAnalise,
         empresa: usuarioAtual,
         analiseAtual: raioX,
+        variacao: proximaVersao,
       })
       setSugestaoMentor(sugestao)
+      setVersaoSugestao(proximaVersao)
+      setMensagemSugestao(sugestao.origem === 'ia'
+        ? 'Nova versão personalizada gerada pelo mentor local.'
+        : 'O mentor local não respondeu. A sugestão padrão segura foi mantida.')
+    } catch {
+      setMensagemSugestao('Não foi possível atualizar a sugestão agora. A versão atual foi mantida.')
     } finally {
       setCarregandoSugestao(false)
     }
@@ -466,7 +475,7 @@ export function CriarVaga() {
 
         <aside className="criar-vaga-preview">
           <section className="empresa-inteligencia-card raio-x-vaga">
-            <header>
+              <header>
               <div>
                 <span className="empresa-inteligencia-label"><Gauge size={15} /> Raio-X da vaga</span>
                 <strong>{raioX.pontuacao}%</strong>
@@ -614,9 +623,11 @@ export function CriarVaga() {
                 <p>Revise a sugestão antes de aplicar. O mentor não publica nem salva a vaga automaticamente.</p>
               </div>
               <button type="button" aria-label="Fechar sugestão" onClick={() => setSugestaoMentor(null)}><X size={20} /></button>
-            </header>
+              </header>
 
-            <div className="vaga-mentor-sugestoes">
+              {mensagemSugestao && <p className="vaga-mentor-status vaga-mentor-modal-status">{mensagemSugestao}</p>}
+
+              <div className="vaga-mentor-sugestoes">
               <article className="span-2"><span>Título sugerido</span><strong>{sugestaoMentor.titulo}</strong></article>
               <article className="span-2"><span>Descrição sugerida</span><p>{sugestaoMentor.descricao}</p></article>
               <article><span>Requisitos sugeridos</span><ul>{linhasFormulario(sugestaoMentor.requisitos).map((item) => <li key={item}>{item}</li>)}</ul></article>
@@ -628,7 +639,10 @@ export function CriarVaga() {
             <footer>
               <button className="botao botao-secondary" type="button" onClick={() => setSugestaoMentor(null)}>Cancelar</button>
               <button className="botao botao-secondary" type="button" onClick={copiarSugestaoMentor}><Copy size={16} /> Copiar texto</button>
-              <button className="botao botao-secondary" type="button" onClick={gerarSugestaoMentor} disabled={carregandoSugestao}><RefreshCw size={16} /> Gerar outra versão</button>
+              <button className="botao botao-secondary" type="button" onClick={gerarSugestaoMentor} disabled={carregandoSugestao}>
+                <RefreshCw className={carregandoSugestao ? 'girando' : ''} size={16} />
+                {carregandoSugestao ? 'Gerando nova versão...' : 'Gerar outra versão'}
+              </button>
               <button className="botao botao-primary" type="button" onClick={aplicarSugestaoMentor}><CheckCircle2 size={16} /> Aplicar sugestão</button>
             </footer>
           </section>
