@@ -104,7 +104,7 @@ function BotaoCopiar({ identificador, valor, copiado, aoCopiar }) {
 export function Coday() {
   const [copiado, setCopiado] = useState('')
   const [destinoPendente, setDestinoPendente] = useState('')
-  const [segundosRestantes, setSegundosRestantes] = useState(10)
+  const [segundosRestantes, setSegundosRestantes] = useState(20)
   const temporizadorCopia = useRef(null)
   const contasDemoRef = useRef(null)
   const navigate = useNavigate()
@@ -130,7 +130,7 @@ export function Coday() {
   function prepararAcesso(evento, destino) {
     evento.preventDefault()
     setDestinoPendente(destino)
-    setSegundosRestantes(10)
+    setSegundosRestantes(20)
   }
 
   function continuarAgora() {
