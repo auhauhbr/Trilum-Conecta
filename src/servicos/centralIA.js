@@ -194,7 +194,10 @@ export async function executarIAComSeguranca({
 } = {}) {
   const conteudoFallback = resolverFallback(fallback, contexto, tipo) ?? gerarFallbackSeguro(tipo, contexto)
   const configuracaoTipo = CONFIGURACOES_TIPO_IA[tipo] || {}
-  const formatoFinal = formato || (configuracaoTipo.formato === 'json' ? 'json' : undefined)
+  const formatoFinal = formato === false
+    ? undefined
+    : (formato || (configuracaoTipo.formato === 'json' ? 'json' : undefined))
+  const respostaEhJson = formatoFinal === 'json' || Boolean(formatoFinal && typeof formatoFinal === 'object')
   const limiteFinal = maxCaracteres || configuracaoTipo.maxCaracteres || 1200
   if (!iaEstaHabilitada()) return { sucesso: true, origem: 'fallback', conteudo: conteudoFallback, aviso: '' }
 
@@ -202,8 +205,8 @@ export async function executarIAComSeguranca({
   const respostaBruta = await chamarIAComTimeout({ system, prompt: promptFinal, timeoutMs, formato: formatoFinal, opcoes })
   if (!respostaBruta) return { sucesso: true, origem: 'fallback', conteudo: conteudoFallback, aviso: AVISO_FALLBACK }
 
-  const resposta = formatoFinal === 'json' ? extrairJSONSeguro(respostaBruta) : normalizarRespostaIA(respostaBruta)
-  const valida = formatoFinal === 'json'
+  const resposta = respostaEhJson ? extrairJSONSeguro(respostaBruta) : normalizarRespostaIA(respostaBruta)
+  const valida = respostaEhJson
     ? validarJSONIA(resposta, { camposObrigatorios, maxCaracteres: limiteFinal, validar: validarResposta })
     : validarTextoIA(resposta, { maxCaracteres: limiteFinal, minCaracteres, validar: validarResposta })
 

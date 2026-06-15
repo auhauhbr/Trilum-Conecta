@@ -37,7 +37,7 @@ jobs:
           VITE_IA_LOCAL_HABILITADA: true
           VITE_OLLAMA_ENDPOINT: http://localhost:11434/api/chat
           VITE_OLLAMA_MODELO: gemma3:1b
-          VITE_IA_TIMEOUT_MS: 8000
+          VITE_IA_TIMEOUT_MS: 30000
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

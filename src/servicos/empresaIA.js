@@ -1,14 +1,6 @@
 import { gerarFeedbackCandidatoFallback, validarFeedbackCandidato } from './analiseCandidaturaEmpresa'
-import { executarConteudoIAComFallback, TIPOS_IA } from './centralIA'
+import { executarConteudoIAComFallback, executarIAComSeguranca, TIPOS_IA } from './centralIA'
 import { listaEmpresa, normalizarTextoEmpresa } from './empresaInteligencia'
-
-const SYSTEM_PROMPT = `Você é um assistente de recrutamento da plataforma Trilum Conecta.
-Ajude a empresa a melhorar uma vaga de tecnologia usando apenas os dados fornecidos.
-Não invente salário, benefícios, modalidade, localização, tecnologias ou requisitos.
-Não prometa contratação, publique ou salve a vaga.
-Se a vaga for Júnior, evite exigências exageradas.
-Organize os textos com clareza e responda em português brasileiro.
-Retorne somente JSON válido com titulo, descricao, requisitos, atividades, tags e observacoes.`
 
 const SYSTEM_PROMPT_PERFIL = `Você é um assistente de recrutamento da plataforma Trilum Conecta.
 Ajude uma empresa a melhorar seu perfil público para atrair candidatos usando apenas os dados fornecidos.
@@ -187,6 +179,34 @@ export function validarSugestaoVagaIA(sugestao, vaga = {}) {
   return true
 }
 
+const TERMOS_DESCRICAO_NAO_PERMITIDOS = /(?:sal[aá]rio|benef[ií]cio|experi[eê]ncia|essencial|obrigat[oó]ri|forma[cç][aã]o em|produ[cç][aã]o|garantir|respons[aá]vel por|aws|azure|google cloud|kubernetes|certifica[cç][aã]o)/i
+
+function descricaoSeguraDaIA(valor, vaga, fallback) {
+  const contextoPermitido = normalizarTextoEmpresa([
+    vaga.titulo,
+    vaga.descricao,
+    vaga.requisitos,
+    vaga.atividades,
+    ...linhas(vaga.tags),
+  ].join(' '))
+  const tecnologiasConhecidas = [
+    'react', 'typescript', 'javascript', 'java', 'spring', 'csharp', 'dotnet',
+    'python', 'fastapi', 'php', 'node', 'nextjs', 'angular', 'docker', 'linux',
+    'git', 'sql', 'postgresql', 'aws', 'azure', 'kubernetes', 'cloud', 'api', 'ci cd',
+  ]
+  const sentencas = texto(valor, 1200)
+    .split(/(?<=[.!?])\s+/)
+    .map((item) => item.trim())
+    .filter((item) => item.length >= 35 && !TERMOS_DESCRICAO_NAO_PERMITIDOS.test(item))
+    .filter((item) => tecnologiasConhecidas.every((tecnologia) => {
+      const citada = normalizarTextoEmpresa(item).includes(tecnologia)
+      return !citada || contextoPermitido.includes(tecnologia)
+    }))
+    .slice(0, 2)
+  const descricao = sentencas.join(' ').slice(0, 900)
+  return descricao.length >= 80 ? descricao : fallback
+}
+
 export async function melhorarVagaComIA({ vaga = {}, empresa = {}, analiseAtual = {}, variacao = 1 } = {}) {
   const fallback = gerarVagaFallback({ vaga, empresa, analiseAtual })
   const contextoSeguro = {
@@ -202,22 +222,32 @@ export async function melhorarVagaComIA({ vaga = {}, empresa = {}, analiseAtual 
     diagnostico: { erros: analiseAtual.erros || [], alertas: analiseAtual.alertas || [], sugestoes: analiseAtual.sugestoes || [] },
     variacao: Number(variacao) || 1,
   }
-  return executarConteudoIAComFallback({
+  const resultadoDescricao = await executarIAComSeguranca({
     tipo: TIPOS_IA.MELHORAR_VAGA,
     contexto: contextoSeguro,
-    system: SYSTEM_PROMPT,
-    prompt: `Melhore somente os textos da vaga abaixo. Preserve tecnologias e fatos informados.
-Não inclua salário, benefícios, modalidade ou localização nos textos.
-Se algo não foi informado, registre apenas uma observação para a empresa revisar.
-Esta é a versão ${contextoSeguro.variacao}. Varie a redação e a organização sem alterar fatos, tecnologias ou requisitos reais.
-Contexto: ${JSON.stringify(contextoSeguro)}`,
-    fallback,
-    formato: 'json',
-    camposObrigatorios: ['titulo', 'descricao', 'requisitos', 'atividades', 'tags'],
-    validarResposta: (resposta) => validarSugestaoVagaIA(resposta, vaga),
-    transformarResposta: normalizarSugestao,
-    opcoes: { temperature: 0.45, num_predict: 900 },
+    system: `Reescreva somente a descricao fornecida.
+Nao acrescente responsabilidades, requisitos, experiencia, tecnologias, beneficios, ferramentas ou fatos.
+Responda somente com duas frases em portugues brasileiro.`,
+    prompt: `Crie a versao ${contextoSeguro.variacao} da descricao abaixo, preservando exatamente seu sentido:
+${contextoSeguro.vaga.descricao}`,
+    fallback: fallback.descricao,
+    formato: false,
+    maxCaracteres: 900,
+    validarResposta: (resposta) => descricaoSeguraDaIA(resposta, vaga, fallback.descricao) !== fallback.descricao,
+    transformarResposta: (resposta) => descricaoSeguraDaIA(resposta, vaga, fallback.descricao),
+    opcoes: { temperature: 0.45, num_predict: 260 },
   })
+  return {
+    ...fallback,
+    descricao: resultadoDescricao.conteudo,
+    observacoes: [
+      ...(resultadoDescricao.origem === 'ia'
+        ? ['A descricao recebeu uma nova redacao segura; requisitos, atividades e tags foram preservados pelas regras.']
+        : []),
+      ...fallback.observacoes,
+    ],
+    origem: resultadoDescricao.origem,
+  }
 }
 
 export function gerarSugestaoDescricaoVaga(contexto) {

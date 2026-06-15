@@ -13,5 +13,5 @@ export const configIA = {
   provedor: 'ollama',
   endpoint: import.meta.env.VITE_OLLAMA_ENDPOINT || 'http://localhost:11434/api/chat',
   modelo: import.meta.env.VITE_OLLAMA_MODELO || 'gemma3:1b',
-  timeoutMs: valorNumero(import.meta.env.VITE_IA_TIMEOUT_MS, 8000),
+  timeoutMs: valorNumero(import.meta.env.VITE_IA_TIMEOUT_MS, 30000),
 }

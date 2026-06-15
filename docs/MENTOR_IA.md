@@ -36,7 +36,7 @@ ollama pull gemma3:1b
 VITE_IA_LOCAL_HABILITADA=true
 VITE_OLLAMA_ENDPOINT=http://localhost:11434/api/chat
 VITE_OLLAMA_MODELO=gemma3:1b
-VITE_IA_TIMEOUT_MS=8000
+VITE_IA_TIMEOUT_MS=30000
 ```
 
 4. Inicie novamente o projeto.
@@ -66,18 +66,19 @@ O deploy publicado sempre funciona com regras e fallbacks, mesmo sem Ollama. O w
 
 Cada visitante que quiser receber textos gerados pelo modelo precisa ter o Ollama instalado, o `gemma3:1b` baixado e o serviço local executando. Como a chamada parte do navegador aberto no domínio público, também pode ser necessário autorizar `https://auhauhbr.github.io` na configuração local do Ollama. Sem isso, a central usa fallback automaticamente e nenhuma tela quebra.
 
-Exemplo para testar o deploy no PowerShell, após fechar outra instância do Ollama:
+Para autorizar permanentemente o deploy no Windows, execute uma vez e reinicie o Ollama:
 
 ```powershell
-$env:OLLAMA_ORIGINS='https://auhauhbr.github.io'
-ollama serve
+setx OLLAMA_ORIGINS "https://auhauhbr.github.io"
 ```
 
-Em outro terminal:
+Depois, confirme que o modelo está disponível:
 
 ```powershell
 ollama pull gemma3:1b
 ```
+
+Sem essa autorização local, o deploy continua funcionando, mas apresenta os textos de fallback.
 
 ## Proteções
 
