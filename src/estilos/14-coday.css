@@ -262,6 +262,111 @@
 .coday-footer p { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; margin: 0; }
 .coday-page a:focus-visible, .coday-page button:focus-visible { outline: 3px solid #6ea5ff; outline-offset: 4px; }
 
+.coday-ai-transition {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgb(9 18 34 / 76%);
+  backdrop-filter: blur(7px);
+}
+
+.coday-ai-dialog {
+  width: min(700px, 100%);
+  max-height: calc(100vh - 44px);
+  padding: clamp(22px, 4vw, 32px);
+  overflow-y: auto;
+  border: 1px solid #b8ccef;
+  background: #fff;
+  box-shadow: 0 30px 90px rgb(5 17 42 / 36%);
+}
+
+.coday-ai-dialog-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 14px;
+  color: #fff;
+  background: var(--coday-blue);
+}
+
+.coday-ai-dialog h2 {
+  margin: 10px 0 12px;
+  font-size: clamp(1.85rem, 4vw, 2.55rem);
+  line-height: 1.05;
+  letter-spacing: -.045em;
+}
+
+.coday-ai-dialog > p {
+  margin: 0;
+  color: var(--coday-muted);
+  line-height: 1.65;
+}
+
+.coday-ai-dialog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.coday-ai-dialog-grid > div {
+  padding: 14px;
+  border: 1px solid var(--coday-line);
+  background: #f7f9fd;
+}
+
+.coday-ai-dialog-grid strong { color: var(--coday-blue-dark); }
+.coday-ai-dialog-grid p {
+  margin: 8px 0 0;
+  color: var(--coday-muted);
+  font-size: .91rem;
+  line-height: 1.55;
+}
+
+.coday-ai-documentation-note {
+  padding: 12px 14px;
+  border-left: 3px solid var(--coday-blue);
+  background: #edf4ff;
+}
+
+.coday-ai-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.coday-ai-dialog-actions a, .coday-ai-dialog-actions button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid var(--coday-blue);
+  color: var(--coday-blue-dark);
+  background: #fff;
+  font: inherit;
+  font-weight: 850;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.coday-ai-dialog-actions button { color: #fff; background: var(--coday-blue); }
+.coday-ai-countdown {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  margin-top: 12px;
+  color: #68758d;
+  font-size: .82rem;
+  font-weight: 750;
+}
+
 @media (max-width: 900px) {
   .coday-hero { grid-template-columns: 1fr; min-height: auto; padding: 56px 0 80px; }
   .coday-journey { box-shadow: 14px 14px 0 #dbe7ff; }
@@ -286,6 +391,8 @@
   .coday-notice { grid-template-columns: 1fr; }
   .coday-footer { align-items: flex-start; flex-direction: column; }
   .coday-footer p { justify-content: flex-start; }
+  .coday-ai-dialog-grid { grid-template-columns: 1fr; }
+  .coday-ai-dialog-actions, .coday-ai-dialog-actions a, .coday-ai-dialog-actions button { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

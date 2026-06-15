@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
   Building2,
   Check,
+  Clock3,
   Copy,
+  Cpu,
   ExternalLink,
   FileText,
   Code2,
@@ -13,6 +15,8 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 import logoPlataforma from '../../ativos/imagens/logo-plataforma.png'
+
+const DOCUMENTACAO_COMPLETA_URL = 'https://drive.google.com/file/d/1lhtqJuuEM68KanhU55ACK4ZJfSK7UGj-/view?usp=sharing'
 
 const contasDemo = [
   {
@@ -50,7 +54,7 @@ const materiaisCoday = [
     titulo: 'Documentação visual completa',
     descricao: 'Apresentação detalhada da proposta, arquitetura, jornadas, regras, IA e principais funcionalidades.',
     paginas: '36 páginas',
-    href: 'https://drive.google.com/file/d/1lhtqJuuEM68KanhU55ACK4ZJfSK7UGj-/view?usp=sharing',
+    href: DOCUMENTACAO_COMPLETA_URL,
     disponivel: true,
     Icone: FileText,
   },
@@ -99,10 +103,41 @@ function BotaoCopiar({ identificador, valor, copiado, aoCopiar }) {
 
 export function Coday() {
   const [copiado, setCopiado] = useState('')
+  const [destinoPendente, setDestinoPendente] = useState('')
+  const [segundosRestantes, setSegundosRestantes] = useState(5)
   const temporizadorCopia = useRef(null)
   const contasDemoRef = useRef(null)
+  const navigate = useNavigate()
 
   useEffect(() => () => clearTimeout(temporizadorCopia.current), [])
+  useEffect(() => {
+    if (!destinoPendente) return undefined
+
+    const temporizador = window.setInterval(() => {
+      setSegundosRestantes((atual) => {
+        if (atual <= 1) {
+          window.clearInterval(temporizador)
+          navigate(destinoPendente)
+          return 0
+        }
+        return atual - 1
+      })
+    }, 1000)
+
+    return () => window.clearInterval(temporizador)
+  }, [destinoPendente, navigate])
+
+  function prepararAcesso(evento, destino) {
+    evento.preventDefault()
+    setDestinoPendente(destino)
+    setSegundosRestantes(5)
+  }
+
+  function continuarAgora() {
+    const destino = destinoPendente
+    setDestinoPendente('')
+    if (destino) navigate(destino)
+  }
 
   function irParaContasDemo(evento) {
     evento.preventDefault()
@@ -124,11 +159,11 @@ export function Coday() {
   return (
     <div className="coday-page">
       <header className="coday-header">
-        <Link className="coday-brand" to="/" aria-label="Ir para a página inicial da Trilum Conecta">
+        <Link className="coday-brand" to="/" onClick={(evento) => prepararAcesso(evento, '/')} aria-label="Ir para a página inicial da Trilum Conecta">
           <img src={logoPlataforma} alt="" />
           <span>Trilum Conecta</span>
         </Link>
-        <Link className="coday-header-link" to="/">
+        <Link className="coday-header-link" to="/" onClick={(evento) => prepararAcesso(evento, '/')}>
           Abrir projeto <ArrowRight size={17} aria-hidden="true" />
         </Link>
       </header>
@@ -150,7 +185,7 @@ export function Coday() {
               completas para alunos e recrutadores.
             </p>
             <div className="coday-hero-actions">
-              <Link className="coday-primary-button" to="/">
+              <Link className="coday-primary-button" to="/" onClick={(evento) => prepararAcesso(evento, '/')}>
                 Abrir projeto <ArrowRight size={18} aria-hidden="true" />
               </Link>
               <a className="coday-secondary-button" href="#contas-demo" onClick={irParaContasDemo}>
@@ -186,7 +221,7 @@ export function Coday() {
               dois lados da plataforma.
             </p>
           </div>
-          <Link className="coday-primary-button" to="/">
+          <Link className="coday-primary-button" to="/" onClick={(evento) => prepararAcesso(evento, '/')}>
             Acessar Trilum Conecta <ExternalLink size={18} aria-hidden="true" />
           </Link>
         </section>
@@ -200,7 +235,7 @@ export function Coday() {
           <div className="coday-section-heading">
             <span className="coday-section-kicker">Demonstração guiada</span>
             <h2 id="titulo-contas-demo" tabIndex="-1">Escolha uma conta para começar</h2>
-            <p>Copie os dados e acesse o login. Nenhuma configuração adicional é necessária.</p>
+            <p>Copie os dados e acesse o login. Sem Ollama local, a demonstração usa fallback seguro.</p>
           </div>
           <div className="coday-demo-grid">
             {contasDemo.map(({ id, tipo, nome, email, senha, descricao, Icone }) => (
@@ -220,7 +255,7 @@ export function Coday() {
                     </div>
                   ))}
                 </dl>
-                <Link className="coday-card-action" to={`/entrar?demo=${id}`}>
+                <Link className="coday-card-action" to={`/entrar?demo=${id}`} onClick={(evento) => prepararAcesso(evento, `/entrar?demo=${id}`)}>
                   Ir para o login <ArrowRight size={17} aria-hidden="true" />
                 </Link>
               </article>
@@ -271,6 +306,58 @@ export function Coday() {
         <div><strong>Trilum Conecta</strong><span>Projeto acadêmico — Coday 2026.1</span></div>
         <p>Link recomendado para QR Code: <code>/Trilum-Conecta/#/coday</code></p>
       </footer>
+
+      {destinoPendente && (
+        <div className="coday-ai-transition" role="presentation">
+          <section
+            className="coday-ai-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-aviso-ia"
+            aria-describedby="descricao-aviso-ia"
+          >
+            <div className="coday-ai-dialog-icon"><Cpu size={28} aria-hidden="true" /></div>
+            <span className="coday-section-kicker">Antes de explorar o projeto</span>
+            <h2 id="titulo-aviso-ia">A IA do Trilum é local e opcional</h2>
+            <p id="descricao-aviso-ia">
+              Para receber textos personalizados pela IA, este computador precisa ter o Ollama
+              instalado, o modelo local configurado e o domínio do projeto autorizado.
+            </p>
+            <div className="coday-ai-dialog-grid">
+              <div>
+                <strong>Sem Ollama</strong>
+                <p>
+                  O sistema continua funcionando com regras, pesos, validações e textos seguros de
+                  fallback. Algumas sugestões serão padronizadas em vez de geradas pela IA.
+                </p>
+              </div>
+              <div>
+                <strong>Com Ollama</strong>
+                <p>
+                  O mentor pode personalizar explicações e melhorar textos, sem decidir
+                  recomendações, candidaturas ou ações automaticamente.
+                </p>
+              </div>
+            </div>
+            <p className="coday-ai-documentation-note">
+              Para visualizar como as funcionalidades ficam com a IA ativa, consulte a documentação
+              visual completa de 36 páginas.
+            </p>
+            <div className="coday-ai-dialog-actions">
+              <a href={DOCUMENTACAO_COMPLETA_URL} target="_blank" rel="noreferrer">
+                Abrir documentação completa <ExternalLink size={16} aria-hidden="true" />
+              </a>
+              <button type="button" onClick={continuarAgora}>
+                Continuar agora <ArrowRight size={16} aria-hidden="true" />
+              </button>
+            </div>
+            <div className="coday-ai-countdown" aria-live="polite">
+              <Clock3 size={16} aria-hidden="true" />
+              Encaminhando para o projeto em {segundosRestantes} segundos
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   )
 }
