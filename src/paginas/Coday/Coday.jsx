@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
   Building2,
   Check,
   Clock3,
+  Code2,
   Copy,
   Cpu,
   ExternalLink,
   FileText,
-  Code2,
   GraduationCap,
   Presentation,
   ShieldCheck,
@@ -103,40 +103,42 @@ function BotaoCopiar({ identificador, valor, copiado, aoCopiar }) {
 
 export function Coday() {
   const [copiado, setCopiado] = useState('')
-  const [destinoPendente, setDestinoPendente] = useState('')
-  const [segundosRestantes, setSegundosRestantes] = useState(20)
+  const [avisoAberto, setAvisoAberto] = useState(false)
+  const [perfilSelecionado, setPerfilSelecionado] = useState('')
+  const [segundosRestantes, setSegundosRestantes] = useState(15)
   const temporizadorCopia = useRef(null)
   const contasDemoRef = useRef(null)
   const navigate = useNavigate()
 
+  const acessoLiberado = segundosRestantes <= 0
+  const podeContinuar = acessoLiberado && perfilSelecionado
+
   useEffect(() => () => clearTimeout(temporizadorCopia.current), [])
+
   useEffect(() => {
-    if (!destinoPendente) return undefined
+    if (!avisoAberto || segundosRestantes <= 0) return undefined
 
     const temporizador = window.setInterval(() => {
-      setSegundosRestantes((atual) => {
-        if (atual <= 1) {
-          window.clearInterval(temporizador)
-          navigate(destinoPendente)
-          return 0
-        }
-        return atual - 1
-      })
+      setSegundosRestantes((atual) => Math.max(0, atual - 1))
     }, 1000)
 
     return () => window.clearInterval(temporizador)
-  }, [destinoPendente, navigate])
+  }, [avisoAberto, segundosRestantes])
 
-  function prepararAcesso(evento, destino) {
+  function prepararAcesso(evento, perfil = '') {
     evento.preventDefault()
-    setDestinoPendente(destino)
-    setSegundosRestantes(20)
+    setPerfilSelecionado(perfil)
+    setSegundosRestantes(15)
+    setAvisoAberto(true)
   }
 
   function continuarAgora() {
-    const destino = destinoPendente
-    setDestinoPendente('')
-    if (destino) navigate(destino)
+    if (!podeContinuar) return
+
+    const perfil = perfilSelecionado
+    setAvisoAberto(false)
+    setPerfilSelecionado('')
+    navigate(`/entrar?demo=${perfil}`)
   }
 
   function irParaContasDemo(evento) {
@@ -159,22 +161,16 @@ export function Coday() {
   return (
     <div className="coday-page">
       <header className="coday-header">
-        <Link className="coday-brand" to="/" onClick={(evento) => prepararAcesso(evento, '/')} aria-label="Ir para a página inicial da Trilum Conecta">
+        <div className="coday-brand">
           <img src={logoPlataforma} alt="" />
           <span>Trilum Conecta</span>
-        </Link>
-        <Link className="coday-header-link" to="/" onClick={(evento) => prepararAcesso(evento, '/')}>
-          Abrir projeto <ArrowRight size={17} aria-hidden="true" />
-        </Link>
+        </div>
       </header>
 
       <main>
         <section className="coday-hero">
           <div className="coday-hero-content">
-            <span className="coday-eyebrow">
-
-              Projeto acadêmico apresentado no Coday 2026.1
-            </span>
+            <span className="coday-eyebrow">Projeto acadêmico apresentado no Coday 2026.1</span>
             <h1>Trilum Conecta — Coday 2026.1</h1>
             <p className="coday-hero-lead">
               Uma plataforma que conecta aprendizado, projetos práticos, candidaturas e empresas em
@@ -185,9 +181,9 @@ export function Coday() {
               completas para alunos e recrutadores.
             </p>
             <div className="coday-hero-actions">
-              <Link className="coday-primary-button" to="/" onClick={(evento) => prepararAcesso(evento, '/')}>
+              <button className="coday-primary-button" type="button" onClick={(evento) => prepararAcesso(evento)}>
                 Abrir projeto <ArrowRight size={18} aria-hidden="true" />
-              </Link>
+              </button>
               <a className="coday-secondary-button" href="#contas-demo" onClick={irParaContasDemo}>
                 Ver contas de demonstração
               </a>
@@ -212,20 +208,6 @@ export function Coday() {
           </div>
         </section>
 
-        <section className="coday-section coday-access-section" aria-labelledby="acessar-projeto">
-          <div>
-            <span className="coday-section-kicker">Acesso rápido</span>
-            <h2 id="acessar-projeto">Explore a experiência completa</h2>
-            <p>
-              Navegue pela landing page e entre com uma das contas de demonstração para explorar os
-              dois lados da plataforma.
-            </p>
-          </div>
-          <Link className="coday-primary-button" to="/" onClick={(evento) => prepararAcesso(evento, '/')}>
-            Acessar Trilum Conecta <ExternalLink size={18} aria-hidden="true" />
-          </Link>
-        </section>
-
         <section
           className="coday-section"
           id="contas-demo"
@@ -245,7 +227,10 @@ export function Coday() {
                 <h3>{nome}</h3>
                 <p>{descricao}</p>
                 <dl className="coday-credentials">
-                  {[['email', 'E-mail', email], ['senha', 'Senha', senha]].map(([campo, label, valor]) => (
+                  {[
+                    ['email', 'E-mail', email],
+                    ['senha', 'Senha', senha],
+                  ].map(([campo, label, valor]) => (
                     <div key={campo}>
                       <dt>{label}</dt>
                       <dd>
@@ -255,9 +240,9 @@ export function Coday() {
                     </div>
                   ))}
                 </dl>
-                <Link className="coday-card-action" to={`/entrar?demo=${id}`} onClick={(evento) => prepararAcesso(evento, `/entrar?demo=${id}`)}>
+                <button className="coday-card-action" type="button" onClick={(evento) => prepararAcesso(evento, id)}>
                   Ir para o login <ArrowRight size={17} aria-hidden="true" />
-                </Link>
+                </button>
               </article>
             ))}
           </div>
@@ -302,12 +287,7 @@ export function Coday() {
         </section>
       </main>
 
-      <footer className="coday-footer">
-        <div><strong>Trilum Conecta</strong><span>Projeto acadêmico — Coday 2026.1</span></div>
-        <p>Link recomendado para QR Code: <code>/Trilum-Conecta/#/coday</code></p>
-      </footer>
-
-      {destinoPendente && (
+      {avisoAberto && (
         <div className="coday-ai-transition" role="presentation">
           <section
             className="coday-ai-dialog"
@@ -343,17 +323,38 @@ export function Coday() {
               Para visualizar como as funcionalidades ficam com a IA ativa, consulte a documentação
               visual completa de 36 páginas.
             </p>
+            <fieldset className="coday-profile-choice">
+              <legend>Escolha como deseja entrar na demonstração</legend>
+              {contasDemo.map(({ id, tipo, nome, Icone }) => (
+                <button
+                  className={perfilSelecionado === id ? 'is-selected' : ''}
+                  type="button"
+                  key={id}
+                  onClick={() => setPerfilSelecionado(id)}
+                  aria-pressed={perfilSelecionado === id}
+                >
+                  <Icone size={20} aria-hidden="true" />
+                  <span>{tipo}</span>
+                  <strong>{nome}</strong>
+                </button>
+              ))}
+            </fieldset>
             <div className="coday-ai-dialog-actions">
               <a href={DOCUMENTACAO_COMPLETA_URL} target="_blank" rel="noreferrer">
                 Abrir documentação completa <ExternalLink size={16} aria-hidden="true" />
               </a>
-              <button type="button" onClick={continuarAgora}>
-                Continuar agora <ArrowRight size={16} aria-hidden="true" />
+              <button type="button" onClick={continuarAgora} disabled={!podeContinuar}>
+                {acessoLiberado ? 'Continuar agora' : 'Aguarde o aviso'}
+                <ArrowRight size={16} aria-hidden="true" />
               </button>
             </div>
             <div className="coday-ai-countdown" aria-live="polite">
               <Clock3 size={16} aria-hidden="true" />
-              Encaminhando para o projeto em {segundosRestantes} segundos
+              {segundosRestantes > 0
+                ? `Liberação do acesso em ${segundosRestantes} segundos`
+                : perfilSelecionado
+                  ? 'Acesso liberado. Clique em Continuar agora para entrar.'
+                  : 'Escolha aluno ou empresa para continuar.'}
             </div>
           </section>
         </div>
